@@ -1,0 +1,1 @@
+{"mappings":"AAAA;;;;;;;;;;AAQA","sources":["css/style.css"],"sourcesContent":["@keyframes rotating {\n    from {\n        transform: rotate(0deg);\n    }\n    to {\n        transform: rotate(360deg);\n    }\n}\n.rotating {\n    animation: rotating 2s linear infinite;\n}\n"],"names":[],"version":3,"file":"index.b2625c6b.css.map","sourceRoot":"/__parcel_source_root/"}
