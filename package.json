@@ -1,0 +1,17 @@
+{
+    "private": true,
+    "scripts": {
+        "start": "parcel index.html",
+        "start-no-debug": "PARCEL_ELM_NO_DEBUG=1 yarn start",
+        "review": "elm-review",
+        "review-fix": "elm-review --fix",
+        "build": "parcel build index.html"
+    },
+    "devDependencies": {
+        "@parcel/transformer-elm": "2.6.0",
+        "@parcel/transformer-sass": "2.6.0",
+        "elm": "^0.19.1-5",
+        "elm-review": "^2.7.2",
+        "elm-test": "^0.19.1-revision8"
+    }
+}

@@ -1,0 +1,101 @@
+@import '_reset.css';
+
+body {
+    font-family: Menlo, 'Courier New', Courier, monospace;
+    overflow-y: hidden;
+}
+
+label,
+button,
+input[type='checkbox'],
+select {
+    cursor: pointer;
+}
+
+h1,
+h2,
+h3 {
+    font-weight: bold;
+    text-decoration: underline;
+    margin-bottom: 1em;
+}
+
+.cpu-state .highlight {
+    background-color: #f39c12;
+}
+
+ul {
+    list-style-type: disc;
+    padding-left: 2em;
+}
+ul ul {
+    list-style-type: circle;
+}
+
+#program-explorer {
+    .highlight {
+        background-color: #0984e3;
+    }
+}
+
+.scroller {
+    overflow-y: scroll;
+    padding-bottom: 25vh;
+}
+
+.left,
+.right {
+    border: 1px solid black;
+}
+
+.container {
+    display: flex;
+
+    .spacer {
+        margin: 0 auto;
+    }
+
+    .left {
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .left,
+    .right {
+        width: 25vw;
+        min-width: 340px;
+    }
+
+    .right {
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        // overflow-y: hidden;
+
+        #program-explorer {
+            overflow-y: scroll;
+            min-height: min-content;
+        }
+    }
+}
+
+.keyboard {
+    border: 1px solid black;
+    display: inline-block;
+    .highlight {
+        background: lime;
+    }
+}
+
+@keyframes rotating {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+.rotating {
+    animation: rotating 2s linear infinite;
+}
