@@ -78,11 +78,11 @@ ul ul {
   border: 1px solid #000;
 }
 
-.rom-selector label.highlight {
+.rom-selector .highlight {
   background-color: #0984e3;
 }
 
-.rom-selector label {
+.rom-selector .rom-input {
   padding: 1em;
 }
 

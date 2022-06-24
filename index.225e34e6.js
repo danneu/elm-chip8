@@ -4369,8 +4369,8 @@ type alias Process =
     var $elm$json$Json$Decode$decodeValue = _Json_run;
     var $author$project$Main$defaultDebug = {
         showDebug: true,
-        showHistory: false,
-        showProgram: false
+        showHistory: true,
+        showProgram: true
     };
     var $author$project$Main$defaultConfig = {
         debug: $author$project$Main$defaultDebug,
@@ -18318,7 +18318,7 @@ type alias Process =
             return A2($elm$core$List$cons, value, valueList);
         }), _List_Nil, dict);
     };
-    var $author$project$Main$viewSampleRomSelector = function(currentRom) {
+    var $author$project$Main$viewRomSelector = function(currentRom) {
         var selectedRomIsCustom = function() {
             if (currentRom.$ === 'SampleRom') return false;
             else return true;
@@ -18341,7 +18341,8 @@ type alias Process =
                 A2($elm$html$Html$Attributes$style, 'display', 'block'),
                 $elm$html$Html$Attributes$classList(_List_fromArray([
                     _Utils_Tuple2('highlight', !selectedRomIsCustom)
-                ]))
+                ])),
+                $elm$html$Html$Attributes$class('rom-input')
             ]), _List_fromArray([
                 $elm$html$Html$text('Built-in ROMs: '),
                 A2($elm$html$Html$select, _List_fromArray([
@@ -18370,13 +18371,14 @@ type alias Process =
                     $author$project$SampleRom$Game
                 ])))
             ])),
-            A2($elm$html$Html$label, _List_fromArray([
+            A2($elm$html$Html$div, _List_fromArray([
                 $elm$html$Html$Attributes$classList(_List_fromArray([
                     _Utils_Tuple2('highlight', selectedRomIsCustom)
                 ])),
-                A2($elm$html$Html$Attributes$style, 'display', 'block')
+                A2($elm$html$Html$Attributes$style, 'display', 'block'),
+                $elm$html$Html$Attributes$class('rom-input')
             ]), _List_fromArray([
-                $elm$html$Html$text('Load your own ROM file: '),
+                $elm$html$Html$text('Load your own ROM (.ch8) file: '),
                 A2($elm$html$Html$button, _List_fromArray([
                     $elm$html$Html$Events$onClick($author$project$Main$RequestUserFile),
                     $elm$html$Html$Attributes$type_('button')
@@ -18411,7 +18413,7 @@ type alias Process =
                     A2($elm$html$Html$Attributes$style, 'max-width', 'fit-content'),
                     A2($elm$html$Html$Attributes$style, 'margin', '0 auto')
                 ]), _List_fromArray([
-                    $author$project$Main$viewSampleRomSelector(model.rom),
+                    $author$project$Main$viewRomSelector(model.rom),
                     A2($elm$html$Html$br, _List_Nil, _List_Nil),
                     $author$project$Main$viewFrameBuffer(model.cpu.frameBuf),
                     A2($elm$html$Html$br, _List_Nil, _List_Nil),
