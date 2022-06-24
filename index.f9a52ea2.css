@@ -38,8 +38,12 @@ body {
   overflow-y: hidden;
 }
 
-label, button, input[type="checkbox"], select {
+label, button, input[type="checkbox"], input[type="range"], select {
   cursor: pointer;
+}
+
+label.disabled {
+  color: gray;
 }
 
 h1, h2, h3 {
@@ -74,7 +78,32 @@ ul ul {
   border: 1px solid #000;
 }
 
+.rom-selector label.highlight {
+  background-color: #0984e3;
+}
+
+.rom-selector label {
+  padding: 1em;
+}
+
+svg {
+  width: 100%;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.playback-controls {
+  justify-content: space-evenly;
+  margin: .5em 0;
+  display: flex;
+}
+
+.playback-controls button {
+  width: 25%;
+}
+
 .container {
+  justify-content: space-between;
   display: flex;
 }
 
@@ -85,6 +114,13 @@ ul ul {
 .container .left {
   height: 100vh;
   flex-direction: column;
+  display: flex;
+}
+
+.container .mid {
+  height: 100vh;
+  flex-direction: column;
+  flex-grow: 2;
   display: flex;
 }
 
@@ -104,13 +140,39 @@ ul ul {
   overflow-y: scroll;
 }
 
+.debug-options {
+  margin-top: 3em;
+}
+
+.awaiting {
+  text-align: center;
+  background-color: #f39c12;
+}
+
 .keyboard {
   border: 1px solid #000;
   display: inline-block;
 }
 
-.keyboard .highlight {
-  background: #0f0;
+.keyboard .row {
+  display: flex;
+}
+
+.keyboard button {
+  background-color: #fff;
+  border: 1px solid #999;
+  margin: 0;
+  padding: 1em;
+  font-family: Menlo, Courier New, monospace;
+  font-size: .75em;
+}
+
+.keyboard button:hover {
+  background-color: #ccc;
+}
+
+.keyboard button.highlight {
+  background-color: #0f0;
 }
 
 @keyframes rotating {
@@ -125,6 +187,27 @@ ul ul {
 
 .rotating {
   animation: rotating 2s linear infinite;
+}
+
+.pulse-blue {
+  animation: pulse-blue 2s infinite;
+}
+
+@keyframes pulse-blue {
+  0% {
+    transform: scale(.95);
+    box-shadow: 0 0 #34ace0b3;
+  }
+
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 10px #34ace000;
+  }
+
+  100% {
+    transform: scale(.95);
+    box-shadow: 0 0 #34ace000;
+  }
 }
 
 /*# sourceMappingURL=index.f9a52ea2.css.map */

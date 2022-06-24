@@ -530,7 +530,8 @@ function hmrAcceptRun(bundle, id) {
 var _mainElm = require("./src/Main.elm");
 const app = _mainElm.Elm.Main.init({
     flags: {
-        seed: Date.now()
+        seed: Date.now(),
+        config: getConfig()
     }
 });
 app.ports.scrollToId.subscribe((id)=>{
@@ -577,6 +578,18 @@ app.ports.playAudio.subscribe((shouldPlay)=>{
     if (shouldPlay) audio.play();
     else audio.pause();
 });
+app.ports.storeConfig.subscribe((config)=>{
+    console.log('config', config);
+    localStorage.setItem('config', JSON.stringify(config, null, 2));
+});
+function getConfig() {
+    const json = localStorage.getItem('config');
+    console.log('getConfig', json);
+    if (typeof json !== 'string') return;
+    try {
+        return JSON.parse(json);
+    } catch (e) {}
+}
 
 },{"./src/Main.elm":"4XkAe"}],"4XkAe":[function(require,module,exports) {
 (function(scope) {
@@ -721,7 +734,7 @@ app.ports.playAudio.subscribe((shouldPlay)=>{
     function A9(fun, a, b, c, d, e, f, g, h, i) {
         return fun.a === 9 ? fun.f(a, b, c, d, e, f, g, h, i) : fun(a)(b)(c)(d)(e)(f)(g)(h)(i);
     }
-    console.warn('Compiled in DEBUG mode. Follow the advice at https://elm-lang.org/0.19.1/optimize for better performance and smaller assets.');
+    console.warn('Compiled in DEV mode. Follow the advice at https://elm-lang.org/0.19.1/optimize for better performance and smaller assets.');
     var _JsArray_empty = [];
     function _JsArray_singleton(value) {
         return [
@@ -3162,345 +3175,6 @@ type alias Process =
             b: keyedNode.b
         };
     }
-    var _Bitwise_and = F2(function(a, b) {
-        return a & b;
-    });
-    var _Bitwise_or = F2(function(a, b) {
-        return a | b;
-    });
-    var _Bitwise_xor = F2(function(a, b) {
-        return a ^ b;
-    });
-    function _Bitwise_complement(a) {
-        return ~a;
-    }
-    var _Bitwise_shiftLeftBy = F2(function(offset, a) {
-        return a << offset;
-    });
-    var _Bitwise_shiftRightBy = F2(function(offset, a) {
-        return a >> offset;
-    });
-    var _Bitwise_shiftRightZfBy = F2(function(offset, a) {
-        return a >>> offset;
-    });
-    // HELPERS
-    function _Debugger_unsafeCoerce(value) {
-        return value;
-    }
-    // PROGRAMS
-    var _Debugger_element = F4(function(impl, flagDecoder, debugMetadata, args) {
-        return _Platform_initialize(flagDecoder, args, A3($elm$browser$Debugger$Main$wrapInit, _Json_wrap(debugMetadata), _Debugger_popout(), impl.init), $elm$browser$Debugger$Main$wrapUpdate(impl.update), $elm$browser$Debugger$Main$wrapSubs(impl.subscriptions), function(sendToApp, initialModel) {
-            var view = impl.view;
-            var title = _VirtualDom_doc.title;
-            var domNode = args && args['node'] ? args['node'] : _Debug_crash(0);
-            var currNode = _VirtualDom_virtualize(domNode);
-            var currBlocker = $elm$browser$Debugger$Main$toBlockerType(initialModel);
-            var currPopout;
-            var cornerNode = _VirtualDom_doc.createElement('div');
-            domNode.parentNode.insertBefore(cornerNode, domNode.nextSibling);
-            var cornerCurr = _VirtualDom_virtualize(cornerNode);
-            initialModel.popout.a = sendToApp;
-            return _Browser_makeAnimator(initialModel, function(model) {
-                var nextNode = A2(_VirtualDom_map, $elm$browser$Debugger$Main$UserMsg, view($elm$browser$Debugger$Main$getUserModel(model)));
-                var patches = _VirtualDom_diff(currNode, nextNode);
-                domNode = _VirtualDom_applyPatches(domNode, currNode, patches, sendToApp);
-                currNode = nextNode;
-                // update blocker
-                var nextBlocker = $elm$browser$Debugger$Main$toBlockerType(model);
-                _Debugger_updateBlocker(currBlocker, nextBlocker);
-                currBlocker = nextBlocker;
-                // view corner
-                var cornerNext = $elm$browser$Debugger$Main$cornerView(model);
-                var cornerPatches = _VirtualDom_diff(cornerCurr, cornerNext);
-                cornerNode = _VirtualDom_applyPatches(cornerNode, cornerCurr, cornerPatches, sendToApp);
-                cornerCurr = cornerNext;
-                if (!model.popout.b) {
-                    currPopout = undefined;
-                    return;
-                }
-                // view popout
-                _VirtualDom_doc = model.popout.b; // SWITCH TO POPOUT DOC
-                currPopout || (currPopout = _VirtualDom_virtualize(model.popout.b));
-                var nextPopout = $elm$browser$Debugger$Main$popoutView(model);
-                var popoutPatches = _VirtualDom_diff(currPopout, nextPopout);
-                _VirtualDom_applyPatches(model.popout.b.body, currPopout, popoutPatches, sendToApp);
-                currPopout = nextPopout;
-                _VirtualDom_doc = document; // SWITCH BACK TO NORMAL DOC
-            });
-        });
-    });
-    var _Debugger_document = F4(function(impl, flagDecoder, debugMetadata, args) {
-        return _Platform_initialize(flagDecoder, args, A3($elm$browser$Debugger$Main$wrapInit, _Json_wrap(debugMetadata), _Debugger_popout(), impl.init), $elm$browser$Debugger$Main$wrapUpdate(impl.update), $elm$browser$Debugger$Main$wrapSubs(impl.subscriptions), function(sendToApp, initialModel) {
-            var divertHrefToApp = impl.setup && impl.setup(function(x) {
-                return sendToApp($elm$browser$Debugger$Main$UserMsg(x));
-            });
-            var view = impl.view;
-            var title = _VirtualDom_doc.title;
-            var bodyNode = _VirtualDom_doc.body;
-            var currNode = _VirtualDom_virtualize(bodyNode);
-            var currBlocker = $elm$browser$Debugger$Main$toBlockerType(initialModel);
-            var currPopout;
-            initialModel.popout.a = sendToApp;
-            return _Browser_makeAnimator(initialModel, function(model) {
-                _VirtualDom_divertHrefToApp = divertHrefToApp;
-                var doc = view($elm$browser$Debugger$Main$getUserModel(model));
-                var nextNode = _VirtualDom_node('body')(_List_Nil)(_Utils_ap(A2($elm$core$List$map, _VirtualDom_map($elm$browser$Debugger$Main$UserMsg), doc.body), _List_Cons($elm$browser$Debugger$Main$cornerView(model), _List_Nil)));
-                var patches = _VirtualDom_diff(currNode, nextNode);
-                bodyNode = _VirtualDom_applyPatches(bodyNode, currNode, patches, sendToApp);
-                currNode = nextNode;
-                _VirtualDom_divertHrefToApp = 0;
-                title !== doc.title && (_VirtualDom_doc.title = title = doc.title);
-                // update blocker
-                var nextBlocker = $elm$browser$Debugger$Main$toBlockerType(model);
-                _Debugger_updateBlocker(currBlocker, nextBlocker);
-                currBlocker = nextBlocker;
-                // view popout
-                if (!model.popout.b) {
-                    currPopout = undefined;
-                    return;
-                }
-                _VirtualDom_doc = model.popout.b; // SWITCH TO POPOUT DOC
-                currPopout || (currPopout = _VirtualDom_virtualize(model.popout.b));
-                var nextPopout = $elm$browser$Debugger$Main$popoutView(model);
-                var popoutPatches = _VirtualDom_diff(currPopout, nextPopout);
-                _VirtualDom_applyPatches(model.popout.b.body, currPopout, popoutPatches, sendToApp);
-                currPopout = nextPopout;
-                _VirtualDom_doc = document; // SWITCH BACK TO NORMAL DOC
-            });
-        });
-    });
-    function _Debugger_popout() {
-        return {
-            b: undefined,
-            a: undefined
-        };
-    }
-    function _Debugger_isOpen(popout) {
-        return !!popout.b;
-    }
-    function _Debugger_open(popout) {
-        return _Scheduler_binding(function(callback) {
-            _Debugger_openWindow(popout);
-            callback(_Scheduler_succeed(_Utils_Tuple0));
-        });
-    }
-    function _Debugger_openWindow(popout) {
-        var w = $elm$browser$Debugger$Main$initialWindowWidth, h = $elm$browser$Debugger$Main$initialWindowHeight, x = screen.width - w, y = screen.height - h;
-        var debuggerWindow = window.open('', '', 'width=' + w + ',height=' + h + ',left=' + x + ',top=' + y);
-        var doc = debuggerWindow.document;
-        doc.title = 'Elm Debugger';
-        // handle arrow keys
-        doc.addEventListener('keydown', function(event) {
-            event.metaKey && event.which === 82 && window.location.reload();
-            event.key === 'ArrowUp' && (popout.a($elm$browser$Debugger$Main$Up), event.preventDefault());
-            event.key === 'ArrowDown' && (popout.a($elm$browser$Debugger$Main$Down), event.preventDefault());
-        });
-        // handle window close
-        window.addEventListener('unload', close);
-        debuggerWindow.addEventListener('unload', function() {
-            popout.b = undefined;
-            popout.a($elm$browser$Debugger$Main$NoOp);
-            window.removeEventListener('unload', close);
-        });
-        function close() {
-            popout.b = undefined;
-            popout.a($elm$browser$Debugger$Main$NoOp);
-            debuggerWindow.close();
-        }
-        // register new window
-        popout.b = doc;
-    }
-    // SCROLL
-    function _Debugger_scroll(popout) {
-        return _Scheduler_binding(function(callback) {
-            if (popout.b) {
-                var msgs = popout.b.getElementById('elm-debugger-sidebar');
-                if (msgs && msgs.scrollTop !== 0) msgs.scrollTop = 0;
-            }
-            callback(_Scheduler_succeed(_Utils_Tuple0));
-        });
-    }
-    var _Debugger_scrollTo = F2(function(id, popout) {
-        return _Scheduler_binding(function(callback) {
-            if (popout.b) {
-                var msg = popout.b.getElementById(id);
-                if (msg) msg.scrollIntoView(false);
-            }
-            callback(_Scheduler_succeed(_Utils_Tuple0));
-        });
-    });
-    // UPLOAD
-    function _Debugger_upload(popout) {
-        return _Scheduler_binding(function(callback) {
-            var doc = popout.b || document;
-            var element = doc.createElement('input');
-            element.setAttribute('type', 'file');
-            element.setAttribute('accept', 'text/json');
-            element.style.display = 'none';
-            element.addEventListener('change', function(event) {
-                var fileReader = new FileReader();
-                fileReader.onload = function(e) {
-                    callback(_Scheduler_succeed(e.target.result));
-                };
-                fileReader.readAsText(event.target.files[0]);
-                doc.body.removeChild(element);
-            });
-            doc.body.appendChild(element);
-            element.click();
-        });
-    }
-    // DOWNLOAD
-    var _Debugger_download = F2(function(historyLength, json) {
-        return _Scheduler_binding(function(callback) {
-            var fileName = 'history-' + historyLength + '.txt';
-            var jsonString = JSON.stringify(json);
-            var mime = 'text/plain;charset=utf-8';
-            var done = _Scheduler_succeed(_Utils_Tuple0);
-            // for IE10+
-            if (navigator.msSaveBlob) {
-                navigator.msSaveBlob(new Blob([
-                    jsonString
-                ], {
-                    type: mime
-                }), fileName);
-                return callback(done);
-            }
-            // for HTML5
-            var element = document.createElement('a');
-            element.setAttribute('href', 'data:' + mime + ',' + encodeURIComponent(jsonString));
-            element.setAttribute('download', fileName);
-            element.style.display = 'none';
-            document.body.appendChild(element);
-            element.click();
-            document.body.removeChild(element);
-            callback(done);
-        });
-    });
-    // POPOUT CONTENT
-    function _Debugger_messageToString(value) {
-        if (typeof value === 'boolean') return value ? 'True' : 'False';
-        if (typeof value === 'number') return value + '';
-        if (typeof value === 'string') return '"' + _Debugger_addSlashes(value, false) + '"';
-        if (value instanceof String) return "'" + _Debugger_addSlashes(value, true) + "'";
-        if (typeof value !== 'object' || value === null || !('$' in value)) return '…';
-        if (typeof value.$ === 'number') return '…';
-        var code = value.$.charCodeAt(0);
-        if (code === 0x23 /* # */  || /* a */ 0x61 <= code && code <= 0x7A /* z */ ) return '…';
-        if ([
-            'Array_elm_builtin',
-            'Set_elm_builtin',
-            'RBNode_elm_builtin',
-            'RBEmpty_elm_builtin'
-        ].indexOf(value.$) >= 0) return '…';
-        var keys = Object.keys(value);
-        switch(keys.length){
-            case 1:
-                return value.$;
-            case 2:
-                return value.$ + ' ' + _Debugger_messageToString(value.a);
-            default:
-                return value.$ + ' … ' + _Debugger_messageToString(value[keys[keys.length - 1]]);
-        }
-    }
-    function _Debugger_init(value) {
-        if (typeof value === 'boolean') return A3($elm$browser$Debugger$Expando$Constructor, $elm$core$Maybe$Just(value ? 'True' : 'False'), true, _List_Nil);
-        if (typeof value === 'number') return $elm$browser$Debugger$Expando$Primitive(value + '');
-        if (typeof value === 'string') return $elm$browser$Debugger$Expando$S('"' + _Debugger_addSlashes(value, false) + '"');
-        if (value instanceof String) return $elm$browser$Debugger$Expando$S("'" + _Debugger_addSlashes(value, true) + "'");
-        if (typeof value === 'object' && '$' in value) {
-            var tag = value.$;
-            if (tag === '::' || tag === '[]') return A3($elm$browser$Debugger$Expando$Sequence, $elm$browser$Debugger$Expando$ListSeq, true, A2($elm$core$List$map, _Debugger_init, value));
-            if (tag === 'Set_elm_builtin') return A3($elm$browser$Debugger$Expando$Sequence, $elm$browser$Debugger$Expando$SetSeq, true, A3($elm$core$Set$foldr, _Debugger_initCons, _List_Nil, value));
-            if (tag === 'RBNode_elm_builtin' || tag == 'RBEmpty_elm_builtin') return A2($elm$browser$Debugger$Expando$Dictionary, true, A3($elm$core$Dict$foldr, _Debugger_initKeyValueCons, _List_Nil, value));
-            if (tag === 'Array_elm_builtin') return A3($elm$browser$Debugger$Expando$Sequence, $elm$browser$Debugger$Expando$ArraySeq, true, A3($elm$core$Array$foldr, _Debugger_initCons, _List_Nil, value));
-            if (typeof tag === 'number') return $elm$browser$Debugger$Expando$Primitive('<internals>');
-            var char = tag.charCodeAt(0);
-            if (char === 35 || 65 <= char && char <= 90) {
-                var list = _List_Nil;
-                for(var i in value){
-                    if (i === '$') continue;
-                    list = _List_Cons(_Debugger_init(value[i]), list);
-                }
-                return A3($elm$browser$Debugger$Expando$Constructor, char === 35 ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(tag), true, $elm$core$List$reverse(list));
-            }
-            return $elm$browser$Debugger$Expando$Primitive('<internals>');
-        }
-        if (typeof value === 'object') {
-            var dict = $elm$core$Dict$empty;
-            for(var i in value)dict = A3($elm$core$Dict$insert, i, _Debugger_init(value[i]), dict);
-            return A2($elm$browser$Debugger$Expando$Record, true, dict);
-        }
-        return $elm$browser$Debugger$Expando$Primitive('<internals>');
-    }
-    var _Debugger_initCons = F2(function initConsHelp(value, list) {
-        return _List_Cons(_Debugger_init(value), list);
-    });
-    var _Debugger_initKeyValueCons = F3(function(key, value, list) {
-        return _List_Cons(_Utils_Tuple2(_Debugger_init(key), _Debugger_init(value)), list);
-    });
-    function _Debugger_addSlashes(str, isChar) {
-        var s = str.replace(/\\/g, '\\\\').replace(/\n/g, '\\n').replace(/\t/g, '\\t').replace(/\r/g, '\\r').replace(/\v/g, '\\v').replace(/\0/g, '\\0');
-        if (isChar) return s.replace(/\'/g, '\\\'');
-        else return s.replace(/\"/g, '\\"');
-    }
-    // BLOCK EVENTS
-    function _Debugger_updateBlocker(oldBlocker, newBlocker) {
-        if (oldBlocker === newBlocker) return;
-        var oldEvents = _Debugger_blockerToEvents(oldBlocker);
-        var newEvents = _Debugger_blockerToEvents(newBlocker);
-        // remove old blockers
-        for(var i = 0; i < oldEvents.length; i++)document.removeEventListener(oldEvents[i], _Debugger_blocker, true);
-        // add new blockers
-        for(var i = 0; i < newEvents.length; i++)document.addEventListener(newEvents[i], _Debugger_blocker, true);
-    }
-    function _Debugger_blocker(event) {
-        if (event.type === 'keydown' && event.metaKey && event.which === 82) return;
-        var isScroll = event.type === 'scroll' || event.type === 'wheel';
-        for(var node = event.target; node; node = node.parentNode){
-            if (isScroll ? node.id === 'elm-debugger-details' : node.id === 'elm-debugger-overlay') return;
-        }
-        event.stopPropagation();
-        event.preventDefault();
-    }
-    function _Debugger_blockerToEvents(blocker) {
-        return blocker === $elm$browser$Debugger$Overlay$BlockNone ? [] : blocker === $elm$browser$Debugger$Overlay$BlockMost ? _Debugger_mostEvents : _Debugger_allEvents;
-    }
-    var _Debugger_mostEvents = [
-        'click',
-        'dblclick',
-        'mousemove',
-        'mouseup',
-        'mousedown',
-        'mouseenter',
-        'mouseleave',
-        'touchstart',
-        'touchend',
-        'touchcancel',
-        'touchmove',
-        'pointerdown',
-        'pointerup',
-        'pointerover',
-        'pointerout',
-        'pointerenter',
-        'pointerleave',
-        'pointermove',
-        'pointercancel',
-        'dragstart',
-        'drag',
-        'dragend',
-        'dragenter',
-        'dragover',
-        'dragleave',
-        'drop',
-        'keyup',
-        'keydown',
-        'keypress',
-        'input',
-        'change',
-        'focus',
-        'blur'
-    ];
-    var _Debugger_allEvents = _Debugger_mostEvents.concat('wheel', 'scroll');
     // ELEMENT
     var _Debugger_element;
     var _Browser_element = _Debugger_element || F4(function(impl, flagDecoder, debugMetadata, args) {
@@ -3780,6 +3454,283 @@ type alias Process =
                 _VirtualDom_doc.location.reload(false);
             }
         }));
+    }
+    var _Bitwise_and = F2(function(a, b) {
+        return a & b;
+    });
+    var _Bitwise_or = F2(function(a, b) {
+        return a | b;
+    });
+    var _Bitwise_xor = F2(function(a, b) {
+        return a ^ b;
+    });
+    function _Bitwise_complement(a) {
+        return ~a;
+    }
+    var _Bitwise_shiftLeftBy = F2(function(offset, a) {
+        return a << offset;
+    });
+    var _Bitwise_shiftRightBy = F2(function(offset, a) {
+        return a >> offset;
+    });
+    var _Bitwise_shiftRightZfBy = F2(function(offset, a) {
+        return a >>> offset;
+    });
+    // BYTES
+    function _Bytes_width(bytes) {
+        return bytes.byteLength;
+    }
+    var _Bytes_getHostEndianness = F2(function(le, be) {
+        return _Scheduler_binding(function(callback) {
+            callback(_Scheduler_succeed(new Uint8Array(new Uint32Array([
+                1
+            ]))[0] === 1 ? le : be));
+        });
+    });
+    // ENCODERS
+    function _Bytes_encode(encoder) {
+        var mutableBytes = new DataView(new ArrayBuffer($elm$bytes$Bytes$Encode$getWidth(encoder)));
+        $elm$bytes$Bytes$Encode$write(encoder)(mutableBytes)(0);
+        return mutableBytes;
+    }
+    // SIGNED INTEGERS
+    var _Bytes_write_i8 = F3(function(mb, i, n) {
+        mb.setInt8(i, n);
+        return i + 1;
+    });
+    var _Bytes_write_i16 = F4(function(mb, i, n, isLE) {
+        mb.setInt16(i, n, isLE);
+        return i + 2;
+    });
+    var _Bytes_write_i32 = F4(function(mb, i, n, isLE) {
+        mb.setInt32(i, n, isLE);
+        return i + 4;
+    });
+    // UNSIGNED INTEGERS
+    var _Bytes_write_u8 = F3(function(mb, i, n) {
+        mb.setUint8(i, n);
+        return i + 1;
+    });
+    var _Bytes_write_u16 = F4(function(mb, i, n, isLE) {
+        mb.setUint16(i, n, isLE);
+        return i + 2;
+    });
+    var _Bytes_write_u32 = F4(function(mb, i, n, isLE) {
+        mb.setUint32(i, n, isLE);
+        return i + 4;
+    });
+    // FLOATS
+    var _Bytes_write_f32 = F4(function(mb, i, n, isLE) {
+        mb.setFloat32(i, n, isLE);
+        return i + 4;
+    });
+    var _Bytes_write_f64 = F4(function(mb, i, n, isLE) {
+        mb.setFloat64(i, n, isLE);
+        return i + 8;
+    });
+    // BYTES
+    var _Bytes_write_bytes = F3(function(mb, offset, bytes) {
+        for(var i = 0, len = bytes.byteLength, limit = len - 4; i <= limit; i += 4)mb.setUint32(offset + i, bytes.getUint32(i));
+        for(; i < len; i++)mb.setUint8(offset + i, bytes.getUint8(i));
+        return offset + len;
+    });
+    // STRINGS
+    function _Bytes_getStringWidth(string) {
+        for(var width = 0, i = 0; i < string.length; i++){
+            var code = string.charCodeAt(i);
+            width += code < 0x80 ? 1 : code < 0x800 ? 2 : code < 0xD800 || 0xDBFF < code ? 3 : (i++, 4);
+        }
+        return width;
+    }
+    var _Bytes_write_string = F3(function(mb, offset, string) {
+        for(var i = 0; i < string.length; i++){
+            var code = string.charCodeAt(i);
+            offset += code < 0x80 ? (mb.setUint8(offset, code), 1) : code < 0x800 ? (mb.setUint16(offset, 0xC080 /* 0b1100000010000000 */  | (code >>> 6 & 0x1F /* 0b00011111 */ ) << 8 | code & 0x3F /* 0b00111111 */ ), 2) : code < 0xD800 || 0xDBFF < code ? (mb.setUint16(offset, 0xE080 /* 0b1110000010000000 */  | (code >>> 12 & 0xF /* 0b00001111 */ ) << 8 | code >>> 6 & 0x3F /* 0b00111111 */ ), mb.setUint8(offset + 2, 0x80 /* 0b10000000 */  | code & 0x3F /* 0b00111111 */ ), 3) : (code = (code - 0xD800) * 0x400 + string.charCodeAt(++i) - 0xDC00 + 0x10000, mb.setUint32(offset, 0xF0808080 /* 0b11110000100000001000000010000000 */  | (code >>> 18 & 0x7 /* 0b00000111 */ ) << 24 | (code >>> 12 & 0x3F /* 0b00111111 */ ) << 16 | (code >>> 6 & 0x3F /* 0b00111111 */ ) << 8 | code & 0x3F /* 0b00111111 */ ), 4);
+        }
+        return offset;
+    });
+    // DECODER
+    var _Bytes_decode = F2(function(decoder, bytes) {
+        try {
+            return $elm$core$Maybe$Just(A2(decoder, bytes, 0).b);
+        } catch (e) {
+            return $elm$core$Maybe$Nothing;
+        }
+    });
+    var _Bytes_read_i8 = F2(function(bytes, offset) {
+        return _Utils_Tuple2(offset + 1, bytes.getInt8(offset));
+    });
+    var _Bytes_read_i16 = F3(function(isLE, bytes, offset) {
+        return _Utils_Tuple2(offset + 2, bytes.getInt16(offset, isLE));
+    });
+    var _Bytes_read_i32 = F3(function(isLE, bytes, offset) {
+        return _Utils_Tuple2(offset + 4, bytes.getInt32(offset, isLE));
+    });
+    var _Bytes_read_u8 = F2(function(bytes, offset) {
+        return _Utils_Tuple2(offset + 1, bytes.getUint8(offset));
+    });
+    var _Bytes_read_u16 = F3(function(isLE, bytes, offset) {
+        return _Utils_Tuple2(offset + 2, bytes.getUint16(offset, isLE));
+    });
+    var _Bytes_read_u32 = F3(function(isLE, bytes, offset) {
+        return _Utils_Tuple2(offset + 4, bytes.getUint32(offset, isLE));
+    });
+    var _Bytes_read_f32 = F3(function(isLE, bytes, offset) {
+        return _Utils_Tuple2(offset + 4, bytes.getFloat32(offset, isLE));
+    });
+    var _Bytes_read_f64 = F3(function(isLE, bytes, offset) {
+        return _Utils_Tuple2(offset + 8, bytes.getFloat64(offset, isLE));
+    });
+    var _Bytes_read_bytes = F3(function(len, bytes, offset) {
+        return _Utils_Tuple2(offset + len, new DataView(bytes.buffer, bytes.byteOffset + offset, len));
+    });
+    var _Bytes_read_string = F3(function(len, bytes, offset) {
+        var string = '';
+        var end = offset + len;
+        for(; offset < end;){
+            var byte = bytes.getUint8(offset++);
+            string += byte < 128 ? String.fromCharCode(byte) : (byte & 0xE0 /* 0b11100000 */ ) === 0xC0 /* 0b11000000 */  ? String.fromCharCode((byte & 0x1F /* 0b00011111 */ ) << 6 | bytes.getUint8(offset++) & 0x3F /* 0b00111111 */ ) : (byte & 0xF0 /* 0b11110000 */ ) === 0xE0 /* 0b11100000 */  ? String.fromCharCode((byte & 0xF /* 0b00001111 */ ) << 12 | (bytes.getUint8(offset++) & 0x3F /* 0b00111111 */ ) << 6 | bytes.getUint8(offset++) & 0x3F /* 0b00111111 */ ) : (byte = ((byte & 0x7 /* 0b00000111 */ ) << 18 | (bytes.getUint8(offset++) & 0x3F /* 0b00111111 */ ) << 12 | (bytes.getUint8(offset++) & 0x3F /* 0b00111111 */ ) << 6 | bytes.getUint8(offset++) & 0x3F /* 0b00111111 */ ) - 0x10000, String.fromCharCode(Math.floor(byte / 0x400) + 0xD800, byte % 0x400 + 0xDC00));
+        }
+        return _Utils_Tuple2(offset, string);
+    });
+    var _Bytes_decodeFailure = F2(function() {
+        throw 0;
+    });
+    // DECODER
+    var _File_decoder = _Json_decodePrim(function(value) {
+        // NOTE: checks if `File` exists in case this is run on node
+        return typeof File !== 'undefined' && value instanceof File ? $elm$core$Result$Ok(value) : _Json_expecting('a FILE', value);
+    });
+    // METADATA
+    function _File_name(file) {
+        return file.name;
+    }
+    function _File_mime(file) {
+        return file.type;
+    }
+    function _File_size(file) {
+        return file.size;
+    }
+    function _File_lastModified(file) {
+        return $elm$time$Time$millisToPosix(file.lastModified);
+    }
+    // DOWNLOAD
+    var _File_downloadNode;
+    function _File_getDownloadNode() {
+        return _File_downloadNode || (_File_downloadNode = document.createElement('a'));
+    }
+    var _File_download = F3(function(name, mime, content) {
+        return _Scheduler_binding(function(callback) {
+            var blob = new Blob([
+                content
+            ], {
+                type: mime
+            });
+            // for IE10+
+            if (navigator.msSaveOrOpenBlob) {
+                navigator.msSaveOrOpenBlob(blob, name);
+                return;
+            }
+            // for HTML5
+            var node = _File_getDownloadNode();
+            var objectUrl = URL.createObjectURL(blob);
+            node.href = objectUrl;
+            node.download = name;
+            _File_click(node);
+            URL.revokeObjectURL(objectUrl);
+        });
+    });
+    function _File_downloadUrl(href) {
+        return _Scheduler_binding(function(callback) {
+            var node = _File_getDownloadNode();
+            node.href = href;
+            node.download = '';
+            node.origin === location.origin || (node.target = '_blank');
+            _File_click(node);
+        });
+    }
+    // IE COMPATIBILITY
+    function _File_makeBytesSafeForInternetExplorer(bytes) {
+        // only needed by IE10 and IE11 to fix https://github.com/elm/file/issues/10
+        // all other browsers can just run `new Blob([bytes])` directly with no problem
+        //
+        return new Uint8Array(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+    }
+    function _File_click(node) {
+        // only needed by IE10 and IE11 to fix https://github.com/elm/file/issues/11
+        // all other browsers have MouseEvent and do not need this conditional stuff
+        //
+        if (typeof MouseEvent === 'function') node.dispatchEvent(new MouseEvent('click'));
+        else {
+            var event = document.createEvent('MouseEvents');
+            event.initMouseEvent('click', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+            document.body.appendChild(node);
+            node.dispatchEvent(event);
+            document.body.removeChild(node);
+        }
+    }
+    // UPLOAD
+    var _File_node;
+    function _File_uploadOne(mimes) {
+        return _Scheduler_binding(function(callback) {
+            _File_node = document.createElement('input');
+            _File_node.type = 'file';
+            _File_node.accept = A2($elm$core$String$join, ',', mimes);
+            _File_node.addEventListener('change', function(event) {
+                callback(_Scheduler_succeed(event.target.files[0]));
+            });
+            _File_click(_File_node);
+        });
+    }
+    function _File_uploadOneOrMore(mimes) {
+        return _Scheduler_binding(function(callback) {
+            _File_node = document.createElement('input');
+            _File_node.type = 'file';
+            _File_node.multiple = true;
+            _File_node.accept = A2($elm$core$String$join, ',', mimes);
+            _File_node.addEventListener('change', function(event) {
+                var elmFiles = _List_fromArray(event.target.files);
+                callback(_Scheduler_succeed(_Utils_Tuple2(elmFiles.a, elmFiles.b)));
+            });
+            _File_click(_File_node);
+        });
+    }
+    // CONTENT
+    function _File_toString(blob) {
+        return _Scheduler_binding(function(callback) {
+            var reader = new FileReader();
+            reader.addEventListener('loadend', function() {
+                callback(_Scheduler_succeed(reader.result));
+            });
+            reader.readAsText(blob);
+            return function() {
+                reader.abort();
+            };
+        });
+    }
+    function _File_toBytes(blob) {
+        return _Scheduler_binding(function(callback) {
+            var reader = new FileReader();
+            reader.addEventListener('loadend', function() {
+                callback(_Scheduler_succeed(new DataView(reader.result)));
+            });
+            reader.readAsArrayBuffer(blob);
+            return function() {
+                reader.abort();
+            };
+        });
+    }
+    function _File_toUrl(blob) {
+        return _Scheduler_binding(function(callback) {
+            var reader = new FileReader();
+            reader.addEventListener('loadend', function() {
+                callback(_Scheduler_succeed(reader.result));
+            });
+            reader.readAsDataURL(blob);
+            return function() {
+                reader.abort();
+            };
+        });
     }
     var $elm$core$Maybe$Just = function(a) {
         return {
@@ -4174,146 +4125,128 @@ type alias Process =
                 return 3;
         }
     };
-    var $elm$browser$Debugger$Expando$ArraySeq = {
-        $: 'ArraySeq'
-    };
-    var $elm$browser$Debugger$Overlay$BlockMost = {
-        $: 'BlockMost'
-    };
-    var $elm$browser$Debugger$Overlay$BlockNone = {
-        $: 'BlockNone'
-    };
-    var $elm$browser$Debugger$Expando$Constructor = F3(function(a, b, c) {
+    var $elm$browser$Browser$External = function(a) {
         return {
-            $: 'Constructor',
-            a: a,
-            b: b,
-            c: c
-        };
-    });
-    var $elm$browser$Debugger$Expando$Dictionary = F2(function(a, b) {
-        return {
-            $: 'Dictionary',
-            a: a,
-            b: b
-        };
-    });
-    var $elm$browser$Debugger$Main$Down = {
-        $: 'Down'
-    };
-    var $elm$browser$Debugger$Expando$ListSeq = {
-        $: 'ListSeq'
-    };
-    var $elm$browser$Debugger$Main$NoOp = {
-        $: 'NoOp'
-    };
-    var $elm$browser$Debugger$Expando$Primitive = function(a) {
-        return {
-            $: 'Primitive',
+            $: 'External',
             a: a
         };
     };
-    var $elm$browser$Debugger$Expando$Record = F2(function(a, b) {
+    var $elm$browser$Browser$Internal = function(a) {
         return {
-            $: 'Record',
-            a: a,
-            b: b
-        };
-    });
-    var $elm$browser$Debugger$Expando$S = function(a) {
-        return {
-            $: 'S',
+            $: 'Internal',
             a: a
         };
     };
-    var $elm$browser$Debugger$Expando$Sequence = F3(function(a, b, c) {
-        return {
-            $: 'Sequence',
-            a: a,
-            b: b,
-            c: c
-        };
-    });
-    var $elm$browser$Debugger$Expando$SetSeq = {
-        $: 'SetSeq'
+    var $elm$core$Basics$identity = function(x) {
+        return x;
     };
-    var $elm$browser$Debugger$Main$Up = {
-        $: 'Up'
-    };
-    var $elm$browser$Debugger$Main$UserMsg = function(a) {
+    var $elm$browser$Browser$Dom$NotFound = function(a) {
         return {
-            $: 'UserMsg',
+            $: 'NotFound',
             a: a
         };
     };
-    var $elm$browser$Debugger$Main$Export = {
-        $: 'Export'
+    var $elm$url$Url$Http = {
+        $: 'Http'
     };
-    var $elm$browser$Debugger$Main$Import = {
-        $: 'Import'
+    var $elm$url$Url$Https = {
+        $: 'Https'
     };
-    var $elm$browser$Debugger$Main$Open = {
-        $: 'Open'
-    };
-    var $elm$browser$Debugger$Main$OverlayMsg = function(a) {
+    var $elm$url$Url$Url = F6(function(protocol, host, port_, path, query, fragment) {
         return {
-            $: 'OverlayMsg',
+            fragment: fragment,
+            host: host,
+            path: path,
+            port_: port_,
+            protocol: protocol,
+            query: query
+        };
+    });
+    var $elm$core$String$contains = _String_contains;
+    var $elm$core$String$length = _String_length;
+    var $elm$core$String$slice = _String_slice;
+    var $elm$core$String$dropLeft = F2(function(n, string) {
+        return n < 1 ? string : A3($elm$core$String$slice, n, $elm$core$String$length(string), string);
+    });
+    var $elm$core$String$indexes = _String_indexes;
+    var $elm$core$String$isEmpty = function(string) {
+        return string === '';
+    };
+    var $elm$core$String$left = F2(function(n, string) {
+        return n < 1 ? '' : A3($elm$core$String$slice, 0, n, string);
+    });
+    var $elm$core$String$toInt = _String_toInt;
+    var $elm$url$Url$chompBeforePath = F5(function(protocol, path, params, frag, str) {
+        if ($elm$core$String$isEmpty(str) || A2($elm$core$String$contains, '@', str)) return $elm$core$Maybe$Nothing;
+        else {
+            var _v0 = A2($elm$core$String$indexes, ':', str);
+            if (!_v0.b) return $elm$core$Maybe$Just(A6($elm$url$Url$Url, protocol, str, $elm$core$Maybe$Nothing, path, params, frag));
+            else {
+                if (!_v0.b.b) {
+                    var i = _v0.a;
+                    var _v1 = $elm$core$String$toInt(A2($elm$core$String$dropLeft, i + 1, str));
+                    if (_v1.$ === 'Nothing') return $elm$core$Maybe$Nothing;
+                    else {
+                        var port_ = _v1;
+                        return $elm$core$Maybe$Just(A6($elm$url$Url$Url, protocol, A2($elm$core$String$left, i, str), port_, path, params, frag));
+                    }
+                } else return $elm$core$Maybe$Nothing;
+            }
+        }
+    });
+    var $elm$url$Url$chompBeforeQuery = F4(function(protocol, params, frag, str) {
+        if ($elm$core$String$isEmpty(str)) return $elm$core$Maybe$Nothing;
+        else {
+            var _v0 = A2($elm$core$String$indexes, '/', str);
+            if (!_v0.b) return A5($elm$url$Url$chompBeforePath, protocol, '/', params, frag, str);
+            else {
+                var i = _v0.a;
+                return A5($elm$url$Url$chompBeforePath, protocol, A2($elm$core$String$dropLeft, i, str), params, frag, A2($elm$core$String$left, i, str));
+            }
+        }
+    });
+    var $elm$url$Url$chompBeforeFragment = F3(function(protocol, frag, str) {
+        if ($elm$core$String$isEmpty(str)) return $elm$core$Maybe$Nothing;
+        else {
+            var _v0 = A2($elm$core$String$indexes, '?', str);
+            if (!_v0.b) return A4($elm$url$Url$chompBeforeQuery, protocol, $elm$core$Maybe$Nothing, frag, str);
+            else {
+                var i = _v0.a;
+                return A4($elm$url$Url$chompBeforeQuery, protocol, $elm$core$Maybe$Just(A2($elm$core$String$dropLeft, i + 1, str)), frag, A2($elm$core$String$left, i, str));
+            }
+        }
+    });
+    var $elm$url$Url$chompAfterProtocol = F2(function(protocol, str) {
+        if ($elm$core$String$isEmpty(str)) return $elm$core$Maybe$Nothing;
+        else {
+            var _v0 = A2($elm$core$String$indexes, '#', str);
+            if (!_v0.b) return A3($elm$url$Url$chompBeforeFragment, protocol, $elm$core$Maybe$Nothing, str);
+            else {
+                var i = _v0.a;
+                return A3($elm$url$Url$chompBeforeFragment, protocol, $elm$core$Maybe$Just(A2($elm$core$String$dropLeft, i + 1, str)), A2($elm$core$String$left, i, str));
+            }
+        }
+    });
+    var $elm$core$String$startsWith = _String_startsWith;
+    var $elm$url$Url$fromString = function(str) {
+        return A2($elm$core$String$startsWith, 'http://', str) ? A2($elm$url$Url$chompAfterProtocol, $elm$url$Url$Http, A2($elm$core$String$dropLeft, 7, str)) : A2($elm$core$String$startsWith, 'https://', str) ? A2($elm$url$Url$chompAfterProtocol, $elm$url$Url$Https, A2($elm$core$String$dropLeft, 8, str)) : $elm$core$Maybe$Nothing;
+    };
+    var $elm$core$Basics$never = function(_v0) {
+        never: while(true){
+            var nvr = _v0.a;
+            var $temp$_v0 = nvr;
+            _v0 = $temp$_v0;
+            continue never;
+        }
+    };
+    var $elm$core$Task$Perform = function(a) {
+        return {
+            $: 'Perform',
             a: a
         };
     };
-    var $elm$browser$Debugger$Main$Resume = {
-        $: 'Resume'
-    };
-    var $elm$browser$Debugger$Main$isPaused = function(state) {
-        if (state.$ === 'Running') return false;
-        else return true;
-    };
-    var $elm$browser$Debugger$History$size = function(history) {
-        return history.numMessages;
-    };
-    var $elm$browser$Debugger$Overlay$Accept = function(a) {
-        return {
-            $: 'Accept',
-            a: a
-        };
-    };
-    var $elm$browser$Debugger$Overlay$Choose = F2(function(a, b) {
-        return {
-            $: 'Choose',
-            a: a,
-            b: b
-        };
-    });
-    var $elm$html$Html$div = _VirtualDom_node('div');
-    var $elm$json$Json$Encode$string = _Json_wrap;
-    var $elm$html$Html$Attributes$stringProperty = F2(function(key, string) {
-        return A2(_VirtualDom_property, key, $elm$json$Json$Encode$string(string));
-    });
-    var $elm$html$Html$Attributes$id = $elm$html$Html$Attributes$stringProperty('id');
-    var $elm$virtual_dom$VirtualDom$Normal = function(a) {
-        return {
-            $: 'Normal',
-            a: a
-        };
-    };
-    var $elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
-    var $elm$html$Html$Events$on = F2(function(event, decoder) {
-        return A2($elm$virtual_dom$VirtualDom$on, event, $elm$virtual_dom$VirtualDom$Normal(decoder));
-    });
-    var $elm$html$Html$Events$onClick = function(msg) {
-        return A2($elm$html$Html$Events$on, 'click', $elm$json$Json$Decode$succeed(msg));
-    };
-    var $elm$html$Html$span = _VirtualDom_node('span');
-    var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
-    var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
-    var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
-    var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
-    var $elm$html$Html$a = _VirtualDom_node('a');
-    var $elm$browser$Debugger$Overlay$goodNews1 = '\nThe good news is that having values like this in your message type is not\nso great in the long run. You are better off using simpler data, like\n';
-    var $elm$browser$Debugger$Overlay$goodNews2 = '\nfunction can pattern match on that data and call whatever functions, JSON\ndecoders, etc. you need. This makes the code much more explicit and easy to\nfollow for other readers (or you in a few months!)\n';
-    var $elm$html$Html$Attributes$href = function(url) {
-        return A2($elm$html$Html$Attributes$stringProperty, 'href', _VirtualDom_noJavaScriptUri(url));
-    };
+    var $elm$core$Task$succeed = _Scheduler_succeed;
+    var $elm$core$Task$init = $elm$core$Task$succeed(_Utils_Tuple0);
     var $elm$core$List$foldrHelper = F4(function(fn, acc, ctr, ls) {
         if (!ls.b) return acc;
         else {
@@ -4346,1248 +4279,106 @@ type alias Process =
             return A2($elm$core$List$cons, f(x), acc);
         }), _List_Nil, xs);
     });
-    var $elm$html$Html$p = _VirtualDom_node('p');
-    var $elm$html$Html$ul = _VirtualDom_node('ul');
-    var $elm$html$Html$code = _VirtualDom_node('code');
-    var $elm$browser$Debugger$Overlay$viewCode = function(name) {
-        return A2($elm$html$Html$code, _List_Nil, _List_fromArray([
-            $elm$html$Html$text(name)
-        ]));
-    };
-    var $elm$browser$Debugger$Overlay$addCommas = function(items) {
-        if (!items.b) return '';
-        else {
-            if (!items.b.b) {
-                var item = items.a;
-                return item;
-            } else if (!items.b.b.b) {
-                var item1 = items.a;
-                var _v1 = items.b;
-                var item2 = _v1.a;
-                return item1 + (' and ' + item2);
-            } else {
-                var lastItem = items.a;
-                var otherItems = items.b;
-                return A2($elm$core$String$join, ', ', _Utils_ap(otherItems, _List_fromArray([
-                    ' and ' + lastItem
-                ])));
-            }
-        }
-    };
-    var $elm$html$Html$li = _VirtualDom_node('li');
-    var $elm$browser$Debugger$Overlay$problemToString = function(problem) {
-        switch(problem.$){
-            case 'Function':
-                return 'functions';
-            case 'Decoder':
-                return 'JSON decoders';
-            case 'Task':
-                return 'tasks';
-            case 'Process':
-                return 'processes';
-            case 'Socket':
-                return 'web sockets';
-            case 'Request':
-                return 'HTTP requests';
-            case 'Program':
-                return 'programs';
-            default:
-                return 'virtual DOM values';
-        }
-    };
-    var $elm$browser$Debugger$Overlay$viewProblemType = function(_v0) {
-        var name = _v0.name;
-        var problems = _v0.problems;
-        return A2($elm$html$Html$li, _List_Nil, _List_fromArray([
-            $elm$browser$Debugger$Overlay$viewCode(name),
-            $elm$html$Html$text(' can contain ' + ($elm$browser$Debugger$Overlay$addCommas(A2($elm$core$List$map, $elm$browser$Debugger$Overlay$problemToString, problems)) + '.'))
-        ]));
-    };
-    var $elm$browser$Debugger$Overlay$viewBadMetadata = function(_v0) {
-        var message = _v0.message;
-        var problems = _v0.problems;
-        return _List_fromArray([
-            A2($elm$html$Html$p, _List_Nil, _List_fromArray([
-                $elm$html$Html$text('The '),
-                $elm$browser$Debugger$Overlay$viewCode(message),
-                $elm$html$Html$text(' type of your program cannot be reliably serialized for history files.')
-            ])),
-            A2($elm$html$Html$p, _List_Nil, _List_fromArray([
-                $elm$html$Html$text('Functions cannot be serialized, nor can values that contain functions. This is a problem in these places:')
-            ])),
-            A2($elm$html$Html$ul, _List_Nil, A2($elm$core$List$map, $elm$browser$Debugger$Overlay$viewProblemType, problems)),
-            A2($elm$html$Html$p, _List_Nil, _List_fromArray([
-                $elm$html$Html$text($elm$browser$Debugger$Overlay$goodNews1),
-                A2($elm$html$Html$a, _List_fromArray([
-                    $elm$html$Html$Attributes$href('https://guide.elm-lang.org/types/custom_types.html')
-                ]), _List_fromArray([
-                    $elm$html$Html$text('custom types')
-                ])),
-                $elm$html$Html$text(', in your messages. From there, your '),
-                $elm$browser$Debugger$Overlay$viewCode('update'),
-                $elm$html$Html$text($elm$browser$Debugger$Overlay$goodNews2)
-            ]))
-        ]);
-    };
-    var $elm$virtual_dom$VirtualDom$map = _VirtualDom_map;
-    var $elm$html$Html$map = $elm$virtual_dom$VirtualDom$map;
-    var $elm$browser$Debugger$Overlay$Cancel = {
-        $: 'Cancel'
-    };
-    var $elm$browser$Debugger$Overlay$Proceed = {
-        $: 'Proceed'
-    };
-    var $elm$html$Html$button = _VirtualDom_node('button');
-    var $elm$browser$Debugger$Overlay$viewButtons = function(buttons) {
-        var btn = F2(function(msg, string) {
-            return A2($elm$html$Html$button, _List_fromArray([
-                A2($elm$html$Html$Attributes$style, 'margin-right', '20px'),
-                $elm$html$Html$Events$onClick(msg)
-            ]), _List_fromArray([
-                $elm$html$Html$text(string)
-            ]));
-        });
-        var buttonNodes = function() {
-            if (buttons.$ === 'Accept') {
-                var proceed = buttons.a;
-                return _List_fromArray([
-                    A2(btn, $elm$browser$Debugger$Overlay$Proceed, proceed)
-                ]);
-            } else {
-                var cancel = buttons.a;
-                var proceed = buttons.b;
-                return _List_fromArray([
-                    A2(btn, $elm$browser$Debugger$Overlay$Cancel, cancel),
-                    A2(btn, $elm$browser$Debugger$Overlay$Proceed, proceed)
-                ]);
-            }
-        }();
-        return A2($elm$html$Html$div, _List_fromArray([
-            A2($elm$html$Html$Attributes$style, 'height', '60px'),
-            A2($elm$html$Html$Attributes$style, 'line-height', '60px'),
-            A2($elm$html$Html$Attributes$style, 'text-align', 'right'),
-            A2($elm$html$Html$Attributes$style, 'background-color', 'rgb(50, 50, 50)')
-        ]), buttonNodes);
-    };
-    var $elm$browser$Debugger$Overlay$viewMessage = F4(function(config, title, details, buttons) {
-        return A2($elm$html$Html$div, _List_fromArray([
-            $elm$html$Html$Attributes$id('elm-debugger-overlay'),
-            A2($elm$html$Html$Attributes$style, 'position', 'fixed'),
-            A2($elm$html$Html$Attributes$style, 'top', '0'),
-            A2($elm$html$Html$Attributes$style, 'left', '0'),
-            A2($elm$html$Html$Attributes$style, 'width', '100vw'),
-            A2($elm$html$Html$Attributes$style, 'height', '100vh'),
-            A2($elm$html$Html$Attributes$style, 'color', 'white'),
-            A2($elm$html$Html$Attributes$style, 'pointer-events', 'none'),
-            A2($elm$html$Html$Attributes$style, 'font-family', '\'Trebuchet MS\', \'Lucida Grande\', \'Bitstream Vera Sans\', \'Helvetica Neue\', sans-serif'),
-            A2($elm$html$Html$Attributes$style, 'z-index', '2147483647')
-        ]), _List_fromArray([
-            A2($elm$html$Html$div, _List_fromArray([
-                A2($elm$html$Html$Attributes$style, 'position', 'absolute'),
-                A2($elm$html$Html$Attributes$style, 'width', '600px'),
-                A2($elm$html$Html$Attributes$style, 'height', '100vh'),
-                A2($elm$html$Html$Attributes$style, 'padding-left', 'calc(50% - 300px)'),
-                A2($elm$html$Html$Attributes$style, 'padding-right', 'calc(50% - 300px)'),
-                A2($elm$html$Html$Attributes$style, 'background-color', 'rgba(200, 200, 200, 0.7)'),
-                A2($elm$html$Html$Attributes$style, 'pointer-events', 'auto')
-            ]), _List_fromArray([
-                A2($elm$html$Html$div, _List_fromArray([
-                    A2($elm$html$Html$Attributes$style, 'font-size', '36px'),
-                    A2($elm$html$Html$Attributes$style, 'height', '80px'),
-                    A2($elm$html$Html$Attributes$style, 'background-color', 'rgb(50, 50, 50)'),
-                    A2($elm$html$Html$Attributes$style, 'padding-left', '22px'),
-                    A2($elm$html$Html$Attributes$style, 'vertical-align', 'middle'),
-                    A2($elm$html$Html$Attributes$style, 'line-height', '80px')
-                ]), _List_fromArray([
-                    $elm$html$Html$text(title)
-                ])),
-                A2($elm$html$Html$div, _List_fromArray([
-                    $elm$html$Html$Attributes$id('elm-debugger-details'),
-                    A2($elm$html$Html$Attributes$style, 'padding', ' 8px 20px'),
-                    A2($elm$html$Html$Attributes$style, 'overflow-y', 'auto'),
-                    A2($elm$html$Html$Attributes$style, 'max-height', 'calc(100vh - 156px)'),
-                    A2($elm$html$Html$Attributes$style, 'background-color', 'rgb(61, 61, 61)')
-                ]), details),
-                A2($elm$html$Html$map, config.wrap, $elm$browser$Debugger$Overlay$viewButtons(buttons))
-            ]))
-        ]));
+    var $elm$core$Task$andThen = _Scheduler_andThen;
+    var $elm$core$Task$map = F2(function(func, taskA) {
+        return A2($elm$core$Task$andThen, function(a) {
+            return $elm$core$Task$succeed(func(a));
+        }, taskA);
     });
-    var $elm$virtual_dom$VirtualDom$attribute = F2(function(key, value) {
-        return A2(_VirtualDom_attribute, _VirtualDom_noOnOrFormAction(key), _VirtualDom_noJavaScriptOrHtmlUri(value));
+    var $elm$core$Task$map2 = F3(function(func, taskA, taskB) {
+        return A2($elm$core$Task$andThen, function(a) {
+            return A2($elm$core$Task$andThen, function(b) {
+                return $elm$core$Task$succeed(A2(func, a, b));
+            }, taskB);
+        }, taskA);
     });
-    var $elm$core$Basics$negate = function(n) {
-        return -n;
+    var $elm$core$Task$sequence = function(tasks) {
+        return A3($elm$core$List$foldr, $elm$core$Task$map2($elm$core$List$cons), $elm$core$Task$succeed(_List_Nil), tasks);
     };
-    var $elm$virtual_dom$VirtualDom$nodeNS = F2(function(namespace, tag) {
-        return A2(_VirtualDom_nodeNS, namespace, _VirtualDom_noScript(tag));
+    var $elm$core$Platform$sendToApp = _Platform_sendToApp;
+    var $elm$core$Task$spawnCmd = F2(function(router, _v0) {
+        var task = _v0.a;
+        return _Scheduler_spawn(A2($elm$core$Task$andThen, $elm$core$Platform$sendToApp(router), task));
     });
-    var $elm$core$String$fromFloat = _String_fromNumber;
-    var $elm$browser$Debugger$Overlay$viewShape = F4(function(x, y, angle, coordinates) {
-        return A4($elm$virtual_dom$VirtualDom$nodeNS, 'http://www.w3.org/2000/svg', 'polygon', _List_fromArray([
-            A2($elm$virtual_dom$VirtualDom$attribute, 'points', coordinates),
-            A2($elm$virtual_dom$VirtualDom$attribute, 'transform', 'translate(' + ($elm$core$String$fromFloat(x) + (' ' + ($elm$core$String$fromFloat(y) + (') rotate(' + ($elm$core$String$fromFloat(-angle) + ')'))))))
-        ]), _List_Nil);
+    var $elm$core$Task$onEffects = F3(function(router, commands, state) {
+        return A2($elm$core$Task$map, function(_v0) {
+            return _Utils_Tuple0;
+        }, $elm$core$Task$sequence(A2($elm$core$List$map, $elm$core$Task$spawnCmd(router), commands)));
     });
-    var $elm$browser$Debugger$Overlay$elmLogo = A4($elm$virtual_dom$VirtualDom$nodeNS, 'http://www.w3.org/2000/svg', 'svg', _List_fromArray([
-        A2($elm$virtual_dom$VirtualDom$attribute, 'viewBox', '-300 -300 600 600'),
-        A2($elm$virtual_dom$VirtualDom$attribute, 'xmlns', 'http://www.w3.org/2000/svg'),
-        A2($elm$virtual_dom$VirtualDom$attribute, 'fill', 'currentColor'),
-        A2($elm$virtual_dom$VirtualDom$attribute, 'width', '24px'),
-        A2($elm$virtual_dom$VirtualDom$attribute, 'height', '24px')
-    ]), _List_fromArray([
-        A4($elm$virtual_dom$VirtualDom$nodeNS, 'http://www.w3.org/2000/svg', 'g', _List_fromArray([
-            A2($elm$virtual_dom$VirtualDom$attribute, 'transform', 'scale(1 -1)')
-        ]), _List_fromArray([
-            A4($elm$browser$Debugger$Overlay$viewShape, 0, -210, 0, '-280,-90 0,190 280,-90'),
-            A4($elm$browser$Debugger$Overlay$viewShape, -210, 0, 90, '-280,-90 0,190 280,-90'),
-            A4($elm$browser$Debugger$Overlay$viewShape, 207, 207, 45, '-198,-66 0,132 198,-66'),
-            A4($elm$browser$Debugger$Overlay$viewShape, 150, 0, 0, '-130,0 0,-130 130,0 0,130'),
-            A4($elm$browser$Debugger$Overlay$viewShape, -89, 239, 0, '-191,61 69,61 191,-61 -69,-61'),
-            A4($elm$browser$Debugger$Overlay$viewShape, 0, 106, 180, '-130,-44 0,86  130,-44'),
-            A4($elm$browser$Debugger$Overlay$viewShape, 256, -150, 270, '-130,-44 0,86  130,-44')
-        ]))
-    ]));
-    var $elm$core$String$length = _String_length;
-    var $elm$browser$Debugger$Overlay$viewMiniControls = F2(function(config, numMsgs) {
-        var string = $elm$core$String$fromInt(numMsgs);
-        var width = $elm$core$String$fromInt(2 + $elm$core$String$length(string));
-        return A2($elm$html$Html$div, _List_fromArray([
-            A2($elm$html$Html$Attributes$style, 'position', 'fixed'),
-            A2($elm$html$Html$Attributes$style, 'bottom', '2em'),
-            A2($elm$html$Html$Attributes$style, 'right', '2em'),
-            A2($elm$html$Html$Attributes$style, 'width', 'calc(42px + ' + (width + 'ch)')),
-            A2($elm$html$Html$Attributes$style, 'height', '36px'),
-            A2($elm$html$Html$Attributes$style, 'background-color', '#1293D8'),
-            A2($elm$html$Html$Attributes$style, 'color', 'white'),
-            A2($elm$html$Html$Attributes$style, 'font-family', 'monospace'),
-            A2($elm$html$Html$Attributes$style, 'pointer-events', 'auto'),
-            A2($elm$html$Html$Attributes$style, 'z-index', '2147483647'),
-            A2($elm$html$Html$Attributes$style, 'display', 'flex'),
-            A2($elm$html$Html$Attributes$style, 'justify-content', 'center'),
-            A2($elm$html$Html$Attributes$style, 'align-items', 'center'),
-            A2($elm$html$Html$Attributes$style, 'cursor', 'pointer'),
-            $elm$html$Html$Events$onClick(config.open)
-        ]), _List_fromArray([
-            $elm$browser$Debugger$Overlay$elmLogo,
-            A2($elm$html$Html$span, _List_fromArray([
-                A2($elm$html$Html$Attributes$style, 'padding-left', 'calc(1ch + 6px)'),
-                A2($elm$html$Html$Attributes$style, 'padding-right', '1ch')
-            ]), _List_fromArray([
-                $elm$html$Html$text(string)
-            ]))
-        ]));
+    var $elm$core$Task$onSelfMsg = F3(function(_v0, _v1, _v2) {
+        return $elm$core$Task$succeed(_Utils_Tuple0);
     });
-    var $elm$browser$Debugger$Overlay$explanationBad = '\nThe messages in this history do not match the messages handled by your\nprogram. I noticed changes in the following types:\n';
-    var $elm$browser$Debugger$Overlay$explanationRisky = '\nThis history seems old. It will work with this program, but some\nmessages have been added since the history was created:\n';
-    var $elm$core$List$intersperse = F2(function(sep, xs) {
-        if (!xs.b) return _List_Nil;
-        else {
-            var hd = xs.a;
-            var tl = xs.b;
-            var step = F2(function(x, rest) {
-                return A2($elm$core$List$cons, sep, A2($elm$core$List$cons, x, rest));
-            });
-            var spersed = A3($elm$core$List$foldr, step, _List_Nil, tl);
-            return A2($elm$core$List$cons, hd, spersed);
-        }
+    var $elm$core$Task$cmdMap = F2(function(tagger, _v0) {
+        var task = _v0.a;
+        return $elm$core$Task$Perform(A2($elm$core$Task$map, tagger, task));
     });
-    var $elm$browser$Debugger$Overlay$viewMention = F2(function(tags, verbed) {
-        var _v0 = A2($elm$core$List$map, $elm$browser$Debugger$Overlay$viewCode, $elm$core$List$reverse(tags));
-        if (!_v0.b) return $elm$html$Html$text('');
-        else {
-            if (!_v0.b.b) {
-                var tag = _v0.a;
-                return A2($elm$html$Html$li, _List_Nil, _List_fromArray([
-                    $elm$html$Html$text(verbed),
-                    tag,
-                    $elm$html$Html$text('.')
-                ]));
-            } else if (!_v0.b.b.b) {
-                var tag2 = _v0.a;
-                var _v1 = _v0.b;
-                var tag1 = _v1.a;
-                return A2($elm$html$Html$li, _List_Nil, _List_fromArray([
-                    $elm$html$Html$text(verbed),
-                    tag1,
-                    $elm$html$Html$text(' and '),
-                    tag2,
-                    $elm$html$Html$text('.')
-                ]));
-            } else {
-                var lastTag = _v0.a;
-                var otherTags = _v0.b;
-                return A2($elm$html$Html$li, _List_Nil, A2($elm$core$List$cons, $elm$html$Html$text(verbed), _Utils_ap(A2($elm$core$List$intersperse, $elm$html$Html$text(', '), $elm$core$List$reverse(otherTags)), _List_fromArray([
-                    $elm$html$Html$text(', and '),
-                    lastTag,
-                    $elm$html$Html$text('.')
-                ]))));
-            }
-        }
+    _Platform_effectManagers['Task'] = _Platform_createManager($elm$core$Task$init, $elm$core$Task$onEffects, $elm$core$Task$onSelfMsg, $elm$core$Task$cmdMap);
+    var $elm$core$Task$command = _Platform_leaf('Task');
+    var $elm$core$Task$perform = F2(function(toMessage, task) {
+        return $elm$core$Task$command($elm$core$Task$Perform(A2($elm$core$Task$map, toMessage, task)));
     });
-    var $elm$browser$Debugger$Overlay$viewChange = function(change) {
-        return A2($elm$html$Html$li, _List_fromArray([
-            A2($elm$html$Html$Attributes$style, 'margin', '8px 0')
-        ]), function() {
-            if (change.$ === 'AliasChange') {
-                var name = change.a;
-                return _List_fromArray([
-                    A2($elm$html$Html$span, _List_fromArray([
-                        A2($elm$html$Html$Attributes$style, 'font-size', '1.5em')
-                    ]), _List_fromArray([
-                        $elm$browser$Debugger$Overlay$viewCode(name)
-                    ]))
-                ]);
-            } else {
-                var name = change.a;
-                var removed = change.b.removed;
-                var changed = change.b.changed;
-                var added = change.b.added;
-                var argsMatch = change.b.argsMatch;
-                return _List_fromArray([
-                    A2($elm$html$Html$span, _List_fromArray([
-                        A2($elm$html$Html$Attributes$style, 'font-size', '1.5em')
-                    ]), _List_fromArray([
-                        $elm$browser$Debugger$Overlay$viewCode(name)
-                    ])),
-                    A2($elm$html$Html$ul, _List_fromArray([
-                        A2($elm$html$Html$Attributes$style, 'list-style-type', 'disc'),
-                        A2($elm$html$Html$Attributes$style, 'padding-left', '2em')
-                    ]), _List_fromArray([
-                        A2($elm$browser$Debugger$Overlay$viewMention, removed, 'Removed '),
-                        A2($elm$browser$Debugger$Overlay$viewMention, changed, 'Changed '),
-                        A2($elm$browser$Debugger$Overlay$viewMention, added, 'Added ')
-                    ])),
-                    argsMatch ? $elm$html$Html$text('') : $elm$html$Html$text('This may be due to the fact that the type variable names changed.')
-                ]);
-            }
-        }());
-    };
-    var $elm$browser$Debugger$Overlay$viewReport = F2(function(isBad, report) {
-        switch(report.$){
-            case 'CorruptHistory':
-                return _List_fromArray([
-                    $elm$html$Html$text('Looks like this history file is corrupt. I cannot understand it.')
-                ]);
-            case 'VersionChanged':
-                var old = report.a;
-                var _new = report.b;
-                return _List_fromArray([
-                    $elm$html$Html$text('This history was created with Elm ' + (old + (', but you are using Elm ' + (_new + ' right now.'))))
-                ]);
-            case 'MessageChanged':
-                var old = report.a;
-                var _new = report.b;
-                return _List_fromArray([
-                    $elm$html$Html$text("To import some other history, the overall message type must be the same. The old history has "),
-                    $elm$browser$Debugger$Overlay$viewCode(old),
-                    $elm$html$Html$text(' messages, but the new program works with '),
-                    $elm$browser$Debugger$Overlay$viewCode(_new),
-                    $elm$html$Html$text(' messages.')
-                ]);
-            default:
-                var changes = report.a;
-                return _List_fromArray([
-                    A2($elm$html$Html$p, _List_Nil, _List_fromArray([
-                        $elm$html$Html$text(isBad ? $elm$browser$Debugger$Overlay$explanationBad : $elm$browser$Debugger$Overlay$explanationRisky)
-                    ])),
-                    A2($elm$html$Html$ul, _List_fromArray([
-                        A2($elm$html$Html$Attributes$style, 'list-style-type', 'none'),
-                        A2($elm$html$Html$Attributes$style, 'padding-left', '20px')
-                    ]), A2($elm$core$List$map, $elm$browser$Debugger$Overlay$viewChange, changes))
-                ]);
-        }
-    });
-    var $elm$browser$Debugger$Overlay$view = F5(function(config, isPaused, isOpen, numMsgs, state) {
-        switch(state.$){
-            case 'None':
-                return isOpen ? $elm$html$Html$text('') : isPaused ? A2($elm$html$Html$div, _List_fromArray([
-                    $elm$html$Html$Attributes$id('elm-debugger-overlay'),
-                    A2($elm$html$Html$Attributes$style, 'position', 'fixed'),
-                    A2($elm$html$Html$Attributes$style, 'top', '0'),
-                    A2($elm$html$Html$Attributes$style, 'left', '0'),
-                    A2($elm$html$Html$Attributes$style, 'width', '100vw'),
-                    A2($elm$html$Html$Attributes$style, 'height', '100vh'),
-                    A2($elm$html$Html$Attributes$style, 'cursor', 'pointer'),
-                    A2($elm$html$Html$Attributes$style, 'display', 'flex'),
-                    A2($elm$html$Html$Attributes$style, 'align-items', 'center'),
-                    A2($elm$html$Html$Attributes$style, 'justify-content', 'center'),
-                    A2($elm$html$Html$Attributes$style, 'pointer-events', 'auto'),
-                    A2($elm$html$Html$Attributes$style, 'background-color', 'rgba(200, 200, 200, 0.7)'),
-                    A2($elm$html$Html$Attributes$style, 'color', 'white'),
-                    A2($elm$html$Html$Attributes$style, 'font-family', '\'Trebuchet MS\', \'Lucida Grande\', \'Bitstream Vera Sans\', \'Helvetica Neue\', sans-serif'),
-                    A2($elm$html$Html$Attributes$style, 'z-index', '2147483646'),
-                    $elm$html$Html$Events$onClick(config.resume)
-                ]), _List_fromArray([
-                    A2($elm$html$Html$span, _List_fromArray([
-                        A2($elm$html$Html$Attributes$style, 'font-size', '80px')
-                    ]), _List_fromArray([
-                        $elm$html$Html$text('Click to Resume')
-                    ])),
-                    A2($elm$browser$Debugger$Overlay$viewMiniControls, config, numMsgs)
-                ])) : A2($elm$browser$Debugger$Overlay$viewMiniControls, config, numMsgs);
-            case 'BadMetadata':
-                var badMetadata_ = state.a;
-                return A4($elm$browser$Debugger$Overlay$viewMessage, config, 'Cannot use Import or Export', $elm$browser$Debugger$Overlay$viewBadMetadata(badMetadata_), $elm$browser$Debugger$Overlay$Accept('Ok'));
-            case 'BadImport':
-                var report = state.a;
-                return A4($elm$browser$Debugger$Overlay$viewMessage, config, 'Cannot Import History', A2($elm$browser$Debugger$Overlay$viewReport, true, report), $elm$browser$Debugger$Overlay$Accept('Ok'));
-            default:
-                var report = state.a;
-                return A4($elm$browser$Debugger$Overlay$viewMessage, config, 'Warning', A2($elm$browser$Debugger$Overlay$viewReport, false, report), A2($elm$browser$Debugger$Overlay$Choose, 'Cancel', 'Import Anyway'));
-        }
-    });
-    var $elm$browser$Debugger$Main$cornerView = function(model) {
-        return A5($elm$browser$Debugger$Overlay$view, {
-            exportHistory: $elm$browser$Debugger$Main$Export,
-            importHistory: $elm$browser$Debugger$Main$Import,
-            open: $elm$browser$Debugger$Main$Open,
-            resume: $elm$browser$Debugger$Main$Resume,
-            wrap: $elm$browser$Debugger$Main$OverlayMsg
-        }, $elm$browser$Debugger$Main$isPaused(model.state), _Debugger_isOpen(model.popout), $elm$browser$Debugger$History$size(model.history), model.overlay);
-    };
-    var $elm$core$Dict$RBEmpty_elm_builtin = {
-        $: 'RBEmpty_elm_builtin'
-    };
-    var $elm$core$Dict$empty = $elm$core$Dict$RBEmpty_elm_builtin;
-    var $elm$core$Set$foldr = F3(function(func, initialState, _v0) {
-        var dict = _v0.a;
-        return A3($elm$core$Dict$foldr, F3(function(key, _v1, state) {
-            return A2(func, key, state);
-        }), initialState, dict);
-    });
-    var $elm$browser$Debugger$Main$getCurrentModel = function(state) {
-        if (state.$ === 'Running') {
-            var model = state.a;
-            return model;
-        } else {
-            var model = state.b;
-            return model;
-        }
-    };
-    var $elm$browser$Debugger$Main$getUserModel = function(model) {
-        return $elm$browser$Debugger$Main$getCurrentModel(model.state);
-    };
-    var $elm$browser$Debugger$Main$initialWindowHeight = 420;
-    var $elm$browser$Debugger$Main$initialWindowWidth = 900;
-    var $elm$core$Dict$Black = {
-        $: 'Black'
-    };
-    var $elm$core$Dict$RBNode_elm_builtin = F5(function(a, b, c, d, e) {
-        return {
-            $: 'RBNode_elm_builtin',
-            a: a,
-            b: b,
-            c: c,
-            d: d,
-            e: e
-        };
-    });
-    var $elm$core$Dict$Red = {
-        $: 'Red'
-    };
-    var $elm$core$Dict$balance = F5(function(color, key, value, left, right) {
-        if (right.$ === 'RBNode_elm_builtin' && right.a.$ === 'Red') {
-            var _v1 = right.a;
-            var rK = right.b;
-            var rV = right.c;
-            var rLeft = right.d;
-            var rRight = right.e;
-            if (left.$ === 'RBNode_elm_builtin' && left.a.$ === 'Red') {
-                var _v3 = left.a;
-                var lK = left.b;
-                var lV = left.c;
-                var lLeft = left.d;
-                var lRight = left.e;
-                return A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, key, value, A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, lK, lV, lLeft, lRight), A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, rK, rV, rLeft, rRight));
-            } else return A5($elm$core$Dict$RBNode_elm_builtin, color, rK, rV, A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, key, value, left, rLeft), rRight);
-        } else {
-            if (left.$ === 'RBNode_elm_builtin' && left.a.$ === 'Red' && left.d.$ === 'RBNode_elm_builtin' && left.d.a.$ === 'Red') {
-                var _v5 = left.a;
-                var lK = left.b;
-                var lV = left.c;
-                var _v6 = left.d;
-                var _v7 = _v6.a;
-                var llK = _v6.b;
-                var llV = _v6.c;
-                var llLeft = _v6.d;
-                var llRight = _v6.e;
-                var lRight = left.e;
-                return A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, lK, lV, A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, llK, llV, llLeft, llRight), A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, key, value, lRight, right));
-            } else return A5($elm$core$Dict$RBNode_elm_builtin, color, key, value, left, right);
-        }
-    });
-    var $elm$core$Basics$compare = _Utils_compare;
-    var $elm$core$Dict$insertHelp = F3(function(key, value, dict) {
-        if (dict.$ === 'RBEmpty_elm_builtin') return A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, key, value, $elm$core$Dict$RBEmpty_elm_builtin, $elm$core$Dict$RBEmpty_elm_builtin);
-        else {
-            var nColor = dict.a;
-            var nKey = dict.b;
-            var nValue = dict.c;
-            var nLeft = dict.d;
-            var nRight = dict.e;
-            var _v1 = A2($elm$core$Basics$compare, key, nKey);
-            switch(_v1.$){
-                case 'LT':
-                    return A5($elm$core$Dict$balance, nColor, nKey, nValue, A3($elm$core$Dict$insertHelp, key, value, nLeft), nRight);
-                case 'EQ':
-                    return A5($elm$core$Dict$RBNode_elm_builtin, nColor, nKey, value, nLeft, nRight);
-                default:
-                    return A5($elm$core$Dict$balance, nColor, nKey, nValue, nLeft, A3($elm$core$Dict$insertHelp, key, value, nRight));
-            }
-        }
-    });
-    var $elm$core$Dict$insert = F3(function(key, value, dict) {
-        var _v0 = A3($elm$core$Dict$insertHelp, key, value, dict);
-        if (_v0.$ === 'RBNode_elm_builtin' && _v0.a.$ === 'Red') {
-            var _v1 = _v0.a;
-            var k = _v0.b;
-            var v = _v0.c;
-            var l = _v0.d;
-            var r = _v0.e;
-            return A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, k, v, l, r);
-        } else {
-            var x = _v0;
-            return x;
-        }
-    });
-    var $elm$browser$Debugger$Main$cachedHistory = function(model) {
-        var _v0 = model.state;
-        if (_v0.$ === 'Running') return model.history;
-        else {
-            var history = _v0.e;
-            return history;
-        }
-    };
-    var $elm$virtual_dom$VirtualDom$node = function(tag) {
-        return _VirtualDom_node(_VirtualDom_noScript(tag));
-    };
-    var $elm$html$Html$node = $elm$virtual_dom$VirtualDom$node;
-    var $elm$browser$Debugger$Main$DragEnd = {
-        $: 'DragEnd'
-    };
-    var $elm$browser$Debugger$Main$getDragStatus = function(layout) {
-        if (layout.$ === 'Horizontal') {
-            var status = layout.a;
-            return status;
-        } else {
-            var status = layout.a;
-            return status;
-        }
-    };
-    var $elm$browser$Debugger$Main$Drag = function(a) {
-        return {
-            $: 'Drag',
-            a: a
-        };
-    };
-    var $elm$browser$Debugger$Main$DragInfo = F5(function(x, y, down, width, height) {
-        return {
-            down: down,
-            height: height,
-            width: width,
-            x: x,
-            y: y
-        };
-    });
+    var $elm$browser$Browser$document = _Browser_document;
     var $elm$json$Json$Decode$field = _Json_decodeField;
-    var $elm$json$Json$Decode$at = F2(function(fields, decoder) {
-        return A3($elm$core$List$foldr, $elm$json$Json$Decode$field, decoder, fields);
-    });
-    var $elm$json$Json$Decode$float = _Json_decodeFloat;
-    var $elm$browser$Debugger$Main$decodeDimension = function(field) {
-        return A2($elm$json$Json$Decode$at, _List_fromArray([
-            'currentTarget',
-            'ownerDocument',
-            'defaultView',
-            field
-        ]), $elm$json$Json$Decode$float);
-    };
-    var $elm$json$Json$Decode$int = _Json_decodeInt;
-    var $elm$json$Json$Decode$map5 = _Json_map5;
-    var $elm$browser$Debugger$Main$onMouseMove = A2($elm$html$Html$Events$on, 'mousemove', A2($elm$json$Json$Decode$map, $elm$browser$Debugger$Main$Drag, A6($elm$json$Json$Decode$map5, $elm$browser$Debugger$Main$DragInfo, A2($elm$json$Json$Decode$field, 'pageX', $elm$json$Json$Decode$float), A2($elm$json$Json$Decode$field, 'pageY', $elm$json$Json$Decode$float), A2($elm$json$Json$Decode$field, 'buttons', A2($elm$json$Json$Decode$map, function(v) {
-        return v === 1;
-    }, $elm$json$Json$Decode$int)), $elm$browser$Debugger$Main$decodeDimension('innerWidth'), $elm$browser$Debugger$Main$decodeDimension('innerHeight'))));
-    var $elm$html$Html$Events$onMouseUp = function(msg) {
-        return A2($elm$html$Html$Events$on, 'mouseup', $elm$json$Json$Decode$succeed(msg));
-    };
-    var $elm$browser$Debugger$Main$toDragListeners = function(layout) {
-        var _v0 = $elm$browser$Debugger$Main$getDragStatus(layout);
-        if (_v0.$ === 'Static') return _List_Nil;
-        else return _List_fromArray([
-            $elm$browser$Debugger$Main$onMouseMove,
-            $elm$html$Html$Events$onMouseUp($elm$browser$Debugger$Main$DragEnd)
-        ]);
-    };
-    var $elm$browser$Debugger$Main$toFlexDirection = function(layout) {
-        if (layout.$ === 'Horizontal') return 'row';
-        else return 'column-reverse';
-    };
-    var $elm$browser$Debugger$Main$DragStart = {
-        $: 'DragStart'
-    };
-    var $elm$html$Html$Events$onMouseDown = function(msg) {
-        return A2($elm$html$Html$Events$on, 'mousedown', $elm$json$Json$Decode$succeed(msg));
-    };
-    var $elm$browser$Debugger$Main$toPercent = function(fraction) {
-        return $elm$core$String$fromFloat(100 * fraction) + '%';
-    };
-    var $elm$browser$Debugger$Main$viewDragZone = function(layout) {
-        if (layout.$ === 'Horizontal') {
-            var x = layout.b;
-            return A2($elm$html$Html$div, _List_fromArray([
-                A2($elm$html$Html$Attributes$style, 'position', 'absolute'),
-                A2($elm$html$Html$Attributes$style, 'top', '0'),
-                A2($elm$html$Html$Attributes$style, 'left', $elm$browser$Debugger$Main$toPercent(x)),
-                A2($elm$html$Html$Attributes$style, 'margin-left', '-5px'),
-                A2($elm$html$Html$Attributes$style, 'width', '10px'),
-                A2($elm$html$Html$Attributes$style, 'height', '100%'),
-                A2($elm$html$Html$Attributes$style, 'cursor', 'col-resize'),
-                $elm$html$Html$Events$onMouseDown($elm$browser$Debugger$Main$DragStart)
-            ]), _List_Nil);
-        } else {
-            var y = layout.c;
-            return A2($elm$html$Html$div, _List_fromArray([
-                A2($elm$html$Html$Attributes$style, 'position', 'absolute'),
-                A2($elm$html$Html$Attributes$style, 'top', $elm$browser$Debugger$Main$toPercent(y)),
-                A2($elm$html$Html$Attributes$style, 'left', '0'),
-                A2($elm$html$Html$Attributes$style, 'margin-top', '-5px'),
-                A2($elm$html$Html$Attributes$style, 'width', '100%'),
-                A2($elm$html$Html$Attributes$style, 'height', '10px'),
-                A2($elm$html$Html$Attributes$style, 'cursor', 'row-resize'),
-                $elm$html$Html$Events$onMouseDown($elm$browser$Debugger$Main$DragStart)
-            ]), _List_Nil);
-        }
-    };
-    var $elm$browser$Debugger$Main$TweakExpandoModel = function(a) {
+    var $author$project$Main$SampleRom = F2(function(a, b) {
         return {
-            $: 'TweakExpandoModel',
-            a: a
-        };
-    };
-    var $elm$browser$Debugger$Main$TweakExpandoMsg = function(a) {
-        return {
-            $: 'TweakExpandoMsg',
-            a: a
-        };
-    };
-    var $elm$browser$Debugger$Main$toExpandoPercents = function(layout) {
-        if (layout.$ === 'Horizontal') {
-            var x = layout.b;
-            return _Utils_Tuple2($elm$browser$Debugger$Main$toPercent(1 - x), '100%');
-        } else {
-            var y = layout.c;
-            return _Utils_Tuple2('100%', $elm$browser$Debugger$Main$toPercent(y));
-        }
-    };
-    var $elm$browser$Debugger$Main$toMouseBlocker = function(layout) {
-        var _v0 = $elm$browser$Debugger$Main$getDragStatus(layout);
-        if (_v0.$ === 'Static') return 'auto';
-        else return 'none';
-    };
-    var $elm$browser$Debugger$Expando$Field = F2(function(a, b) {
-        return {
-            $: 'Field',
+            $: 'SampleRom',
             a: a,
             b: b
         };
     });
-    var $elm$browser$Debugger$Expando$Index = F3(function(a, b, c) {
+    var $elm$core$Maybe$andThen = F2(function(callback, maybeValue) {
+        if (maybeValue.$ === 'Just') {
+            var value = maybeValue.a;
+            return callback(value);
+        } else return $elm$core$Maybe$Nothing;
+    });
+    var $author$project$Main$Config = F2(function(debug, rom) {
         return {
-            $: 'Index',
-            a: a,
-            b: b,
-            c: c
+            debug: debug,
+            rom: rom
         };
     });
-    var $elm$browser$Debugger$Expando$Key = {
-        $: 'Key'
-    };
-    var $elm$browser$Debugger$Expando$None = {
-        $: 'None'
-    };
-    var $elm$browser$Debugger$Expando$Toggle = {
-        $: 'Toggle'
-    };
-    var $elm$browser$Debugger$Expando$Value = {
-        $: 'Value'
-    };
-    var $elm$browser$Debugger$Expando$blue = A2($elm$html$Html$Attributes$style, 'color', 'rgb(28, 0, 207)');
-    var $elm$core$Basics$composeL = F3(function(g, f, x) {
-        return g(f(x));
-    });
-    var $elm$browser$Debugger$Expando$leftPad = function(maybeKey) {
-        if (maybeKey.$ === 'Nothing') return _List_Nil;
-        else return _List_fromArray([
-            A2($elm$html$Html$Attributes$style, 'padding-left', '4ch')
-        ]);
-    };
-    var $elm$browser$Debugger$Expando$makeArrow = function(arrow) {
-        return A2($elm$html$Html$span, _List_fromArray([
-            A2($elm$html$Html$Attributes$style, 'color', '#777'),
-            A2($elm$html$Html$Attributes$style, 'padding-left', '2ch'),
-            A2($elm$html$Html$Attributes$style, 'width', '2ch'),
-            A2($elm$html$Html$Attributes$style, 'display', 'inline-block')
-        ]), _List_fromArray([
-            $elm$html$Html$text(arrow)
-        ]));
-    };
-    var $elm$browser$Debugger$Expando$purple = A2($elm$html$Html$Attributes$style, 'color', 'rgb(136, 19, 145)');
-    var $elm$browser$Debugger$Expando$lineStarter = F3(function(maybeKey, maybeIsClosed, description) {
-        var arrow = function() {
-            if (maybeIsClosed.$ === 'Nothing') return $elm$browser$Debugger$Expando$makeArrow('');
-            else {
-                if (maybeIsClosed.a) return $elm$browser$Debugger$Expando$makeArrow('▸');
-                else return $elm$browser$Debugger$Expando$makeArrow('▾');
-            }
-        }();
-        if (maybeKey.$ === 'Nothing') return A2($elm$core$List$cons, arrow, description);
-        else {
-            var key = maybeKey.a;
-            return A2($elm$core$List$cons, arrow, A2($elm$core$List$cons, A2($elm$html$Html$span, _List_fromArray([
-                $elm$browser$Debugger$Expando$purple
-            ]), _List_fromArray([
-                $elm$html$Html$text(key)
-            ])), A2($elm$core$List$cons, $elm$html$Html$text(' = '), description)));
-        }
-    });
-    var $elm$browser$Debugger$Expando$red = A2($elm$html$Html$Attributes$style, 'color', 'rgb(196, 26, 22)');
-    var $elm$core$Tuple$second = function(_v0) {
-        var y = _v0.b;
-        return y;
-    };
-    var $elm$browser$Debugger$Expando$seqTypeToString = F2(function(n, seqType) {
-        switch(seqType.$){
-            case 'ListSeq':
-                return 'List(' + ($elm$core$String$fromInt(n) + ')');
-            case 'SetSeq':
-                return 'Set(' + ($elm$core$String$fromInt(n) + ')');
-            default:
-                return 'Array(' + ($elm$core$String$fromInt(n) + ')');
-        }
-    });
-    var $elm$core$String$slice = _String_slice;
-    var $elm$core$String$left = F2(function(n, string) {
-        return n < 1 ? '' : A3($elm$core$String$slice, 0, n, string);
-    });
-    var $elm$core$String$right = F2(function(n, string) {
-        return n < 1 ? '' : A3($elm$core$String$slice, -n, $elm$core$String$length(string), string);
-    });
-    var $elm$browser$Debugger$Expando$elideMiddle = function(str) {
-        return $elm$core$String$length(str) <= 18 ? str : A2($elm$core$String$left, 8, str) + ('...' + A2($elm$core$String$right, 8, str));
-    };
-    var $elm$core$Dict$isEmpty = function(dict) {
-        if (dict.$ === 'RBEmpty_elm_builtin') return true;
-        else return false;
-    };
-    var $elm$browser$Debugger$Expando$viewExtraTinyRecord = F3(function(length, starter, entries) {
-        if (!entries.b) return _Utils_Tuple2(length + 1, _List_fromArray([
-            $elm$html$Html$text('}')
-        ]));
-        else {
-            var field = entries.a;
-            var rest = entries.b;
-            var nextLength = length + $elm$core$String$length(field) + 1;
-            if (nextLength > 18) return _Utils_Tuple2(length + 2, _List_fromArray([
-                $elm$html$Html$text('…}')
-            ]));
-            else {
-                var _v1 = A3($elm$browser$Debugger$Expando$viewExtraTinyRecord, nextLength, ',', rest);
-                var finalLength = _v1.a;
-                var otherHtmls = _v1.b;
-                return _Utils_Tuple2(finalLength, A2($elm$core$List$cons, $elm$html$Html$text(starter), A2($elm$core$List$cons, A2($elm$html$Html$span, _List_fromArray([
-                    $elm$browser$Debugger$Expando$purple
-                ]), _List_fromArray([
-                    $elm$html$Html$text(field)
-                ])), otherHtmls)));
-            }
-        }
-    });
-    var $elm$browser$Debugger$Expando$viewTinyHelp = function(str) {
-        return _Utils_Tuple2($elm$core$String$length(str), _List_fromArray([
-            $elm$html$Html$text(str)
-        ]));
-    };
-    var $elm$core$Maybe$withDefault = F2(function(_default, maybe) {
-        if (maybe.$ === 'Just') {
-            var value = maybe.a;
-            return value;
-        } else return _default;
-    });
-    var $elm$browser$Debugger$Expando$viewExtraTiny = function(value) {
-        if (value.$ === 'Record') {
-            var record = value.b;
-            return A3($elm$browser$Debugger$Expando$viewExtraTinyRecord, 0, '{', $elm$core$Dict$keys(record));
-        } else return $elm$browser$Debugger$Expando$viewTiny(value);
-    };
-    var $elm$browser$Debugger$Expando$viewTiny = function(value) {
-        switch(value.$){
-            case 'S':
-                var stringRep = value.a;
-                var str = $elm$browser$Debugger$Expando$elideMiddle(stringRep);
-                return _Utils_Tuple2($elm$core$String$length(str), _List_fromArray([
-                    A2($elm$html$Html$span, _List_fromArray([
-                        $elm$browser$Debugger$Expando$red
-                    ]), _List_fromArray([
-                        $elm$html$Html$text(str)
-                    ]))
-                ]));
-            case 'Primitive':
-                var stringRep = value.a;
-                return _Utils_Tuple2($elm$core$String$length(stringRep), _List_fromArray([
-                    A2($elm$html$Html$span, _List_fromArray([
-                        $elm$browser$Debugger$Expando$blue
-                    ]), _List_fromArray([
-                        $elm$html$Html$text(stringRep)
-                    ]))
-                ]));
-            case 'Sequence':
-                var seqType = value.a;
-                var valueList = value.c;
-                return $elm$browser$Debugger$Expando$viewTinyHelp(A2($elm$browser$Debugger$Expando$seqTypeToString, $elm$core$List$length(valueList), seqType));
-            case 'Dictionary':
-                var keyValuePairs = value.b;
-                return $elm$browser$Debugger$Expando$viewTinyHelp('Dict(' + ($elm$core$String$fromInt($elm$core$List$length(keyValuePairs)) + ')'));
-            case 'Record':
-                var record = value.b;
-                return $elm$browser$Debugger$Expando$viewTinyRecord(record);
-            default:
-                if (!value.c.b) {
-                    var maybeName = value.a;
-                    return $elm$browser$Debugger$Expando$viewTinyHelp(A2($elm$core$Maybe$withDefault, 'Unit', maybeName));
-                } else {
-                    var maybeName = value.a;
-                    var valueList = value.c;
-                    return $elm$browser$Debugger$Expando$viewTinyHelp(function() {
-                        if (maybeName.$ === 'Nothing') return 'Tuple(' + ($elm$core$String$fromInt($elm$core$List$length(valueList)) + ')');
-                        else {
-                            var name = maybeName.a;
-                            return name + ' …';
-                        }
-                    }());
-                }
-        }
-    };
-    var $elm$browser$Debugger$Expando$viewTinyRecord = function(record) {
-        return $elm$core$Dict$isEmpty(record) ? _Utils_Tuple2(2, _List_fromArray([
-            $elm$html$Html$text('{}')
-        ])) : A3($elm$browser$Debugger$Expando$viewTinyRecordHelp, 0, '{ ', $elm$core$Dict$toList(record));
-    };
-    var $elm$browser$Debugger$Expando$viewTinyRecordHelp = F3(function(length, starter, entries) {
-        if (!entries.b) return _Utils_Tuple2(length + 2, _List_fromArray([
-            $elm$html$Html$text(' }')
-        ]));
-        else {
-            var _v1 = entries.a;
-            var field = _v1.a;
-            var value = _v1.b;
-            var rest = entries.b;
-            var fieldLen = $elm$core$String$length(field);
-            var _v2 = $elm$browser$Debugger$Expando$viewExtraTiny(value);
-            var valueLen = _v2.a;
-            var valueHtmls = _v2.b;
-            var newLength = length + fieldLen + valueLen + 5;
-            if (newLength > 60) return _Utils_Tuple2(length + 4, _List_fromArray([
-                $elm$html$Html$text(', … }')
-            ]));
-            else {
-                var _v3 = A3($elm$browser$Debugger$Expando$viewTinyRecordHelp, newLength, ', ', rest);
-                var finalLength = _v3.a;
-                var otherHtmls = _v3.b;
-                return _Utils_Tuple2(finalLength, A2($elm$core$List$cons, $elm$html$Html$text(starter), A2($elm$core$List$cons, A2($elm$html$Html$span, _List_fromArray([
-                    $elm$browser$Debugger$Expando$purple
-                ]), _List_fromArray([
-                    $elm$html$Html$text(field)
-                ])), A2($elm$core$List$cons, $elm$html$Html$text(' = '), A2($elm$core$List$cons, A2($elm$html$Html$span, _List_Nil, valueHtmls), otherHtmls)))));
-            }
-        }
-    });
-    var $elm$browser$Debugger$Expando$view = F2(function(maybeKey, expando) {
-        switch(expando.$){
-            case 'S':
-                var stringRep = expando.a;
-                return A2($elm$html$Html$div, $elm$browser$Debugger$Expando$leftPad(maybeKey), A3($elm$browser$Debugger$Expando$lineStarter, maybeKey, $elm$core$Maybe$Nothing, _List_fromArray([
-                    A2($elm$html$Html$span, _List_fromArray([
-                        $elm$browser$Debugger$Expando$red
-                    ]), _List_fromArray([
-                        $elm$html$Html$text(stringRep)
-                    ]))
-                ])));
-            case 'Primitive':
-                var stringRep = expando.a;
-                return A2($elm$html$Html$div, $elm$browser$Debugger$Expando$leftPad(maybeKey), A3($elm$browser$Debugger$Expando$lineStarter, maybeKey, $elm$core$Maybe$Nothing, _List_fromArray([
-                    A2($elm$html$Html$span, _List_fromArray([
-                        $elm$browser$Debugger$Expando$blue
-                    ]), _List_fromArray([
-                        $elm$html$Html$text(stringRep)
-                    ]))
-                ])));
-            case 'Sequence':
-                var seqType = expando.a;
-                var isClosed = expando.b;
-                var valueList = expando.c;
-                return A4($elm$browser$Debugger$Expando$viewSequence, maybeKey, seqType, isClosed, valueList);
-            case 'Dictionary':
-                var isClosed = expando.a;
-                var keyValuePairs = expando.b;
-                return A3($elm$browser$Debugger$Expando$viewDictionary, maybeKey, isClosed, keyValuePairs);
-            case 'Record':
-                var isClosed = expando.a;
-                var valueDict = expando.b;
-                return A3($elm$browser$Debugger$Expando$viewRecord, maybeKey, isClosed, valueDict);
-            default:
-                var maybeName = expando.a;
-                var isClosed = expando.b;
-                var valueList = expando.c;
-                return A4($elm$browser$Debugger$Expando$viewConstructor, maybeKey, maybeName, isClosed, valueList);
-        }
-    });
-    var $elm$browser$Debugger$Expando$viewConstructor = F4(function(maybeKey, maybeName, isClosed, valueList) {
-        var tinyArgs = A2($elm$core$List$map, A2($elm$core$Basics$composeL, $elm$core$Tuple$second, $elm$browser$Debugger$Expando$viewExtraTiny), valueList);
-        var description = function() {
-            var _v7 = _Utils_Tuple2(maybeName, tinyArgs);
-            if (_v7.a.$ === 'Nothing') {
-                if (!_v7.b.b) {
-                    var _v8 = _v7.a;
-                    return _List_fromArray([
-                        $elm$html$Html$text('()')
-                    ]);
-                } else {
-                    var _v9 = _v7.a;
-                    var _v10 = _v7.b;
-                    var x = _v10.a;
-                    var xs = _v10.b;
-                    return A2($elm$core$List$cons, $elm$html$Html$text('( '), A2($elm$core$List$cons, A2($elm$html$Html$span, _List_Nil, x), A3($elm$core$List$foldr, F2(function(args, rest) {
-                        return A2($elm$core$List$cons, $elm$html$Html$text(', '), A2($elm$core$List$cons, A2($elm$html$Html$span, _List_Nil, args), rest));
-                    }), _List_fromArray([
-                        $elm$html$Html$text(' )')
-                    ]), xs)));
-                }
-            } else if (!_v7.b.b) {
-                var name = _v7.a.a;
-                return _List_fromArray([
-                    $elm$html$Html$text(name)
-                ]);
-            } else {
-                var name = _v7.a.a;
-                var _v11 = _v7.b;
-                var x = _v11.a;
-                var xs = _v11.b;
-                return A2($elm$core$List$cons, $elm$html$Html$text(name + ' '), A2($elm$core$List$cons, A2($elm$html$Html$span, _List_Nil, x), A3($elm$core$List$foldr, F2(function(args, rest) {
-                    return A2($elm$core$List$cons, $elm$html$Html$text(' '), A2($elm$core$List$cons, A2($elm$html$Html$span, _List_Nil, args), rest));
-                }), _List_Nil, xs)));
-            }
-        }();
-        var _v4 = function() {
-            if (!valueList.b) return _Utils_Tuple2($elm$core$Maybe$Nothing, A2($elm$html$Html$div, _List_Nil, _List_Nil));
-            else {
-                if (!valueList.b.b) {
-                    var entry = valueList.a;
-                    switch(entry.$){
-                        case 'S':
-                            return _Utils_Tuple2($elm$core$Maybe$Nothing, A2($elm$html$Html$div, _List_Nil, _List_Nil));
-                        case 'Primitive':
-                            return _Utils_Tuple2($elm$core$Maybe$Nothing, A2($elm$html$Html$div, _List_Nil, _List_Nil));
-                        case 'Sequence':
-                            var subValueList = entry.c;
-                            return _Utils_Tuple2($elm$core$Maybe$Just(isClosed), isClosed ? A2($elm$html$Html$div, _List_Nil, _List_Nil) : A2($elm$html$Html$map, A2($elm$browser$Debugger$Expando$Index, $elm$browser$Debugger$Expando$None, 0), $elm$browser$Debugger$Expando$viewSequenceOpen(subValueList)));
-                        case 'Dictionary':
-                            var keyValuePairs = entry.b;
-                            return _Utils_Tuple2($elm$core$Maybe$Just(isClosed), isClosed ? A2($elm$html$Html$div, _List_Nil, _List_Nil) : A2($elm$html$Html$map, A2($elm$browser$Debugger$Expando$Index, $elm$browser$Debugger$Expando$None, 0), $elm$browser$Debugger$Expando$viewDictionaryOpen(keyValuePairs)));
-                        case 'Record':
-                            var record = entry.b;
-                            return _Utils_Tuple2($elm$core$Maybe$Just(isClosed), isClosed ? A2($elm$html$Html$div, _List_Nil, _List_Nil) : A2($elm$html$Html$map, A2($elm$browser$Debugger$Expando$Index, $elm$browser$Debugger$Expando$None, 0), $elm$browser$Debugger$Expando$viewRecordOpen(record)));
-                        default:
-                            var subValueList = entry.c;
-                            return _Utils_Tuple2($elm$core$Maybe$Just(isClosed), isClosed ? A2($elm$html$Html$div, _List_Nil, _List_Nil) : A2($elm$html$Html$map, A2($elm$browser$Debugger$Expando$Index, $elm$browser$Debugger$Expando$None, 0), $elm$browser$Debugger$Expando$viewConstructorOpen(subValueList)));
-                    }
-                } else return _Utils_Tuple2($elm$core$Maybe$Just(isClosed), isClosed ? A2($elm$html$Html$div, _List_Nil, _List_Nil) : $elm$browser$Debugger$Expando$viewConstructorOpen(valueList));
-            }
-        }();
-        var maybeIsClosed = _v4.a;
-        var openHtml = _v4.b;
-        return A2($elm$html$Html$div, $elm$browser$Debugger$Expando$leftPad(maybeKey), _List_fromArray([
-            A2($elm$html$Html$div, _List_fromArray([
-                $elm$html$Html$Events$onClick($elm$browser$Debugger$Expando$Toggle)
-            ]), A3($elm$browser$Debugger$Expando$lineStarter, maybeKey, maybeIsClosed, description)),
-            openHtml
-        ]));
-    });
-    var $elm$browser$Debugger$Expando$viewConstructorEntry = F2(function(index, value) {
-        return A2($elm$html$Html$map, A2($elm$browser$Debugger$Expando$Index, $elm$browser$Debugger$Expando$None, index), A2($elm$browser$Debugger$Expando$view, $elm$core$Maybe$Just($elm$core$String$fromInt(index)), value));
-    });
-    var $elm$browser$Debugger$Expando$viewConstructorOpen = function(valueList) {
-        return A2($elm$html$Html$div, _List_Nil, A2($elm$core$List$indexedMap, $elm$browser$Debugger$Expando$viewConstructorEntry, valueList));
-    };
-    var $elm$browser$Debugger$Expando$viewDictionary = F3(function(maybeKey, isClosed, keyValuePairs) {
-        var starter = 'Dict(' + ($elm$core$String$fromInt($elm$core$List$length(keyValuePairs)) + ')');
-        return A2($elm$html$Html$div, $elm$browser$Debugger$Expando$leftPad(maybeKey), _List_fromArray([
-            A2($elm$html$Html$div, _List_fromArray([
-                $elm$html$Html$Events$onClick($elm$browser$Debugger$Expando$Toggle)
-            ]), A3($elm$browser$Debugger$Expando$lineStarter, maybeKey, $elm$core$Maybe$Just(isClosed), _List_fromArray([
-                $elm$html$Html$text(starter)
-            ]))),
-            isClosed ? $elm$html$Html$text('') : $elm$browser$Debugger$Expando$viewDictionaryOpen(keyValuePairs)
-        ]));
-    });
-    var $elm$browser$Debugger$Expando$viewDictionaryEntry = F2(function(index, _v2) {
-        var key = _v2.a;
-        var value = _v2.b;
-        switch(key.$){
-            case 'S':
-                var stringRep = key.a;
-                return A2($elm$html$Html$map, A2($elm$browser$Debugger$Expando$Index, $elm$browser$Debugger$Expando$Value, index), A2($elm$browser$Debugger$Expando$view, $elm$core$Maybe$Just(stringRep), value));
-            case 'Primitive':
-                var stringRep = key.a;
-                return A2($elm$html$Html$map, A2($elm$browser$Debugger$Expando$Index, $elm$browser$Debugger$Expando$Value, index), A2($elm$browser$Debugger$Expando$view, $elm$core$Maybe$Just(stringRep), value));
-            default:
-                return A2($elm$html$Html$div, _List_Nil, _List_fromArray([
-                    A2($elm$html$Html$map, A2($elm$browser$Debugger$Expando$Index, $elm$browser$Debugger$Expando$Key, index), A2($elm$browser$Debugger$Expando$view, $elm$core$Maybe$Just('key'), key)),
-                    A2($elm$html$Html$map, A2($elm$browser$Debugger$Expando$Index, $elm$browser$Debugger$Expando$Value, index), A2($elm$browser$Debugger$Expando$view, $elm$core$Maybe$Just('value'), value))
-                ]));
-        }
-    });
-    var $elm$browser$Debugger$Expando$viewDictionaryOpen = function(keyValuePairs) {
-        return A2($elm$html$Html$div, _List_Nil, A2($elm$core$List$indexedMap, $elm$browser$Debugger$Expando$viewDictionaryEntry, keyValuePairs));
-    };
-    var $elm$browser$Debugger$Expando$viewRecord = F3(function(maybeKey, isClosed, record) {
-        var _v1 = isClosed ? _Utils_Tuple3($elm$browser$Debugger$Expando$viewTinyRecord(record).b, $elm$html$Html$text(''), $elm$html$Html$text('')) : _Utils_Tuple3(_List_fromArray([
-            $elm$html$Html$text('{')
-        ]), $elm$browser$Debugger$Expando$viewRecordOpen(record), A2($elm$html$Html$div, $elm$browser$Debugger$Expando$leftPad($elm$core$Maybe$Just(_Utils_Tuple0)), _List_fromArray([
-            $elm$html$Html$text('}')
-        ])));
-        var start = _v1.a;
-        var middle = _v1.b;
-        var end = _v1.c;
-        return A2($elm$html$Html$div, $elm$browser$Debugger$Expando$leftPad(maybeKey), _List_fromArray([
-            A2($elm$html$Html$div, _List_fromArray([
-                $elm$html$Html$Events$onClick($elm$browser$Debugger$Expando$Toggle)
-            ]), A3($elm$browser$Debugger$Expando$lineStarter, maybeKey, $elm$core$Maybe$Just(isClosed), start)),
-            middle,
-            end
-        ]));
-    });
-    var $elm$browser$Debugger$Expando$viewRecordEntry = function(_v0) {
-        var field = _v0.a;
-        var value = _v0.b;
-        return A2($elm$html$Html$map, $elm$browser$Debugger$Expando$Field(field), A2($elm$browser$Debugger$Expando$view, $elm$core$Maybe$Just(field), value));
-    };
-    var $elm$browser$Debugger$Expando$viewRecordOpen = function(record) {
-        return A2($elm$html$Html$div, _List_Nil, A2($elm$core$List$map, $elm$browser$Debugger$Expando$viewRecordEntry, $elm$core$Dict$toList(record)));
-    };
-    var $elm$browser$Debugger$Expando$viewSequence = F4(function(maybeKey, seqType, isClosed, valueList) {
-        var starter = A2($elm$browser$Debugger$Expando$seqTypeToString, $elm$core$List$length(valueList), seqType);
-        return A2($elm$html$Html$div, $elm$browser$Debugger$Expando$leftPad(maybeKey), _List_fromArray([
-            A2($elm$html$Html$div, _List_fromArray([
-                $elm$html$Html$Events$onClick($elm$browser$Debugger$Expando$Toggle)
-            ]), A3($elm$browser$Debugger$Expando$lineStarter, maybeKey, $elm$core$Maybe$Just(isClosed), _List_fromArray([
-                $elm$html$Html$text(starter)
-            ]))),
-            isClosed ? $elm$html$Html$text('') : $elm$browser$Debugger$Expando$viewSequenceOpen(valueList)
-        ]));
-    });
-    var $elm$browser$Debugger$Expando$viewSequenceOpen = function(values) {
-        return A2($elm$html$Html$div, _List_Nil, A2($elm$core$List$indexedMap, $elm$browser$Debugger$Expando$viewConstructorEntry, values));
-    };
-    var $elm$browser$Debugger$Main$viewExpando = F3(function(expandoMsg, expandoModel, layout) {
-        var block = $elm$browser$Debugger$Main$toMouseBlocker(layout);
-        var _v0 = $elm$browser$Debugger$Main$toExpandoPercents(layout);
-        var w = _v0.a;
-        var h = _v0.b;
-        return A2($elm$html$Html$div, _List_fromArray([
-            A2($elm$html$Html$Attributes$style, 'display', 'block'),
-            A2($elm$html$Html$Attributes$style, 'width', 'calc(' + (w + ' - 4em)')),
-            A2($elm$html$Html$Attributes$style, 'height', 'calc(' + (h + ' - 4em)')),
-            A2($elm$html$Html$Attributes$style, 'padding', '2em'),
-            A2($elm$html$Html$Attributes$style, 'margin', '0'),
-            A2($elm$html$Html$Attributes$style, 'overflow', 'auto'),
-            A2($elm$html$Html$Attributes$style, 'pointer-events', block),
-            A2($elm$html$Html$Attributes$style, '-webkit-user-select', block),
-            A2($elm$html$Html$Attributes$style, '-moz-user-select', block),
-            A2($elm$html$Html$Attributes$style, '-ms-user-select', block),
-            A2($elm$html$Html$Attributes$style, 'user-select', block)
-        ]), _List_fromArray([
-            A2($elm$html$Html$div, _List_fromArray([
-                A2($elm$html$Html$Attributes$style, 'color', '#ccc'),
-                A2($elm$html$Html$Attributes$style, 'padding', '0 0 1em 0')
-            ]), _List_fromArray([
-                $elm$html$Html$text('-- MESSAGE')
-            ])),
-            A2($elm$html$Html$map, $elm$browser$Debugger$Main$TweakExpandoMsg, A2($elm$browser$Debugger$Expando$view, $elm$core$Maybe$Nothing, expandoMsg)),
-            A2($elm$html$Html$div, _List_fromArray([
-                A2($elm$html$Html$Attributes$style, 'color', '#ccc'),
-                A2($elm$html$Html$Attributes$style, 'padding', '1em 0')
-            ]), _List_fromArray([
-                $elm$html$Html$text('-- MODEL')
-            ])),
-            A2($elm$html$Html$map, $elm$browser$Debugger$Main$TweakExpandoModel, A2($elm$browser$Debugger$Expando$view, $elm$core$Maybe$Nothing, expandoModel))
-        ]));
-    });
-    var $elm$browser$Debugger$Main$Jump = function(a) {
+    var $author$project$Main$CustomRom = function(a) {
         return {
-            $: 'Jump',
+            $: 'CustomRom',
             a: a
         };
     };
-    var $elm$virtual_dom$VirtualDom$lazy = _VirtualDom_lazy;
-    var $elm$html$Html$Lazy$lazy = $elm$virtual_dom$VirtualDom$lazy;
-    var $elm$browser$Debugger$Main$toHistoryPercents = function(layout) {
-        if (layout.$ === 'Horizontal') {
-            var x = layout.b;
-            return _Utils_Tuple2($elm$browser$Debugger$Main$toPercent(x), '100%');
-        } else {
-            var y = layout.c;
-            return _Utils_Tuple2('100%', $elm$browser$Debugger$Main$toPercent(1 - y));
-        }
+    var $author$project$Main$DebugOptions = F3(function(showDebug, showHistory, showProgram) {
+        return {
+            showDebug: showDebug,
+            showHistory: showHistory,
+            showProgram: showProgram
+        };
+    });
+    var $elm$json$Json$Decode$bool = _Json_decodeBool;
+    var $elm$core$Basics$composeR = F3(function(f, g, x) {
+        return g(f(x));
+    });
+    var $elm$json$Json$Decode$index = _Json_decodeIndex;
+    var $elm$json$Json$Decode$int = _Json_decodeInt;
+    var $elm$json$Json$Decode$list = _Json_decodeList;
+    var $elm$json$Json$Decode$map3 = _Json_map3;
+    var $elm$json$Json$Decode$oneOf = _Json_oneOf;
+    var $elm$json$Json$Decode$string = _Json_decodeString;
+    var $author$project$Main$decodeConfig = A3($elm$json$Json$Decode$map2, $author$project$Main$Config, A2($elm$json$Json$Decode$field, 'debug', A4($elm$json$Json$Decode$map3, $author$project$Main$DebugOptions, A2($elm$json$Json$Decode$field, 'showDebug', $elm$json$Json$Decode$bool), A2($elm$json$Json$Decode$field, 'showHistory', $elm$json$Json$Decode$bool), A2($elm$json$Json$Decode$field, 'showProgram', $elm$json$Json$Decode$bool))), A2($elm$json$Json$Decode$field, 'rom', $elm$json$Json$Decode$oneOf(_List_fromArray([
+        A2($elm$json$Json$Decode$map, A2($elm$core$Basics$composeR, $author$project$Main$CustomRom, $elm$core$Maybe$Just), $elm$json$Json$Decode$list($elm$json$Json$Decode$int)),
+        A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, A3($elm$json$Json$Decode$map2, $author$project$Main$SampleRom, A2($elm$json$Json$Decode$index, 0, $elm$json$Json$Decode$string), A2($elm$json$Json$Decode$index, 1, $elm$json$Json$Decode$list($elm$json$Json$Decode$int)))),
+        $elm$json$Json$Decode$succeed($elm$core$Maybe$Nothing)
+    ]))));
+    var $elm$json$Json$Decode$decodeValue = _Json_run;
+    var $author$project$Main$defaultDebug = {
+        showDebug: true,
+        showHistory: false,
+        showProgram: false
     };
-    var $elm$virtual_dom$VirtualDom$lazy3 = _VirtualDom_lazy3;
-    var $elm$html$Html$Lazy$lazy3 = $elm$virtual_dom$VirtualDom$lazy3;
-    var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
-    var $elm$browser$Debugger$History$idForMessageIndex = function(index) {
-        return 'msg-' + $elm$core$String$fromInt(index);
+    var $author$project$Main$defaultConfig = {
+        debug: $author$project$Main$defaultDebug,
+        rom: $elm$core$Maybe$Nothing
     };
-    var $elm$html$Html$Attributes$title = $elm$html$Html$Attributes$stringProperty('title');
-    var $elm$browser$Debugger$History$viewMessage = F3(function(currentIndex, index, msg) {
-        var messageName = _Debugger_messageToString(msg);
-        var className = _Utils_eq(currentIndex, index) ? 'elm-debugger-entry elm-debugger-entry-selected' : 'elm-debugger-entry';
-        return A2($elm$html$Html$div, _List_fromArray([
-            $elm$html$Html$Attributes$id($elm$browser$Debugger$History$idForMessageIndex(index)),
-            $elm$html$Html$Attributes$class(className),
-            $elm$html$Html$Events$onClick(index)
-        ]), _List_fromArray([
-            A2($elm$html$Html$span, _List_fromArray([
-                $elm$html$Html$Attributes$title(messageName),
-                $elm$html$Html$Attributes$class('elm-debugger-entry-content')
-            ]), _List_fromArray([
-                $elm$html$Html$text(messageName)
-            ])),
-            A2($elm$html$Html$span, _List_fromArray([
-                $elm$html$Html$Attributes$class('elm-debugger-entry-index')
-            ]), _List_fromArray([
-                $elm$html$Html$text($elm$core$String$fromInt(index))
-            ]))
-        ]));
-    });
-    var $elm$browser$Debugger$History$consMsg = F3(function(currentIndex, msg, _v0) {
-        var index = _v0.a;
-        var rest = _v0.b;
-        return _Utils_Tuple2(index + 1, A2($elm$core$List$cons, _Utils_Tuple2($elm$core$String$fromInt(index), A4($elm$html$Html$Lazy$lazy3, $elm$browser$Debugger$History$viewMessage, currentIndex, index, msg)), rest));
-    });
-    var $elm$core$Array$length = function(_v0) {
-        var len = _v0.a;
-        return len;
+    var $author$project$Main$Paused = {
+        $: 'Paused'
     };
-    var $elm$core$Basics$neq = _Utils_notEqual;
-    var $elm$virtual_dom$VirtualDom$keyedNode = function(tag) {
-        return _VirtualDom_keyedNode(_VirtualDom_noScript(tag));
-    };
-    var $elm$html$Html$Keyed$node = $elm$virtual_dom$VirtualDom$keyedNode;
-    var $elm$browser$Debugger$History$maxSnapshotSize = 31;
-    var $elm$browser$Debugger$History$showMoreButton = function(numMessages) {
-        var nextIndex = numMessages - 1 - $elm$browser$Debugger$History$maxSnapshotSize * 2;
-        var labelText = 'View more messages';
-        return A2($elm$html$Html$div, _List_fromArray([
-            $elm$html$Html$Attributes$class('elm-debugger-entry'),
-            $elm$html$Html$Events$onClick(nextIndex)
-        ]), _List_fromArray([
-            A2($elm$html$Html$span, _List_fromArray([
-                $elm$html$Html$Attributes$title(labelText),
-                $elm$html$Html$Attributes$class('elm-debugger-entry-content')
-            ]), _List_fromArray([
-                $elm$html$Html$text(labelText)
-            ])),
-            A2($elm$html$Html$span, _List_fromArray([
-                $elm$html$Html$Attributes$class('elm-debugger-entry-index')
-            ]), _List_Nil)
-        ]));
-    };
-    var $elm$browser$Debugger$History$styles = A3($elm$html$Html$node, 'style', _List_Nil, _List_fromArray([
-        $elm$html$Html$text('\n\n.elm-debugger-entry {\n  cursor: pointer;\n  width: 100%;\n  box-sizing: border-box;\n  padding: 8px;\n}\n\n.elm-debugger-entry:hover {\n  background-color: rgb(41, 41, 41);\n}\n\n.elm-debugger-entry-selected, .elm-debugger-entry-selected:hover {\n  background-color: rgb(10, 10, 10);\n}\n\n.elm-debugger-entry-content {\n  width: calc(100% - 40px);\n  padding: 0 5px;\n  box-sizing: border-box;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n  overflow: hidden;\n  display: inline-block;\n}\n\n.elm-debugger-entry-index {\n  color: #666;\n  width: 40px;\n  text-align: right;\n  display: block;\n  float: right;\n}\n\n')
-    ]));
-    var $elm$core$Basics$ge = _Utils_ge;
-    var $elm$browser$Debugger$History$viewSnapshot = F3(function(selectedIndex, index, _v0) {
-        var messages = _v0.messages;
-        return A3($elm$html$Html$Keyed$node, 'div', _List_Nil, A3($elm$core$Array$foldr, $elm$browser$Debugger$History$consMsg(selectedIndex), _Utils_Tuple2(index, _List_Nil), messages).b);
-    });
-    var $elm$browser$Debugger$History$consSnapshot = F3(function(selectedIndex, snapshot, _v0) {
-        var index = _v0.a;
-        var rest = _v0.b;
-        var nextIndex = index + $elm$core$Array$length(snapshot.messages);
-        var selectedIndexHelp = _Utils_cmp(nextIndex, selectedIndex) > 0 && _Utils_cmp(selectedIndex, index) > -1 ? selectedIndex : -1;
-        return _Utils_Tuple2(nextIndex, A2($elm$core$List$cons, A4($elm$html$Html$Lazy$lazy3, $elm$browser$Debugger$History$viewSnapshot, selectedIndexHelp, index, snapshot), rest));
-    });
-    var $elm$core$Elm$JsArray$foldl = _JsArray_foldl;
-    var $elm$core$Array$foldl = F3(function(func, baseCase, _v0) {
-        var tree = _v0.c;
-        var tail = _v0.d;
-        var helper = F2(function(node, acc) {
-            if (node.$ === 'SubTree') {
-                var subTree = node.a;
-                return A3($elm$core$Elm$JsArray$foldl, helper, acc, subTree);
-            } else {
-                var values = node.a;
-                return A3($elm$core$Elm$JsArray$foldl, func, acc, values);
-            }
-        });
-        return A3($elm$core$Elm$JsArray$foldl, func, A3($elm$core$Elm$JsArray$foldl, helper, baseCase, tree), tail);
-    });
-    var $elm$browser$Debugger$History$viewAllSnapshots = F3(function(selectedIndex, startIndex, snapshots) {
-        return A2($elm$html$Html$div, _List_Nil, A3($elm$core$Array$foldl, $elm$browser$Debugger$History$consSnapshot(selectedIndex), _Utils_Tuple2(startIndex, _List_Nil), snapshots).b);
-    });
-    var $elm$core$Array$fromListHelp = F3(function(list, nodeList, nodeListSize) {
-        fromListHelp: while(true){
-            var _v0 = A2($elm$core$Elm$JsArray$initializeFromList, $elm$core$Array$branchFactor, list);
-            var jsArray = _v0.a;
-            var remainingItems = _v0.b;
-            if (_Utils_cmp($elm$core$Elm$JsArray$length(jsArray), $elm$core$Array$branchFactor) < 0) return A2($elm$core$Array$builderToArray, true, {
-                nodeList: nodeList,
-                nodeListSize: nodeListSize,
-                tail: jsArray
-            });
-            else {
-                var $temp$list = remainingItems, $temp$nodeList = A2($elm$core$List$cons, $elm$core$Array$Leaf(jsArray), nodeList), $temp$nodeListSize = nodeListSize + 1;
-                list = $temp$list;
-                nodeList = $temp$nodeList;
-                nodeListSize = $temp$nodeListSize;
-                continue fromListHelp;
-            }
-        }
-    });
-    var $elm$core$Array$fromList = function(list) {
-        if (!list.b) return $elm$core$Array$empty;
-        else return A3($elm$core$Array$fromListHelp, list, _List_Nil, 0);
-    };
-    var $elm$core$Bitwise$and = _Bitwise_and;
-    var $elm$core$Bitwise$shiftRightZfBy = _Bitwise_shiftRightZfBy;
-    var $elm$core$Array$bitMask = 4294967295 >>> 32 - $elm$core$Array$shiftStep;
-    var $elm$core$Elm$JsArray$unsafeGet = _JsArray_unsafeGet;
-    var $elm$core$Array$getHelp = F3(function(shift, index, tree) {
-        getHelp: while(true){
-            var pos = $elm$core$Array$bitMask & index >>> shift;
-            var _v0 = A2($elm$core$Elm$JsArray$unsafeGet, pos, tree);
-            if (_v0.$ === 'SubTree') {
-                var subTree = _v0.a;
-                var $temp$shift = shift - $elm$core$Array$shiftStep, $temp$index = index, $temp$tree = subTree;
-                shift = $temp$shift;
-                index = $temp$index;
-                tree = $temp$tree;
-                continue getHelp;
-            } else {
-                var values = _v0.a;
-                return A2($elm$core$Elm$JsArray$unsafeGet, $elm$core$Array$bitMask & index, values);
-            }
-        }
-    });
-    var $elm$core$Bitwise$shiftLeftBy = _Bitwise_shiftLeftBy;
-    var $elm$core$Array$tailIndex = function(len) {
-        return len >>> 5 << 5;
-    };
-    var $elm$core$Array$get = F2(function(index, _v0) {
-        var len = _v0.a;
-        var startShift = _v0.b;
-        var tree = _v0.c;
-        var tail = _v0.d;
-        return index < 0 || _Utils_cmp(index, len) > -1 ? $elm$core$Maybe$Nothing : _Utils_cmp(index, $elm$core$Array$tailIndex(len)) > -1 ? $elm$core$Maybe$Just(A2($elm$core$Elm$JsArray$unsafeGet, $elm$core$Array$bitMask & index, tail)) : $elm$core$Maybe$Just(A3($elm$core$Array$getHelp, startShift, index, tree));
-    });
     var $elm$core$Elm$JsArray$appendN = _JsArray_appendN;
     var $elm$core$Elm$JsArray$slice = _JsArray_slice;
     var $elm$core$Array$appendHelpBuilder = F2(function(tail, builder) {
@@ -5608,6 +4399,111 @@ type alias Process =
             tail: appended
         };
     });
+    var $elm$core$Bitwise$and = _Bitwise_and;
+    var $elm$core$Bitwise$shiftRightZfBy = _Bitwise_shiftRightZfBy;
+    var $elm$core$Array$bitMask = 4294967295 >>> 32 - $elm$core$Array$shiftStep;
+    var $elm$core$Basics$ge = _Utils_ge;
+    var $elm$core$Elm$JsArray$push = _JsArray_push;
+    var $elm$core$Elm$JsArray$singleton = _JsArray_singleton;
+    var $elm$core$Elm$JsArray$unsafeGet = _JsArray_unsafeGet;
+    var $elm$core$Elm$JsArray$unsafeSet = _JsArray_unsafeSet;
+    var $elm$core$Array$insertTailInTree = F4(function(shift, index, tail, tree) {
+        var pos = $elm$core$Array$bitMask & index >>> shift;
+        if (_Utils_cmp(pos, $elm$core$Elm$JsArray$length(tree)) > -1) {
+            if (shift === 5) return A2($elm$core$Elm$JsArray$push, $elm$core$Array$Leaf(tail), tree);
+            else {
+                var newSub = $elm$core$Array$SubTree(A4($elm$core$Array$insertTailInTree, shift - $elm$core$Array$shiftStep, index, tail, $elm$core$Elm$JsArray$empty));
+                return A2($elm$core$Elm$JsArray$push, newSub, tree);
+            }
+        } else {
+            var value = A2($elm$core$Elm$JsArray$unsafeGet, pos, tree);
+            if (value.$ === 'SubTree') {
+                var subTree = value.a;
+                var newSub = $elm$core$Array$SubTree(A4($elm$core$Array$insertTailInTree, shift - $elm$core$Array$shiftStep, index, tail, subTree));
+                return A3($elm$core$Elm$JsArray$unsafeSet, pos, newSub, tree);
+            } else {
+                var newSub = $elm$core$Array$SubTree(A4($elm$core$Array$insertTailInTree, shift - $elm$core$Array$shiftStep, index, tail, $elm$core$Elm$JsArray$singleton(value)));
+                return A3($elm$core$Elm$JsArray$unsafeSet, pos, newSub, tree);
+            }
+        }
+    });
+    var $elm$core$Bitwise$shiftLeftBy = _Bitwise_shiftLeftBy;
+    var $elm$core$Array$unsafeReplaceTail = F2(function(newTail, _v0) {
+        var len = _v0.a;
+        var startShift = _v0.b;
+        var tree = _v0.c;
+        var tail = _v0.d;
+        var originalTailLen = $elm$core$Elm$JsArray$length(tail);
+        var newTailLen = $elm$core$Elm$JsArray$length(newTail);
+        var newArrayLen = len + (newTailLen - originalTailLen);
+        if (_Utils_eq(newTailLen, $elm$core$Array$branchFactor)) {
+            var overflow = _Utils_cmp(newArrayLen >>> $elm$core$Array$shiftStep, 1 << startShift) > 0;
+            if (overflow) {
+                var newShift = startShift + $elm$core$Array$shiftStep;
+                var newTree = A4($elm$core$Array$insertTailInTree, newShift, len, newTail, $elm$core$Elm$JsArray$singleton($elm$core$Array$SubTree(tree)));
+                return A4($elm$core$Array$Array_elm_builtin, newArrayLen, newShift, newTree, $elm$core$Elm$JsArray$empty);
+            } else return A4($elm$core$Array$Array_elm_builtin, newArrayLen, startShift, A4($elm$core$Array$insertTailInTree, startShift, len, newTail, tree), $elm$core$Elm$JsArray$empty);
+        } else return A4($elm$core$Array$Array_elm_builtin, newArrayLen, startShift, tree, newTail);
+    });
+    var $elm$core$Array$appendHelpTree = F2(function(toAppend, array) {
+        var len = array.a;
+        var tree = array.c;
+        var tail = array.d;
+        var itemsToAppend = $elm$core$Elm$JsArray$length(toAppend);
+        var notAppended = $elm$core$Array$branchFactor - $elm$core$Elm$JsArray$length(tail) - itemsToAppend;
+        var appended = A3($elm$core$Elm$JsArray$appendN, $elm$core$Array$branchFactor, tail, toAppend);
+        var newArray = A2($elm$core$Array$unsafeReplaceTail, appended, array);
+        if (notAppended < 0) {
+            var nextTail = A3($elm$core$Elm$JsArray$slice, notAppended, itemsToAppend, toAppend);
+            return A2($elm$core$Array$unsafeReplaceTail, nextTail, newArray);
+        } else return newArray;
+    });
+    var $elm$core$Elm$JsArray$foldl = _JsArray_foldl;
+    var $elm$core$Array$builderFromArray = function(_v0) {
+        var len = _v0.a;
+        var tree = _v0.c;
+        var tail = _v0.d;
+        var helper = F2(function(node, acc) {
+            if (node.$ === 'SubTree') {
+                var subTree = node.a;
+                return A3($elm$core$Elm$JsArray$foldl, helper, acc, subTree);
+            } else return A2($elm$core$List$cons, node, acc);
+        });
+        return {
+            nodeList: A3($elm$core$Elm$JsArray$foldl, helper, _List_Nil, tree),
+            nodeListSize: len / $elm$core$Array$branchFactor | 0,
+            tail: tail
+        };
+    };
+    var $elm$core$Array$append = F2(function(a, _v0) {
+        var aTail = a.d;
+        var bLen = _v0.a;
+        var bTree = _v0.c;
+        var bTail = _v0.d;
+        if (_Utils_cmp(bLen, $elm$core$Array$branchFactor * 4) < 1) {
+            var foldHelper = F2(function(node, array) {
+                if (node.$ === 'SubTree') {
+                    var tree = node.a;
+                    return A3($elm$core$Elm$JsArray$foldl, foldHelper, array, tree);
+                } else {
+                    var leaf = node.a;
+                    return A2($elm$core$Array$appendHelpTree, leaf, array);
+                }
+            });
+            return A2($elm$core$Array$appendHelpTree, bTail, A3($elm$core$Elm$JsArray$foldl, foldHelper, a, bTree));
+        } else {
+            var foldHelper = F2(function(node, builder) {
+                if (node.$ === 'SubTree') {
+                    var tree = node.a;
+                    return A3($elm$core$Elm$JsArray$foldl, foldHelper, builder, tree);
+                } else {
+                    var leaf = node.a;
+                    return A2($elm$core$Array$appendHelpBuilder, leaf, builder);
+                }
+            });
+            return A2($elm$core$Array$builderToArray, true, A2($elm$core$Array$appendHelpBuilder, bTail, A3($elm$core$Elm$JsArray$foldl, foldHelper, $elm$core$Array$builderFromArray(a), bTree)));
+        }
+    });
     var $elm$core$List$drop = F2(function(n, list) {
         drop: while(true){
             if (n <= 0) return list;
@@ -5624,6 +4520,9 @@ type alias Process =
             }
         }
     });
+    var $elm$core$Array$tailIndex = function(len) {
+        return len >>> 5 << 5;
+    };
     var $elm$core$Array$sliceLeft = F2(function(from, array) {
         var len = array.a;
         var tree = array.c;
@@ -5695,7 +4594,6 @@ type alias Process =
             }
         }
     });
-    var $elm$core$Elm$JsArray$unsafeSet = _JsArray_unsafeSet;
     var $elm$core$Array$sliceTree = F3(function(shift, endIdx, tree) {
         var lastPos = $elm$core$Array$bitMask & endIdx >>> shift;
         var _v0 = A2($elm$core$Elm$JsArray$unsafeGet, lastPos, tree);
@@ -5731,1942 +4629,6 @@ type alias Process =
         var correctFrom = A2($elm$core$Array$translateIndex, from, array);
         return _Utils_cmp(correctFrom, correctTo) > 0 ? $elm$core$Array$empty : A2($elm$core$Array$sliceLeft, correctFrom, A2($elm$core$Array$sliceRight, correctTo, array));
     });
-    var $elm$browser$Debugger$History$viewRecentSnapshots = F3(function(selectedIndex, recentMessagesNum, snapshots) {
-        var messagesToFill = $elm$browser$Debugger$History$maxSnapshotSize - recentMessagesNum;
-        var arrayLength = $elm$core$Array$length(snapshots);
-        var snapshotsToRender = function() {
-            var _v0 = _Utils_Tuple2(A2($elm$core$Array$get, arrayLength - 2, snapshots), A2($elm$core$Array$get, arrayLength - 1, snapshots));
-            if (_v0.a.$ === 'Just' && _v0.b.$ === 'Just') {
-                var fillerSnapshot = _v0.a.a;
-                var recentSnapshot = _v0.b.a;
-                return $elm$core$Array$fromList(_List_fromArray([
-                    {
-                        messages: A3($elm$core$Array$slice, 0, messagesToFill, fillerSnapshot.messages),
-                        model: fillerSnapshot.model
-                    },
-                    recentSnapshot
-                ]));
-            } else return snapshots;
-        }();
-        var startingIndex = arrayLength * $elm$browser$Debugger$History$maxSnapshotSize - $elm$browser$Debugger$History$maxSnapshotSize - messagesToFill;
-        return A3($elm$browser$Debugger$History$viewAllSnapshots, selectedIndex, startingIndex, snapshotsToRender);
-    });
-    var $elm$browser$Debugger$History$view = F2(function(maybeIndex, _v0) {
-        var snapshots = _v0.snapshots;
-        var recent = _v0.recent;
-        var numMessages = _v0.numMessages;
-        var recentMessageStartIndex = numMessages - recent.numMessages;
-        var index = A2($elm$core$Maybe$withDefault, -1, maybeIndex);
-        var newStuff = A3($elm$html$Html$Keyed$node, 'div', _List_Nil, A3($elm$core$List$foldr, $elm$browser$Debugger$History$consMsg(index), _Utils_Tuple2(recentMessageStartIndex, _List_Nil), recent.messages).b);
-        var onlyRenderRecentMessages = !_Utils_eq(index, -1) || $elm$core$Array$length(snapshots) < 2;
-        var oldStuff = onlyRenderRecentMessages ? A4($elm$html$Html$Lazy$lazy3, $elm$browser$Debugger$History$viewAllSnapshots, index, 0, snapshots) : A4($elm$html$Html$Lazy$lazy3, $elm$browser$Debugger$History$viewRecentSnapshots, index, recent.numMessages, snapshots);
-        return A2($elm$html$Html$div, _List_fromArray([
-            $elm$html$Html$Attributes$id('elm-debugger-sidebar'),
-            A2($elm$html$Html$Attributes$style, 'width', '100%'),
-            A2($elm$html$Html$Attributes$style, 'overflow-y', 'auto'),
-            A2($elm$html$Html$Attributes$style, 'height', 'calc(100% - 72px)')
-        ]), A2($elm$core$List$cons, $elm$browser$Debugger$History$styles, A2($elm$core$List$cons, newStuff, A2($elm$core$List$cons, oldStuff, onlyRenderRecentMessages ? _List_Nil : _List_fromArray([
-            $elm$browser$Debugger$History$showMoreButton(numMessages)
-        ])))));
-    });
-    var $elm$browser$Debugger$Main$SwapLayout = {
-        $: 'SwapLayout'
-    };
-    var $elm$browser$Debugger$Main$toHistoryIcon = function(layout) {
-        if (layout.$ === 'Horizontal') return 'M13 1a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3h-10a3 3 0 0 1-3-3v-8a3 3 0 0 1 3-3z M13 3h-10a1 1 0 0 0-1 1v5h12v-5a1 1 0 0 0-1-1z M14 10h-12v2a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1z';
-        else return 'M0 4a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3h-10a3 3 0 0 1-3-3z M2 4v8a1 1 0 0 0 1 1h2v-10h-2a1 1 0 0 0-1 1z M6 3v10h7a1 1 0 0 0 1-1v-8a1 1 0 0 0-1-1z';
-    };
-    var $elm$browser$Debugger$Main$icon = function(path) {
-        return A4($elm$virtual_dom$VirtualDom$nodeNS, 'http://www.w3.org/2000/svg', 'svg', _List_fromArray([
-            A2($elm$virtual_dom$VirtualDom$attribute, 'viewBox', '0 0 16 16'),
-            A2($elm$virtual_dom$VirtualDom$attribute, 'xmlns', 'http://www.w3.org/2000/svg'),
-            A2($elm$virtual_dom$VirtualDom$attribute, 'fill', 'currentColor'),
-            A2($elm$virtual_dom$VirtualDom$attribute, 'width', '16px'),
-            A2($elm$virtual_dom$VirtualDom$attribute, 'height', '16px')
-        ]), _List_fromArray([
-            A4($elm$virtual_dom$VirtualDom$nodeNS, 'http://www.w3.org/2000/svg', 'path', _List_fromArray([
-                A2($elm$virtual_dom$VirtualDom$attribute, 'd', path)
-            ]), _List_Nil)
-        ]));
-    };
-    var $elm$browser$Debugger$Main$viewHistoryButton = F3(function(label, msg, path) {
-        return A2($elm$html$Html$button, _List_fromArray([
-            A2($elm$html$Html$Attributes$style, 'display', 'flex'),
-            A2($elm$html$Html$Attributes$style, 'flex-direction', 'row'),
-            A2($elm$html$Html$Attributes$style, 'align-items', 'center'),
-            A2($elm$html$Html$Attributes$style, 'background', 'none'),
-            A2($elm$html$Html$Attributes$style, 'border', 'none'),
-            A2($elm$html$Html$Attributes$style, 'color', 'inherit'),
-            A2($elm$html$Html$Attributes$style, 'cursor', 'pointer'),
-            $elm$html$Html$Events$onClick(msg)
-        ]), _List_fromArray([
-            $elm$browser$Debugger$Main$icon(path),
-            A2($elm$html$Html$span, _List_fromArray([
-                A2($elm$html$Html$Attributes$style, 'padding-left', '6px')
-            ]), _List_fromArray([
-                $elm$html$Html$text(label)
-            ]))
-        ]));
-    });
-    var $elm$browser$Debugger$Main$viewHistoryOptions = function(layout) {
-        return A2($elm$html$Html$div, _List_fromArray([
-            A2($elm$html$Html$Attributes$style, 'width', '100%'),
-            A2($elm$html$Html$Attributes$style, 'height', '36px'),
-            A2($elm$html$Html$Attributes$style, 'display', 'flex'),
-            A2($elm$html$Html$Attributes$style, 'flex-direction', 'row'),
-            A2($elm$html$Html$Attributes$style, 'align-items', 'center'),
-            A2($elm$html$Html$Attributes$style, 'justify-content', 'space-between'),
-            A2($elm$html$Html$Attributes$style, 'background-color', 'rgb(50, 50, 50)')
-        ]), _List_fromArray([
-            A3($elm$browser$Debugger$Main$viewHistoryButton, 'Swap Layout', $elm$browser$Debugger$Main$SwapLayout, $elm$browser$Debugger$Main$toHistoryIcon(layout)),
-            A2($elm$html$Html$div, _List_fromArray([
-                A2($elm$html$Html$Attributes$style, 'display', 'flex'),
-                A2($elm$html$Html$Attributes$style, 'flex-direction', 'row'),
-                A2($elm$html$Html$Attributes$style, 'align-items', 'center'),
-                A2($elm$html$Html$Attributes$style, 'justify-content', 'space-between')
-            ]), _List_fromArray([
-                A3($elm$browser$Debugger$Main$viewHistoryButton, 'Import', $elm$browser$Debugger$Main$Import, 'M5 1a1 1 0 0 1 0 2h-2a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1a1 1 0 0 1 2 0a3 3 0 0 1-3 3h-10a3 3 0 0 1-3-3v-8a3 3 0 0 1 3-3z M10 2a1 1 0 0 0 -2 0v6a1 1 0 0 0 1 1h6a1 1 0 0 0 0-2h-3.586l4.293-4.293a1 1 0 0 0-1.414-1.414l-4.293 4.293z'),
-                A3($elm$browser$Debugger$Main$viewHistoryButton, 'Export', $elm$browser$Debugger$Main$Export, 'M5 1a1 1 0 0 1 0 2h-2a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1 a1 1 0 0 1 2 0a3 3 0 0 1-3 3h-10a3 3 0 0 1-3-3v-8a3 3 0 0 1 3-3z M9 3a1 1 0 1 1 0-2h6a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-3.586l-5.293 5.293 a1 1 0 0 1-1.414-1.414l5.293 -5.293z')
-            ]))
-        ]));
-    };
-    var $elm$browser$Debugger$Main$SliderJump = function(a) {
-        return {
-            $: 'SliderJump',
-            a: a
-        };
-    };
-    var $elm$core$Basics$composeR = F3(function(f, g, x) {
-        return g(f(x));
-    });
-    var $elm$html$Html$input = _VirtualDom_node('input');
-    var $elm$browser$Debugger$Main$isPlaying = function(maybeIndex) {
-        if (maybeIndex.$ === 'Nothing') return true;
-        else return false;
-    };
-    var $elm$html$Html$Attributes$max = $elm$html$Html$Attributes$stringProperty('max');
-    var $elm$html$Html$Attributes$min = $elm$html$Html$Attributes$stringProperty('min');
-    var $elm$html$Html$Events$alwaysStop = function(x) {
-        return _Utils_Tuple2(x, true);
-    };
-    var $elm$virtual_dom$VirtualDom$MayStopPropagation = function(a) {
-        return {
-            $: 'MayStopPropagation',
-            a: a
-        };
-    };
-    var $elm$html$Html$Events$stopPropagationOn = F2(function(event, decoder) {
-        return A2($elm$virtual_dom$VirtualDom$on, event, $elm$virtual_dom$VirtualDom$MayStopPropagation(decoder));
-    });
-    var $elm$json$Json$Decode$string = _Json_decodeString;
-    var $elm$html$Html$Events$targetValue = A2($elm$json$Json$Decode$at, _List_fromArray([
-        'target',
-        'value'
-    ]), $elm$json$Json$Decode$string);
-    var $elm$html$Html$Events$onInput = function(tagger) {
-        return A2($elm$html$Html$Events$stopPropagationOn, 'input', A2($elm$json$Json$Decode$map, $elm$html$Html$Events$alwaysStop, A2($elm$json$Json$Decode$map, tagger, $elm$html$Html$Events$targetValue)));
-    };
-    var $elm$core$String$toInt = _String_toInt;
-    var $elm$html$Html$Attributes$type_ = $elm$html$Html$Attributes$stringProperty('type');
-    var $elm$html$Html$Attributes$value = $elm$html$Html$Attributes$stringProperty('value');
-    var $elm$browser$Debugger$Main$viewPlayButton = function(playing) {
-        return A2($elm$html$Html$button, _List_fromArray([
-            A2($elm$html$Html$Attributes$style, 'background', '#1293D8'),
-            A2($elm$html$Html$Attributes$style, 'border', 'none'),
-            A2($elm$html$Html$Attributes$style, 'color', 'white'),
-            A2($elm$html$Html$Attributes$style, 'cursor', 'pointer'),
-            A2($elm$html$Html$Attributes$style, 'width', '36px'),
-            A2($elm$html$Html$Attributes$style, 'height', '36px'),
-            $elm$html$Html$Events$onClick($elm$browser$Debugger$Main$Resume)
-        ]), _List_fromArray([
-            playing ? $elm$browser$Debugger$Main$icon('M2 2h4v12h-4v-12z M10 2h4v12h-4v-12z') : $elm$browser$Debugger$Main$icon('M2 2l12 7l-12 7z')
-        ]));
-    };
-    var $elm$browser$Debugger$Main$viewHistorySlider = F2(function(history, maybeIndex) {
-        var lastIndex = $elm$browser$Debugger$History$size(history) - 1;
-        var selectedIndex = A2($elm$core$Maybe$withDefault, lastIndex, maybeIndex);
-        return A2($elm$html$Html$div, _List_fromArray([
-            A2($elm$html$Html$Attributes$style, 'display', 'flex'),
-            A2($elm$html$Html$Attributes$style, 'flex-direction', 'row'),
-            A2($elm$html$Html$Attributes$style, 'align-items', 'center'),
-            A2($elm$html$Html$Attributes$style, 'width', '100%'),
-            A2($elm$html$Html$Attributes$style, 'height', '36px'),
-            A2($elm$html$Html$Attributes$style, 'background-color', 'rgb(50, 50, 50)')
-        ]), _List_fromArray([
-            A2($elm$html$Html$Lazy$lazy, $elm$browser$Debugger$Main$viewPlayButton, $elm$browser$Debugger$Main$isPlaying(maybeIndex)),
-            A2($elm$html$Html$input, _List_fromArray([
-                $elm$html$Html$Attributes$type_('range'),
-                A2($elm$html$Html$Attributes$style, 'width', 'calc(100% - 56px)'),
-                A2($elm$html$Html$Attributes$style, 'height', '36px'),
-                A2($elm$html$Html$Attributes$style, 'margin', '0 10px'),
-                $elm$html$Html$Attributes$min('0'),
-                $elm$html$Html$Attributes$max($elm$core$String$fromInt(lastIndex)),
-                $elm$html$Html$Attributes$value($elm$core$String$fromInt(selectedIndex)),
-                $elm$html$Html$Events$onInput(A2($elm$core$Basics$composeR, $elm$core$String$toInt, A2($elm$core$Basics$composeR, $elm$core$Maybe$withDefault(lastIndex), $elm$browser$Debugger$Main$SliderJump)))
-            ]), _List_Nil)
-        ]));
-    });
-    var $elm$browser$Debugger$Main$viewHistory = F3(function(maybeIndex, history, layout) {
-        var block = $elm$browser$Debugger$Main$toMouseBlocker(layout);
-        var _v0 = $elm$browser$Debugger$Main$toHistoryPercents(layout);
-        var w = _v0.a;
-        var h = _v0.b;
-        return A2($elm$html$Html$div, _List_fromArray([
-            A2($elm$html$Html$Attributes$style, 'width', w),
-            A2($elm$html$Html$Attributes$style, 'height', h),
-            A2($elm$html$Html$Attributes$style, 'display', 'flex'),
-            A2($elm$html$Html$Attributes$style, 'flex-direction', 'column'),
-            A2($elm$html$Html$Attributes$style, 'color', '#DDDDDD'),
-            A2($elm$html$Html$Attributes$style, 'background-color', 'rgb(61, 61, 61)'),
-            A2($elm$html$Html$Attributes$style, 'pointer-events', block),
-            A2($elm$html$Html$Attributes$style, 'user-select', block)
-        ]), _List_fromArray([
-            A2($elm$browser$Debugger$Main$viewHistorySlider, history, maybeIndex),
-            A2($elm$html$Html$map, $elm$browser$Debugger$Main$Jump, A2($elm$browser$Debugger$History$view, maybeIndex, history)),
-            A2($elm$html$Html$Lazy$lazy, $elm$browser$Debugger$Main$viewHistoryOptions, layout)
-        ]));
-    });
-    var $elm$browser$Debugger$Main$popoutView = function(model) {
-        var maybeIndex = function() {
-            var _v0 = model.state;
-            if (_v0.$ === 'Running') return $elm$core$Maybe$Nothing;
-            else {
-                var index = _v0.a;
-                return $elm$core$Maybe$Just(index);
-            }
-        }();
-        var historyToRender = $elm$browser$Debugger$Main$cachedHistory(model);
-        return A3($elm$html$Html$node, 'body', _Utils_ap($elm$browser$Debugger$Main$toDragListeners(model.layout), _List_fromArray([
-            A2($elm$html$Html$Attributes$style, 'margin', '0'),
-            A2($elm$html$Html$Attributes$style, 'padding', '0'),
-            A2($elm$html$Html$Attributes$style, 'width', '100%'),
-            A2($elm$html$Html$Attributes$style, 'height', '100%'),
-            A2($elm$html$Html$Attributes$style, 'font-family', 'monospace'),
-            A2($elm$html$Html$Attributes$style, 'display', 'flex'),
-            A2($elm$html$Html$Attributes$style, 'flex-direction', $elm$browser$Debugger$Main$toFlexDirection(model.layout))
-        ])), _List_fromArray([
-            A3($elm$browser$Debugger$Main$viewHistory, maybeIndex, historyToRender, model.layout),
-            $elm$browser$Debugger$Main$viewDragZone(model.layout),
-            A3($elm$browser$Debugger$Main$viewExpando, model.expandoMsg, model.expandoModel, model.layout)
-        ]));
-    };
-    var $elm$browser$Debugger$Overlay$BlockAll = {
-        $: 'BlockAll'
-    };
-    var $elm$browser$Debugger$Overlay$toBlockerType = F2(function(isPaused, state) {
-        switch(state.$){
-            case 'None':
-                return isPaused ? $elm$browser$Debugger$Overlay$BlockAll : $elm$browser$Debugger$Overlay$BlockNone;
-            case 'BadMetadata':
-                return $elm$browser$Debugger$Overlay$BlockMost;
-            case 'BadImport':
-                return $elm$browser$Debugger$Overlay$BlockMost;
-            default:
-                return $elm$browser$Debugger$Overlay$BlockMost;
-        }
-    });
-    var $elm$browser$Debugger$Main$toBlockerType = function(model) {
-        return A2($elm$browser$Debugger$Overlay$toBlockerType, $elm$browser$Debugger$Main$isPaused(model.state), model.overlay);
-    };
-    var $elm$browser$Debugger$Main$Horizontal = F3(function(a, b, c) {
-        return {
-            $: 'Horizontal',
-            a: a,
-            b: b,
-            c: c
-        };
-    });
-    var $elm$browser$Debugger$Main$Running = function(a) {
-        return {
-            $: 'Running',
-            a: a
-        };
-    };
-    var $elm$browser$Debugger$Main$Static = {
-        $: 'Static'
-    };
-    var $elm$browser$Debugger$Metadata$Error = F2(function(message, problems) {
-        return {
-            message: message,
-            problems: problems
-        };
-    });
-    var $elm$json$Json$Decode$decodeValue = _Json_run;
-    var $elm$browser$Debugger$Metadata$Metadata = F2(function(versions, types) {
-        return {
-            types: types,
-            versions: versions
-        };
-    });
-    var $elm$browser$Debugger$Metadata$Types = F3(function(message, aliases, unions) {
-        return {
-            aliases: aliases,
-            message: message,
-            unions: unions
-        };
-    });
-    var $elm$browser$Debugger$Metadata$Alias = F2(function(args, tipe) {
-        return {
-            args: args,
-            tipe: tipe
-        };
-    });
-    var $elm$json$Json$Decode$list = _Json_decodeList;
-    var $elm$browser$Debugger$Metadata$decodeAlias = A3($elm$json$Json$Decode$map2, $elm$browser$Debugger$Metadata$Alias, A2($elm$json$Json$Decode$field, 'args', $elm$json$Json$Decode$list($elm$json$Json$Decode$string)), A2($elm$json$Json$Decode$field, 'type', $elm$json$Json$Decode$string));
-    var $elm$browser$Debugger$Metadata$Union = F2(function(args, tags) {
-        return {
-            args: args,
-            tags: tags
-        };
-    });
-    var $elm$core$Dict$fromList = function(assocs) {
-        return A3($elm$core$List$foldl, F2(function(_v0, dict) {
-            var key = _v0.a;
-            var value = _v0.b;
-            return A3($elm$core$Dict$insert, key, value, dict);
-        }), $elm$core$Dict$empty, assocs);
-    };
-    var $elm$json$Json$Decode$keyValuePairs = _Json_decodeKeyValuePairs;
-    var $elm$json$Json$Decode$dict = function(decoder) {
-        return A2($elm$json$Json$Decode$map, $elm$core$Dict$fromList, $elm$json$Json$Decode$keyValuePairs(decoder));
-    };
-    var $elm$browser$Debugger$Metadata$decodeUnion = A3($elm$json$Json$Decode$map2, $elm$browser$Debugger$Metadata$Union, A2($elm$json$Json$Decode$field, 'args', $elm$json$Json$Decode$list($elm$json$Json$Decode$string)), A2($elm$json$Json$Decode$field, 'tags', $elm$json$Json$Decode$dict($elm$json$Json$Decode$list($elm$json$Json$Decode$string))));
-    var $elm$json$Json$Decode$map3 = _Json_map3;
-    var $elm$browser$Debugger$Metadata$decodeTypes = A4($elm$json$Json$Decode$map3, $elm$browser$Debugger$Metadata$Types, A2($elm$json$Json$Decode$field, 'message', $elm$json$Json$Decode$string), A2($elm$json$Json$Decode$field, 'aliases', $elm$json$Json$Decode$dict($elm$browser$Debugger$Metadata$decodeAlias)), A2($elm$json$Json$Decode$field, 'unions', $elm$json$Json$Decode$dict($elm$browser$Debugger$Metadata$decodeUnion)));
-    var $elm$browser$Debugger$Metadata$Versions = function(elm) {
-        return {
-            elm: elm
-        };
-    };
-    var $elm$browser$Debugger$Metadata$decodeVersions = A2($elm$json$Json$Decode$map, $elm$browser$Debugger$Metadata$Versions, A2($elm$json$Json$Decode$field, 'elm', $elm$json$Json$Decode$string));
-    var $elm$browser$Debugger$Metadata$decoder = A3($elm$json$Json$Decode$map2, $elm$browser$Debugger$Metadata$Metadata, A2($elm$json$Json$Decode$field, 'versions', $elm$browser$Debugger$Metadata$decodeVersions), A2($elm$json$Json$Decode$field, 'types', $elm$browser$Debugger$Metadata$decodeTypes));
-    var $elm$browser$Debugger$Metadata$ProblemType = F2(function(name, problems) {
-        return {
-            name: name,
-            problems: problems
-        };
-    });
-    var $elm$core$List$maybeCons = F3(function(f, mx, xs) {
-        var _v0 = f(mx);
-        if (_v0.$ === 'Just') {
-            var x = _v0.a;
-            return A2($elm$core$List$cons, x, xs);
-        } else return xs;
-    });
-    var $elm$core$List$filterMap = F2(function(f, xs) {
-        return A3($elm$core$List$foldr, $elm$core$List$maybeCons(f), _List_Nil, xs);
-    });
-    var $elm$core$String$contains = _String_contains;
-    var $elm$browser$Debugger$Metadata$hasProblem = F2(function(tipe, _v0) {
-        var problem = _v0.a;
-        var token = _v0.b;
-        return A2($elm$core$String$contains, token, tipe) ? $elm$core$Maybe$Just(problem) : $elm$core$Maybe$Nothing;
-    });
-    var $elm$browser$Debugger$Metadata$Decoder = {
-        $: 'Decoder'
-    };
-    var $elm$browser$Debugger$Metadata$Function = {
-        $: 'Function'
-    };
-    var $elm$browser$Debugger$Metadata$Process = {
-        $: 'Process'
-    };
-    var $elm$browser$Debugger$Metadata$Program = {
-        $: 'Program'
-    };
-    var $elm$browser$Debugger$Metadata$Request = {
-        $: 'Request'
-    };
-    var $elm$browser$Debugger$Metadata$Socket = {
-        $: 'Socket'
-    };
-    var $elm$browser$Debugger$Metadata$Task = {
-        $: 'Task'
-    };
-    var $elm$browser$Debugger$Metadata$VirtualDom = {
-        $: 'VirtualDom'
-    };
-    var $elm$browser$Debugger$Metadata$problemTable = _List_fromArray([
-        _Utils_Tuple2($elm$browser$Debugger$Metadata$Function, '->'),
-        _Utils_Tuple2($elm$browser$Debugger$Metadata$Decoder, 'Json.Decode.Decoder'),
-        _Utils_Tuple2($elm$browser$Debugger$Metadata$Task, 'Task.Task'),
-        _Utils_Tuple2($elm$browser$Debugger$Metadata$Process, 'Process.Id'),
-        _Utils_Tuple2($elm$browser$Debugger$Metadata$Socket, 'WebSocket.LowLevel.WebSocket'),
-        _Utils_Tuple2($elm$browser$Debugger$Metadata$Request, 'Http.Request'),
-        _Utils_Tuple2($elm$browser$Debugger$Metadata$Program, 'Platform.Program'),
-        _Utils_Tuple2($elm$browser$Debugger$Metadata$VirtualDom, 'VirtualDom.Node'),
-        _Utils_Tuple2($elm$browser$Debugger$Metadata$VirtualDom, 'VirtualDom.Attribute')
-    ]);
-    var $elm$browser$Debugger$Metadata$findProblems = function(tipe) {
-        return A2($elm$core$List$filterMap, $elm$browser$Debugger$Metadata$hasProblem(tipe), $elm$browser$Debugger$Metadata$problemTable);
-    };
-    var $elm$browser$Debugger$Metadata$collectBadAliases = F3(function(name, _v0, list) {
-        var tipe = _v0.tipe;
-        var _v1 = $elm$browser$Debugger$Metadata$findProblems(tipe);
-        if (!_v1.b) return list;
-        else {
-            var problems = _v1;
-            return A2($elm$core$List$cons, A2($elm$browser$Debugger$Metadata$ProblemType, name, problems), list);
-        }
-    });
-    var $elm$core$List$append = F2(function(xs, ys) {
-        if (!ys.b) return xs;
-        else return A3($elm$core$List$foldr, $elm$core$List$cons, ys, xs);
-    });
-    var $elm$core$List$concat = function(lists) {
-        return A3($elm$core$List$foldr, $elm$core$List$append, _List_Nil, lists);
-    };
-    var $elm$core$List$concatMap = F2(function(f, list) {
-        return $elm$core$List$concat(A2($elm$core$List$map, f, list));
-    });
-    var $elm$core$Dict$values = function(dict) {
-        return A3($elm$core$Dict$foldr, F3(function(key, value, valueList) {
-            return A2($elm$core$List$cons, value, valueList);
-        }), _List_Nil, dict);
-    };
-    var $elm$browser$Debugger$Metadata$collectBadUnions = F3(function(name, _v0, list) {
-        var tags = _v0.tags;
-        var _v1 = A2($elm$core$List$concatMap, $elm$browser$Debugger$Metadata$findProblems, $elm$core$List$concat($elm$core$Dict$values(tags)));
-        if (!_v1.b) return list;
-        else {
-            var problems = _v1;
-            return A2($elm$core$List$cons, A2($elm$browser$Debugger$Metadata$ProblemType, name, problems), list);
-        }
-    });
-    var $elm$core$Dict$foldl = F3(function(func, acc, dict) {
-        foldl: while(true){
-            if (dict.$ === 'RBEmpty_elm_builtin') return acc;
-            else {
-                var key = dict.b;
-                var value = dict.c;
-                var left = dict.d;
-                var right = dict.e;
-                var $temp$func = func, $temp$acc = A3(func, key, value, A3($elm$core$Dict$foldl, func, acc, left)), $temp$dict = right;
-                func = $temp$func;
-                acc = $temp$acc;
-                dict = $temp$dict;
-                continue foldl;
-            }
-        }
-    });
-    var $elm$browser$Debugger$Metadata$isPortable = function(_v0) {
-        var types = _v0.types;
-        var badAliases = A3($elm$core$Dict$foldl, $elm$browser$Debugger$Metadata$collectBadAliases, _List_Nil, types.aliases);
-        var _v1 = A3($elm$core$Dict$foldl, $elm$browser$Debugger$Metadata$collectBadUnions, badAliases, types.unions);
-        if (!_v1.b) return $elm$core$Maybe$Nothing;
-        else {
-            var problems = _v1;
-            return $elm$core$Maybe$Just(A2($elm$browser$Debugger$Metadata$Error, types.message, problems));
-        }
-    };
-    var $elm$browser$Debugger$Metadata$decode = function(value) {
-        var _v0 = A2($elm$json$Json$Decode$decodeValue, $elm$browser$Debugger$Metadata$decoder, value);
-        if (_v0.$ === 'Err') return $elm$core$Result$Err(A2($elm$browser$Debugger$Metadata$Error, 'The compiler is generating bad metadata. This is a compiler bug!', _List_Nil));
-        else {
-            var metadata = _v0.a;
-            var _v1 = $elm$browser$Debugger$Metadata$isPortable(metadata);
-            if (_v1.$ === 'Nothing') return $elm$core$Result$Ok(metadata);
-            else {
-                var error = _v1.a;
-                return $elm$core$Result$Err(error);
-            }
-        }
-    };
-    var $elm$browser$Debugger$History$History = F3(function(snapshots, recent, numMessages) {
-        return {
-            numMessages: numMessages,
-            recent: recent,
-            snapshots: snapshots
-        };
-    });
-    var $elm$browser$Debugger$History$RecentHistory = F3(function(model, messages, numMessages) {
-        return {
-            messages: messages,
-            model: model,
-            numMessages: numMessages
-        };
-    });
-    var $elm$browser$Debugger$History$empty = function(model) {
-        return A3($elm$browser$Debugger$History$History, $elm$core$Array$empty, A3($elm$browser$Debugger$History$RecentHistory, model, _List_Nil, 0), 0);
-    };
-    var $elm$core$Dict$map = F2(function(func, dict) {
-        if (dict.$ === 'RBEmpty_elm_builtin') return $elm$core$Dict$RBEmpty_elm_builtin;
-        else {
-            var color = dict.a;
-            var key = dict.b;
-            var value = dict.c;
-            var left = dict.d;
-            var right = dict.e;
-            return A5($elm$core$Dict$RBNode_elm_builtin, color, key, A2(func, key, value), A2($elm$core$Dict$map, func, left), A2($elm$core$Dict$map, func, right));
-        }
-    });
-    var $elm$core$Dict$sizeHelp = F2(function(n, dict) {
-        sizeHelp: while(true){
-            if (dict.$ === 'RBEmpty_elm_builtin') return n;
-            else {
-                var left = dict.d;
-                var right = dict.e;
-                var $temp$n = A2($elm$core$Dict$sizeHelp, n + 1, right), $temp$dict = left;
-                n = $temp$n;
-                dict = $temp$dict;
-                continue sizeHelp;
-            }
-        }
-    });
-    var $elm$core$Dict$size = function(dict) {
-        return A2($elm$core$Dict$sizeHelp, 0, dict);
-    };
-    var $elm$browser$Debugger$Expando$initHelp = F2(function(isOuter, expando) {
-        switch(expando.$){
-            case 'S':
-                return expando;
-            case 'Primitive':
-                return expando;
-            case 'Sequence':
-                var seqType = expando.a;
-                var isClosed = expando.b;
-                var items = expando.c;
-                return isOuter ? A3($elm$browser$Debugger$Expando$Sequence, seqType, false, A2($elm$core$List$map, $elm$browser$Debugger$Expando$initHelp(false), items)) : $elm$core$List$length(items) <= 8 ? A3($elm$browser$Debugger$Expando$Sequence, seqType, false, items) : expando;
-            case 'Dictionary':
-                var isClosed = expando.a;
-                var keyValuePairs = expando.b;
-                return isOuter ? A2($elm$browser$Debugger$Expando$Dictionary, false, A2($elm$core$List$map, function(_v1) {
-                    var k = _v1.a;
-                    var v = _v1.b;
-                    return _Utils_Tuple2(k, A2($elm$browser$Debugger$Expando$initHelp, false, v));
-                }, keyValuePairs)) : $elm$core$List$length(keyValuePairs) <= 8 ? A2($elm$browser$Debugger$Expando$Dictionary, false, keyValuePairs) : expando;
-            case 'Record':
-                var isClosed = expando.a;
-                var entries = expando.b;
-                return isOuter ? A2($elm$browser$Debugger$Expando$Record, false, A2($elm$core$Dict$map, F2(function(_v2, v) {
-                    return A2($elm$browser$Debugger$Expando$initHelp, false, v);
-                }), entries)) : $elm$core$Dict$size(entries) <= 4 ? A2($elm$browser$Debugger$Expando$Record, false, entries) : expando;
-            default:
-                var maybeName = expando.a;
-                var isClosed = expando.b;
-                var args = expando.c;
-                return isOuter ? A3($elm$browser$Debugger$Expando$Constructor, maybeName, false, A2($elm$core$List$map, $elm$browser$Debugger$Expando$initHelp(false), args)) : $elm$core$List$length(args) <= 4 ? A3($elm$browser$Debugger$Expando$Constructor, maybeName, false, args) : expando;
-        }
-    });
-    var $elm$browser$Debugger$Expando$init = function(value) {
-        return A2($elm$browser$Debugger$Expando$initHelp, true, _Debugger_init(value));
-    };
-    var $elm$core$Platform$Cmd$map = _Platform_map;
-    var $elm$browser$Debugger$Overlay$None = {
-        $: 'None'
-    };
-    var $elm$browser$Debugger$Overlay$none = $elm$browser$Debugger$Overlay$None;
-    var $elm$browser$Debugger$Main$wrapInit = F4(function(metadata, popout, init, flags) {
-        var _v0 = init(flags);
-        var userModel = _v0.a;
-        var userCommands = _v0.b;
-        return _Utils_Tuple2({
-            expandoModel: $elm$browser$Debugger$Expando$init(userModel),
-            expandoMsg: $elm$browser$Debugger$Expando$init(_Utils_Tuple0),
-            history: $elm$browser$Debugger$History$empty(userModel),
-            layout: A3($elm$browser$Debugger$Main$Horizontal, $elm$browser$Debugger$Main$Static, 0.3, 0.5),
-            metadata: $elm$browser$Debugger$Metadata$decode(metadata),
-            overlay: $elm$browser$Debugger$Overlay$none,
-            popout: popout,
-            state: $elm$browser$Debugger$Main$Running(userModel)
-        }, A2($elm$core$Platform$Cmd$map, $elm$browser$Debugger$Main$UserMsg, userCommands));
-    });
-    var $elm$browser$Debugger$Main$getLatestModel = function(state) {
-        if (state.$ === 'Running') {
-            var model = state.a;
-            return model;
-        } else {
-            var model = state.c;
-            return model;
-        }
-    };
-    var $elm$core$Platform$Sub$map = _Platform_map;
-    var $elm$browser$Debugger$Main$wrapSubs = F2(function(subscriptions, model) {
-        return A2($elm$core$Platform$Sub$map, $elm$browser$Debugger$Main$UserMsg, subscriptions($elm$browser$Debugger$Main$getLatestModel(model.state)));
-    });
-    var $elm$browser$Debugger$Main$Moving = {
-        $: 'Moving'
-    };
-    var $elm$browser$Debugger$Main$Paused = F5(function(a, b, c, d, e) {
-        return {
-            $: 'Paused',
-            a: a,
-            b: b,
-            c: c,
-            d: d,
-            e: e
-        };
-    });
-    var $elm$browser$Debugger$History$Snapshot = F2(function(model, messages) {
-        return {
-            messages: messages,
-            model: model
-        };
-    });
-    var $elm$browser$Debugger$History$addRecent = F3(function(msg, newModel, _v0) {
-        var model = _v0.model;
-        var messages = _v0.messages;
-        var numMessages = _v0.numMessages;
-        return _Utils_eq(numMessages, $elm$browser$Debugger$History$maxSnapshotSize) ? _Utils_Tuple2($elm$core$Maybe$Just(A2($elm$browser$Debugger$History$Snapshot, model, $elm$core$Array$fromList(messages))), A3($elm$browser$Debugger$History$RecentHistory, newModel, _List_fromArray([
-            msg
-        ]), 1)) : _Utils_Tuple2($elm$core$Maybe$Nothing, A3($elm$browser$Debugger$History$RecentHistory, model, A2($elm$core$List$cons, msg, messages), numMessages + 1));
-    });
-    var $elm$core$Elm$JsArray$push = _JsArray_push;
-    var $elm$core$Elm$JsArray$singleton = _JsArray_singleton;
-    var $elm$core$Array$insertTailInTree = F4(function(shift, index, tail, tree) {
-        var pos = $elm$core$Array$bitMask & index >>> shift;
-        if (_Utils_cmp(pos, $elm$core$Elm$JsArray$length(tree)) > -1) {
-            if (shift === 5) return A2($elm$core$Elm$JsArray$push, $elm$core$Array$Leaf(tail), tree);
-            else {
-                var newSub = $elm$core$Array$SubTree(A4($elm$core$Array$insertTailInTree, shift - $elm$core$Array$shiftStep, index, tail, $elm$core$Elm$JsArray$empty));
-                return A2($elm$core$Elm$JsArray$push, newSub, tree);
-            }
-        } else {
-            var value = A2($elm$core$Elm$JsArray$unsafeGet, pos, tree);
-            if (value.$ === 'SubTree') {
-                var subTree = value.a;
-                var newSub = $elm$core$Array$SubTree(A4($elm$core$Array$insertTailInTree, shift - $elm$core$Array$shiftStep, index, tail, subTree));
-                return A3($elm$core$Elm$JsArray$unsafeSet, pos, newSub, tree);
-            } else {
-                var newSub = $elm$core$Array$SubTree(A4($elm$core$Array$insertTailInTree, shift - $elm$core$Array$shiftStep, index, tail, $elm$core$Elm$JsArray$singleton(value)));
-                return A3($elm$core$Elm$JsArray$unsafeSet, pos, newSub, tree);
-            }
-        }
-    });
-    var $elm$core$Array$unsafeReplaceTail = F2(function(newTail, _v0) {
-        var len = _v0.a;
-        var startShift = _v0.b;
-        var tree = _v0.c;
-        var tail = _v0.d;
-        var originalTailLen = $elm$core$Elm$JsArray$length(tail);
-        var newTailLen = $elm$core$Elm$JsArray$length(newTail);
-        var newArrayLen = len + (newTailLen - originalTailLen);
-        if (_Utils_eq(newTailLen, $elm$core$Array$branchFactor)) {
-            var overflow = _Utils_cmp(newArrayLen >>> $elm$core$Array$shiftStep, 1 << startShift) > 0;
-            if (overflow) {
-                var newShift = startShift + $elm$core$Array$shiftStep;
-                var newTree = A4($elm$core$Array$insertTailInTree, newShift, len, newTail, $elm$core$Elm$JsArray$singleton($elm$core$Array$SubTree(tree)));
-                return A4($elm$core$Array$Array_elm_builtin, newArrayLen, newShift, newTree, $elm$core$Elm$JsArray$empty);
-            } else return A4($elm$core$Array$Array_elm_builtin, newArrayLen, startShift, A4($elm$core$Array$insertTailInTree, startShift, len, newTail, tree), $elm$core$Elm$JsArray$empty);
-        } else return A4($elm$core$Array$Array_elm_builtin, newArrayLen, startShift, tree, newTail);
-    });
-    var $elm$core$Array$push = F2(function(a, array) {
-        var tail = array.d;
-        return A2($elm$core$Array$unsafeReplaceTail, A2($elm$core$Elm$JsArray$push, a, tail), array);
-    });
-    var $elm$browser$Debugger$History$add = F3(function(msg, model, _v0) {
-        var snapshots = _v0.snapshots;
-        var recent = _v0.recent;
-        var numMessages = _v0.numMessages;
-        var _v1 = A3($elm$browser$Debugger$History$addRecent, msg, model, recent);
-        if (_v1.a.$ === 'Just') {
-            var snapshot = _v1.a.a;
-            var newRecent = _v1.b;
-            return A3($elm$browser$Debugger$History$History, A2($elm$core$Array$push, snapshot, snapshots), newRecent, numMessages + 1);
-        } else {
-            var _v2 = _v1.a;
-            var newRecent = _v1.b;
-            return A3($elm$browser$Debugger$History$History, snapshots, newRecent, numMessages + 1);
-        }
-    });
-    var $elm$core$Basics$always = F2(function(a, _v0) {
-        return a;
-    });
-    var $elm$browser$Debugger$Overlay$BadImport = function(a) {
-        return {
-            $: 'BadImport',
-            a: a
-        };
-    };
-    var $elm$browser$Debugger$Overlay$RiskyImport = F2(function(a, b) {
-        return {
-            $: 'RiskyImport',
-            a: a,
-            b: b
-        };
-    });
-    var $elm$browser$Debugger$Report$VersionChanged = F2(function(a, b) {
-        return {
-            $: 'VersionChanged',
-            a: a,
-            b: b
-        };
-    });
-    var $elm$browser$Debugger$Report$MessageChanged = F2(function(a, b) {
-        return {
-            $: 'MessageChanged',
-            a: a,
-            b: b
-        };
-    });
-    var $elm$browser$Debugger$Report$SomethingChanged = function(a) {
-        return {
-            $: 'SomethingChanged',
-            a: a
-        };
-    };
-    var $elm$browser$Debugger$Report$AliasChange = function(a) {
-        return {
-            $: 'AliasChange',
-            a: a
-        };
-    };
-    var $elm$browser$Debugger$Metadata$checkAlias = F4(function(name, old, _new, changes) {
-        return _Utils_eq(old.tipe, _new.tipe) && _Utils_eq(old.args, _new.args) ? changes : A2($elm$core$List$cons, $elm$browser$Debugger$Report$AliasChange(name), changes);
-    });
-    var $elm$browser$Debugger$Report$UnionChange = F2(function(a, b) {
-        return {
-            $: 'UnionChange',
-            a: a,
-            b: b
-        };
-    });
-    var $elm$browser$Debugger$Metadata$addTag = F3(function(tag, _v0, changes) {
-        return _Utils_update(changes, {
-            added: A2($elm$core$List$cons, tag, changes.added)
-        });
-    });
-    var $elm$browser$Debugger$Metadata$checkTag = F4(function(tag, old, _new, changes) {
-        return _Utils_eq(old, _new) ? changes : _Utils_update(changes, {
-            changed: A2($elm$core$List$cons, tag, changes.changed)
-        });
-    });
-    var $elm$browser$Debugger$Report$TagChanges = F4(function(removed, changed, added, argsMatch) {
-        return {
-            added: added,
-            argsMatch: argsMatch,
-            changed: changed,
-            removed: removed
-        };
-    });
-    var $elm$browser$Debugger$Report$emptyTagChanges = function(argsMatch) {
-        return A4($elm$browser$Debugger$Report$TagChanges, _List_Nil, _List_Nil, _List_Nil, argsMatch);
-    };
-    var $elm$browser$Debugger$Report$hasTagChanges = function(tagChanges) {
-        return _Utils_eq(tagChanges, A4($elm$browser$Debugger$Report$TagChanges, _List_Nil, _List_Nil, _List_Nil, true));
-    };
-    var $elm$core$Dict$merge = F6(function(leftStep, bothStep, rightStep, leftDict, rightDict, initialResult) {
-        var stepState = F3(function(rKey, rValue, _v0) {
-            stepState: while(true){
-                var list = _v0.a;
-                var result = _v0.b;
-                if (!list.b) return _Utils_Tuple2(list, A3(rightStep, rKey, rValue, result));
-                else {
-                    var _v2 = list.a;
-                    var lKey = _v2.a;
-                    var lValue = _v2.b;
-                    var rest = list.b;
-                    if (_Utils_cmp(lKey, rKey) < 0) {
-                        var $temp$rKey = rKey, $temp$rValue = rValue, $temp$_v0 = _Utils_Tuple2(rest, A3(leftStep, lKey, lValue, result));
-                        rKey = $temp$rKey;
-                        rValue = $temp$rValue;
-                        _v0 = $temp$_v0;
-                        continue stepState;
-                    } else {
-                        if (_Utils_cmp(lKey, rKey) > 0) return _Utils_Tuple2(list, A3(rightStep, rKey, rValue, result));
-                        else return _Utils_Tuple2(rest, A4(bothStep, lKey, lValue, rValue, result));
-                    }
-                }
-            }
-        });
-        var _v3 = A3($elm$core$Dict$foldl, stepState, _Utils_Tuple2($elm$core$Dict$toList(leftDict), initialResult), rightDict);
-        var leftovers = _v3.a;
-        var intermediateResult = _v3.b;
-        return A3($elm$core$List$foldl, F2(function(_v4, result) {
-            var k = _v4.a;
-            var v = _v4.b;
-            return A3(leftStep, k, v, result);
-        }), intermediateResult, leftovers);
-    });
-    var $elm$browser$Debugger$Metadata$removeTag = F3(function(tag, _v0, changes) {
-        return _Utils_update(changes, {
-            removed: A2($elm$core$List$cons, tag, changes.removed)
-        });
-    });
-    var $elm$browser$Debugger$Metadata$checkUnion = F4(function(name, old, _new, changes) {
-        var tagChanges = A6($elm$core$Dict$merge, $elm$browser$Debugger$Metadata$removeTag, $elm$browser$Debugger$Metadata$checkTag, $elm$browser$Debugger$Metadata$addTag, old.tags, _new.tags, $elm$browser$Debugger$Report$emptyTagChanges(_Utils_eq(old.args, _new.args)));
-        return $elm$browser$Debugger$Report$hasTagChanges(tagChanges) ? changes : A2($elm$core$List$cons, A2($elm$browser$Debugger$Report$UnionChange, name, tagChanges), changes);
-    });
-    var $elm$browser$Debugger$Metadata$ignore = F3(function(key, value, report) {
-        return report;
-    });
-    var $elm$browser$Debugger$Metadata$checkTypes = F2(function(old, _new) {
-        return !_Utils_eq(old.message, _new.message) ? A2($elm$browser$Debugger$Report$MessageChanged, old.message, _new.message) : $elm$browser$Debugger$Report$SomethingChanged(A6($elm$core$Dict$merge, $elm$browser$Debugger$Metadata$ignore, $elm$browser$Debugger$Metadata$checkUnion, $elm$browser$Debugger$Metadata$ignore, old.unions, _new.unions, A6($elm$core$Dict$merge, $elm$browser$Debugger$Metadata$ignore, $elm$browser$Debugger$Metadata$checkAlias, $elm$browser$Debugger$Metadata$ignore, old.aliases, _new.aliases, _List_Nil)));
-    });
-    var $elm$browser$Debugger$Metadata$check = F2(function(old, _new) {
-        return !_Utils_eq(old.versions.elm, _new.versions.elm) ? A2($elm$browser$Debugger$Report$VersionChanged, old.versions.elm, _new.versions.elm) : A2($elm$browser$Debugger$Metadata$checkTypes, old.types, _new.types);
-    });
-    var $elm$browser$Debugger$Report$CorruptHistory = {
-        $: 'CorruptHistory'
-    };
-    var $elm$browser$Debugger$Overlay$corruptImport = $elm$browser$Debugger$Overlay$BadImport($elm$browser$Debugger$Report$CorruptHistory);
-    var $elm$json$Json$Decode$decodeString = _Json_runOnString;
-    var $elm$browser$Debugger$Report$Fine = {
-        $: 'Fine'
-    };
-    var $elm$browser$Debugger$Report$Impossible = {
-        $: 'Impossible'
-    };
-    var $elm$browser$Debugger$Report$Risky = {
-        $: 'Risky'
-    };
-    var $elm$core$Basics$not = _Basics_not;
-    var $elm$core$List$isEmpty = function(xs) {
-        if (!xs.b) return true;
-        else return false;
-    };
-    var $elm$browser$Debugger$Report$some = function(list) {
-        return !$elm$core$List$isEmpty(list);
-    };
-    var $elm$browser$Debugger$Report$evaluateChange = function(change) {
-        if (change.$ === 'AliasChange') return $elm$browser$Debugger$Report$Impossible;
-        else {
-            var removed = change.b.removed;
-            var changed = change.b.changed;
-            var added = change.b.added;
-            var argsMatch = change.b.argsMatch;
-            return !argsMatch || $elm$browser$Debugger$Report$some(changed) || $elm$browser$Debugger$Report$some(removed) ? $elm$browser$Debugger$Report$Impossible : $elm$browser$Debugger$Report$some(added) ? $elm$browser$Debugger$Report$Risky : $elm$browser$Debugger$Report$Fine;
-        }
-    };
-    var $elm$browser$Debugger$Report$worstCase = F2(function(status, statusList) {
-        worstCase: while(true){
-            if (!statusList.b) return status;
-            else switch(statusList.a.$){
-                case 'Impossible':
-                    var _v1 = statusList.a;
-                    return $elm$browser$Debugger$Report$Impossible;
-                case 'Risky':
-                    var _v2 = statusList.a;
-                    var rest = statusList.b;
-                    var $temp$status = $elm$browser$Debugger$Report$Risky, $temp$statusList = rest;
-                    status = $temp$status;
-                    statusList = $temp$statusList;
-                    continue worstCase;
-                default:
-                    var _v3 = statusList.a;
-                    var rest = statusList.b;
-                    var $temp$status = status, $temp$statusList = rest;
-                    status = $temp$status;
-                    statusList = $temp$statusList;
-                    continue worstCase;
-            }
-        }
-    });
-    var $elm$browser$Debugger$Report$evaluate = function(report) {
-        switch(report.$){
-            case 'CorruptHistory':
-                return $elm$browser$Debugger$Report$Impossible;
-            case 'VersionChanged':
-                return $elm$browser$Debugger$Report$Impossible;
-            case 'MessageChanged':
-                return $elm$browser$Debugger$Report$Impossible;
-            default:
-                var changes = report.a;
-                return A2($elm$browser$Debugger$Report$worstCase, $elm$browser$Debugger$Report$Fine, A2($elm$core$List$map, $elm$browser$Debugger$Report$evaluateChange, changes));
-        }
-    };
-    var $elm$json$Json$Decode$value = _Json_decodeValue;
-    var $elm$browser$Debugger$Overlay$uploadDecoder = A3($elm$json$Json$Decode$map2, F2(function(x, y) {
-        return _Utils_Tuple2(x, y);
-    }), A2($elm$json$Json$Decode$field, 'metadata', $elm$browser$Debugger$Metadata$decoder), A2($elm$json$Json$Decode$field, 'history', $elm$json$Json$Decode$value));
-    var $elm$browser$Debugger$Overlay$assessImport = F2(function(metadata, jsonString) {
-        var _v0 = A2($elm$json$Json$Decode$decodeString, $elm$browser$Debugger$Overlay$uploadDecoder, jsonString);
-        if (_v0.$ === 'Err') return $elm$core$Result$Err($elm$browser$Debugger$Overlay$corruptImport);
-        else {
-            var _v1 = _v0.a;
-            var foreignMetadata = _v1.a;
-            var rawHistory = _v1.b;
-            var report = A2($elm$browser$Debugger$Metadata$check, foreignMetadata, metadata);
-            var _v2 = $elm$browser$Debugger$Report$evaluate(report);
-            switch(_v2.$){
-                case 'Impossible':
-                    return $elm$core$Result$Err($elm$browser$Debugger$Overlay$BadImport(report));
-                case 'Risky':
-                    return $elm$core$Result$Err(A2($elm$browser$Debugger$Overlay$RiskyImport, report, rawHistory));
-                default:
-                    return $elm$core$Result$Ok(rawHistory);
-            }
-        }
-    });
-    var $elm$core$Platform$Cmd$batch = _Platform_batch;
-    var $elm$browser$Debugger$Overlay$close = F2(function(msg, state) {
-        switch(state.$){
-            case 'None':
-                return $elm$core$Maybe$Nothing;
-            case 'BadMetadata':
-                return $elm$core$Maybe$Nothing;
-            case 'BadImport':
-                return $elm$core$Maybe$Nothing;
-            default:
-                var rawHistory = state.b;
-                if (msg.$ === 'Cancel') return $elm$core$Maybe$Nothing;
-                else return $elm$core$Maybe$Just(rawHistory);
-        }
-    });
-    var $elm$browser$Debugger$History$elmToJs = A2($elm$core$Basics$composeR, _Json_wrap, _Debugger_unsafeCoerce);
-    var $elm$browser$Debugger$History$encodeHelp = F2(function(snapshot, allMessages) {
-        return A3($elm$core$Array$foldl, $elm$core$List$cons, allMessages, snapshot.messages);
-    });
-    var $elm$json$Json$Encode$list = F2(function(func, entries) {
-        return _Json_wrap(A3($elm$core$List$foldl, _Json_addEntry(func), _Json_emptyArray(_Utils_Tuple0), entries));
-    });
-    var $elm$browser$Debugger$History$encode = function(_v0) {
-        var snapshots = _v0.snapshots;
-        var recent = _v0.recent;
-        return A2($elm$json$Json$Encode$list, $elm$browser$Debugger$History$elmToJs, A3($elm$core$Array$foldr, $elm$browser$Debugger$History$encodeHelp, $elm$core$List$reverse(recent.messages), snapshots));
-    };
-    var $elm$json$Json$Encode$object = function(pairs) {
-        return _Json_wrap(A3($elm$core$List$foldl, F2(function(_v0, obj) {
-            var k = _v0.a;
-            var v = _v0.b;
-            return A3(_Json_addField, k, v, obj);
-        }), _Json_emptyObject(_Utils_Tuple0), pairs));
-    };
-    var $elm$browser$Debugger$Metadata$encodeAlias = function(_v0) {
-        var args = _v0.args;
-        var tipe = _v0.tipe;
-        return $elm$json$Json$Encode$object(_List_fromArray([
-            _Utils_Tuple2('args', A2($elm$json$Json$Encode$list, $elm$json$Json$Encode$string, args)),
-            _Utils_Tuple2('type', $elm$json$Json$Encode$string(tipe))
-        ]));
-    };
-    var $elm$browser$Debugger$Metadata$encodeDict = F2(function(f, dict) {
-        return $elm$json$Json$Encode$object($elm$core$Dict$toList(A2($elm$core$Dict$map, F2(function(key, value) {
-            return f(value);
-        }), dict)));
-    });
-    var $elm$browser$Debugger$Metadata$encodeUnion = function(_v0) {
-        var args = _v0.args;
-        var tags = _v0.tags;
-        return $elm$json$Json$Encode$object(_List_fromArray([
-            _Utils_Tuple2('args', A2($elm$json$Json$Encode$list, $elm$json$Json$Encode$string, args)),
-            _Utils_Tuple2('tags', A2($elm$browser$Debugger$Metadata$encodeDict, $elm$json$Json$Encode$list($elm$json$Json$Encode$string), tags))
-        ]));
-    };
-    var $elm$browser$Debugger$Metadata$encodeTypes = function(_v0) {
-        var message = _v0.message;
-        var unions = _v0.unions;
-        var aliases = _v0.aliases;
-        return $elm$json$Json$Encode$object(_List_fromArray([
-            _Utils_Tuple2('message', $elm$json$Json$Encode$string(message)),
-            _Utils_Tuple2('aliases', A2($elm$browser$Debugger$Metadata$encodeDict, $elm$browser$Debugger$Metadata$encodeAlias, aliases)),
-            _Utils_Tuple2('unions', A2($elm$browser$Debugger$Metadata$encodeDict, $elm$browser$Debugger$Metadata$encodeUnion, unions))
-        ]));
-    };
-    var $elm$browser$Debugger$Metadata$encodeVersions = function(_v0) {
-        var elm = _v0.elm;
-        return $elm$json$Json$Encode$object(_List_fromArray([
-            _Utils_Tuple2('elm', $elm$json$Json$Encode$string(elm))
-        ]));
-    };
-    var $elm$browser$Debugger$Metadata$encode = function(_v0) {
-        var versions = _v0.versions;
-        var types = _v0.types;
-        return $elm$json$Json$Encode$object(_List_fromArray([
-            _Utils_Tuple2('versions', $elm$browser$Debugger$Metadata$encodeVersions(versions)),
-            _Utils_Tuple2('types', $elm$browser$Debugger$Metadata$encodeTypes(types))
-        ]));
-    };
-    var $elm$core$Basics$identity = function(x) {
-        return x;
-    };
-    var $elm$core$Task$Perform = function(a) {
-        return {
-            $: 'Perform',
-            a: a
-        };
-    };
-    var $elm$core$Task$succeed = _Scheduler_succeed;
-    var $elm$core$Task$init = $elm$core$Task$succeed(_Utils_Tuple0);
-    var $elm$core$Task$andThen = _Scheduler_andThen;
-    var $elm$core$Task$map = F2(function(func, taskA) {
-        return A2($elm$core$Task$andThen, function(a) {
-            return $elm$core$Task$succeed(func(a));
-        }, taskA);
-    });
-    var $elm$core$Task$map2 = F3(function(func, taskA, taskB) {
-        return A2($elm$core$Task$andThen, function(a) {
-            return A2($elm$core$Task$andThen, function(b) {
-                return $elm$core$Task$succeed(A2(func, a, b));
-            }, taskB);
-        }, taskA);
-    });
-    var $elm$core$Task$sequence = function(tasks) {
-        return A3($elm$core$List$foldr, $elm$core$Task$map2($elm$core$List$cons), $elm$core$Task$succeed(_List_Nil), tasks);
-    };
-    var $elm$core$Platform$sendToApp = _Platform_sendToApp;
-    var $elm$core$Task$spawnCmd = F2(function(router, _v0) {
-        var task = _v0.a;
-        return _Scheduler_spawn(A2($elm$core$Task$andThen, $elm$core$Platform$sendToApp(router), task));
-    });
-    var $elm$core$Task$onEffects = F3(function(router, commands, state) {
-        return A2($elm$core$Task$map, function(_v0) {
-            return _Utils_Tuple0;
-        }, $elm$core$Task$sequence(A2($elm$core$List$map, $elm$core$Task$spawnCmd(router), commands)));
-    });
-    var $elm$core$Task$onSelfMsg = F3(function(_v0, _v1, _v2) {
-        return $elm$core$Task$succeed(_Utils_Tuple0);
-    });
-    var $elm$core$Task$cmdMap = F2(function(tagger, _v0) {
-        var task = _v0.a;
-        return $elm$core$Task$Perform(A2($elm$core$Task$map, tagger, task));
-    });
-    _Platform_effectManagers['Task'] = _Platform_createManager($elm$core$Task$init, $elm$core$Task$onEffects, $elm$core$Task$onSelfMsg, $elm$core$Task$cmdMap);
-    var $elm$core$Task$command = _Platform_leaf('Task');
-    var $elm$core$Task$perform = F2(function(toMessage, task) {
-        return $elm$core$Task$command($elm$core$Task$Perform(A2($elm$core$Task$map, toMessage, task)));
-    });
-    var $elm$browser$Debugger$Main$download = F2(function(metadata, history) {
-        var historyLength = $elm$browser$Debugger$History$size(history);
-        return A2($elm$core$Task$perform, function(_v0) {
-            return $elm$browser$Debugger$Main$NoOp;
-        }, A2(_Debugger_download, historyLength, _Json_unwrap($elm$json$Json$Encode$object(_List_fromArray([
-            _Utils_Tuple2('metadata', $elm$browser$Debugger$Metadata$encode(metadata)),
-            _Utils_Tuple2('history', $elm$browser$Debugger$History$encode(history))
-        ])))));
-    });
-    var $elm$browser$Debugger$Main$Vertical = F3(function(a, b, c) {
-        return {
-            $: 'Vertical',
-            a: a,
-            b: b,
-            c: c
-        };
-    });
-    var $elm$browser$Debugger$Main$drag = F2(function(info, layout) {
-        if (layout.$ === 'Horizontal') {
-            var status = layout.a;
-            var y = layout.c;
-            return A3($elm$browser$Debugger$Main$Horizontal, status, info.x / info.width, y);
-        } else {
-            var status = layout.a;
-            var x = layout.b;
-            return A3($elm$browser$Debugger$Main$Vertical, status, x, info.y / info.height);
-        }
-    });
-    var $elm$browser$Debugger$History$Stepping = F2(function(a, b) {
-        return {
-            $: 'Stepping',
-            a: a,
-            b: b
-        };
-    });
-    var $elm$browser$Debugger$History$Done = F2(function(a, b) {
-        return {
-            $: 'Done',
-            a: a,
-            b: b
-        };
-    });
-    var $elm$browser$Debugger$History$getHelp = F3(function(update, msg, getResult) {
-        if (getResult.$ === 'Done') return getResult;
-        else {
-            var n = getResult.a;
-            var model = getResult.b;
-            return !n ? A2($elm$browser$Debugger$History$Done, msg, A2(update, msg, model).a) : A2($elm$browser$Debugger$History$Stepping, n - 1, A2(update, msg, model).a);
-        }
-    });
-    var $elm$browser$Debugger$History$undone = function(getResult) {
-        undone: while(true)if (getResult.$ === 'Done') {
-            var msg = getResult.a;
-            var model = getResult.b;
-            return _Utils_Tuple2(model, msg);
-        } else {
-            var $temp$getResult = getResult;
-            getResult = $temp$getResult;
-            continue undone;
-        }
-    };
-    var $elm$browser$Debugger$History$get = F3(function(update, index, history) {
-        get: while(true){
-            var recent = history.recent;
-            var snapshotMax = history.numMessages - recent.numMessages;
-            if (_Utils_cmp(index, snapshotMax) > -1) return $elm$browser$Debugger$History$undone(A3($elm$core$List$foldr, $elm$browser$Debugger$History$getHelp(update), A2($elm$browser$Debugger$History$Stepping, index - snapshotMax, recent.model), recent.messages));
-            else {
-                var _v0 = A2($elm$core$Array$get, index / $elm$browser$Debugger$History$maxSnapshotSize | 0, history.snapshots);
-                if (_v0.$ === 'Nothing') {
-                    var $temp$update = update, $temp$index = index, $temp$history = history;
-                    update = $temp$update;
-                    index = $temp$index;
-                    history = $temp$history;
-                    continue get;
-                } else {
-                    var model = _v0.a.model;
-                    var messages = _v0.a.messages;
-                    return $elm$browser$Debugger$History$undone(A3($elm$core$Array$foldr, $elm$browser$Debugger$History$getHelp(update), A2($elm$browser$Debugger$History$Stepping, index % $elm$browser$Debugger$History$maxSnapshotSize, model), messages));
-                }
-            }
-        }
-    });
-    var $elm$browser$Debugger$History$getRecentMsg = function(history) {
-        getRecentMsg: while(true){
-            var _v0 = history.recent.messages;
-            if (!_v0.b) {
-                var $temp$history = history;
-                history = $temp$history;
-                continue getRecentMsg;
-            } else {
-                var first = _v0.a;
-                return first;
-            }
-        }
-    };
-    var $elm$core$Dict$get = F2(function(targetKey, dict) {
-        get: while(true){
-            if (dict.$ === 'RBEmpty_elm_builtin') return $elm$core$Maybe$Nothing;
-            else {
-                var key = dict.b;
-                var value = dict.c;
-                var left = dict.d;
-                var right = dict.e;
-                var _v1 = A2($elm$core$Basics$compare, targetKey, key);
-                switch(_v1.$){
-                    case 'LT':
-                        var $temp$targetKey = targetKey, $temp$dict = left;
-                        targetKey = $temp$targetKey;
-                        dict = $temp$dict;
-                        continue get;
-                    case 'EQ':
-                        return $elm$core$Maybe$Just(value);
-                    default:
-                        var $temp$targetKey = targetKey, $temp$dict = right;
-                        targetKey = $temp$targetKey;
-                        dict = $temp$dict;
-                        continue get;
-                }
-            }
-        }
-    });
-    var $elm$browser$Debugger$Expando$mergeDictHelp = F3(function(oldDict, key, value) {
-        var _v12 = A2($elm$core$Dict$get, key, oldDict);
-        if (_v12.$ === 'Nothing') return value;
-        else {
-            var oldValue = _v12.a;
-            return A2($elm$browser$Debugger$Expando$mergeHelp, oldValue, value);
-        }
-    });
-    var $elm$browser$Debugger$Expando$mergeHelp = F2(function(old, _new) {
-        var _v3 = _Utils_Tuple2(old, _new);
-        _v3$6: while(true)switch(_v3.b.$){
-            case 'S':
-                return _new;
-            case 'Primitive':
-                return _new;
-            case 'Sequence':
-                if (_v3.a.$ === 'Sequence') {
-                    var _v4 = _v3.a;
-                    var isClosed = _v4.b;
-                    var oldValues = _v4.c;
-                    var _v5 = _v3.b;
-                    var seqType = _v5.a;
-                    var newValues = _v5.c;
-                    return A3($elm$browser$Debugger$Expando$Sequence, seqType, isClosed, A2($elm$browser$Debugger$Expando$mergeListHelp, oldValues, newValues));
-                } else break _v3$6;
-            case 'Dictionary':
-                if (_v3.a.$ === 'Dictionary') {
-                    var _v6 = _v3.a;
-                    var isClosed = _v6.a;
-                    var _v7 = _v3.b;
-                    var keyValuePairs = _v7.b;
-                    return A2($elm$browser$Debugger$Expando$Dictionary, isClosed, keyValuePairs);
-                } else break _v3$6;
-            case 'Record':
-                if (_v3.a.$ === 'Record') {
-                    var _v8 = _v3.a;
-                    var isClosed = _v8.a;
-                    var oldDict = _v8.b;
-                    var _v9 = _v3.b;
-                    var newDict = _v9.b;
-                    return A2($elm$browser$Debugger$Expando$Record, isClosed, A2($elm$core$Dict$map, $elm$browser$Debugger$Expando$mergeDictHelp(oldDict), newDict));
-                } else break _v3$6;
-            default:
-                if (_v3.a.$ === 'Constructor') {
-                    var _v10 = _v3.a;
-                    var isClosed = _v10.b;
-                    var oldValues = _v10.c;
-                    var _v11 = _v3.b;
-                    var maybeName = _v11.a;
-                    var newValues = _v11.c;
-                    return A3($elm$browser$Debugger$Expando$Constructor, maybeName, isClosed, A2($elm$browser$Debugger$Expando$mergeListHelp, oldValues, newValues));
-                } else break _v3$6;
-        }
-        return _new;
-    });
-    var $elm$browser$Debugger$Expando$mergeListHelp = F2(function(olds, news) {
-        var _v0 = _Utils_Tuple2(olds, news);
-        if (!_v0.a.b) return news;
-        else {
-            if (!_v0.b.b) return news;
-            else {
-                var _v1 = _v0.a;
-                var x = _v1.a;
-                var xs = _v1.b;
-                var _v2 = _v0.b;
-                var y = _v2.a;
-                var ys = _v2.b;
-                return A2($elm$core$List$cons, A2($elm$browser$Debugger$Expando$mergeHelp, x, y), A2($elm$browser$Debugger$Expando$mergeListHelp, xs, ys));
-            }
-        }
-    });
-    var $elm$browser$Debugger$Expando$merge = F2(function(value, expando) {
-        return A2($elm$browser$Debugger$Expando$mergeHelp, expando, _Debugger_init(value));
-    });
-    var $elm$browser$Debugger$Main$jumpUpdate = F3(function(update, index, model) {
-        var history = $elm$browser$Debugger$Main$cachedHistory(model);
-        var currentMsg = $elm$browser$Debugger$History$getRecentMsg(history);
-        var currentModel = $elm$browser$Debugger$Main$getLatestModel(model.state);
-        var _v0 = A3($elm$browser$Debugger$History$get, update, index, history);
-        var indexModel = _v0.a;
-        var indexMsg = _v0.b;
-        return _Utils_update(model, {
-            expandoModel: A2($elm$browser$Debugger$Expando$merge, indexModel, model.expandoModel),
-            expandoMsg: A2($elm$browser$Debugger$Expando$merge, indexMsg, model.expandoMsg),
-            state: A5($elm$browser$Debugger$Main$Paused, index, indexModel, currentModel, currentMsg, history)
-        });
-    });
-    var $elm$browser$Debugger$History$jsToElm = A2($elm$core$Basics$composeR, _Json_unwrap, _Debugger_unsafeCoerce);
-    var $elm$browser$Debugger$History$decoder = F2(function(initialModel, update) {
-        var addMessage = F2(function(rawMsg, _v0) {
-            var model = _v0.a;
-            var history = _v0.b;
-            var msg = $elm$browser$Debugger$History$jsToElm(rawMsg);
-            return _Utils_Tuple2(A2(update, msg, model), A3($elm$browser$Debugger$History$add, msg, model, history));
-        });
-        var updateModel = function(rawMsgs) {
-            return A3($elm$core$List$foldl, addMessage, _Utils_Tuple2(initialModel, $elm$browser$Debugger$History$empty(initialModel)), rawMsgs);
-        };
-        return A2($elm$json$Json$Decode$map, updateModel, $elm$json$Json$Decode$list($elm$json$Json$Decode$value));
-    });
-    var $elm$browser$Debugger$History$getInitialModel = function(_v0) {
-        var snapshots = _v0.snapshots;
-        var recent = _v0.recent;
-        var _v1 = A2($elm$core$Array$get, 0, snapshots);
-        if (_v1.$ === 'Just') {
-            var model = _v1.a.model;
-            return model;
-        } else return recent.model;
-    };
-    var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
-    var $elm$browser$Debugger$Main$loadNewHistory = F3(function(rawHistory, update, model) {
-        var pureUserUpdate = F2(function(msg, userModel) {
-            return A2(update, msg, userModel).a;
-        });
-        var initialUserModel = $elm$browser$Debugger$History$getInitialModel(model.history);
-        var decoder = A2($elm$browser$Debugger$History$decoder, initialUserModel, pureUserUpdate);
-        var _v0 = A2($elm$json$Json$Decode$decodeValue, decoder, rawHistory);
-        if (_v0.$ === 'Err') return _Utils_Tuple2(_Utils_update(model, {
-            overlay: $elm$browser$Debugger$Overlay$corruptImport
-        }), $elm$core$Platform$Cmd$none);
-        else {
-            var _v1 = _v0.a;
-            var latestUserModel = _v1.a;
-            var newHistory = _v1.b;
-            return _Utils_Tuple2(_Utils_update(model, {
-                expandoModel: $elm$browser$Debugger$Expando$init(latestUserModel),
-                expandoMsg: $elm$browser$Debugger$Expando$init($elm$browser$Debugger$History$getRecentMsg(newHistory)),
-                history: newHistory,
-                overlay: $elm$browser$Debugger$Overlay$none,
-                state: $elm$browser$Debugger$Main$Running(latestUserModel)
-            }), $elm$core$Platform$Cmd$none);
-        }
-    });
-    var $elm$browser$Debugger$Main$scroll = function(popout) {
-        return A2($elm$core$Task$perform, $elm$core$Basics$always($elm$browser$Debugger$Main$NoOp), _Debugger_scroll(popout));
-    };
-    var $elm$browser$Debugger$Main$scrollTo = F2(function(id, popout) {
-        return A2($elm$core$Task$perform, $elm$core$Basics$always($elm$browser$Debugger$Main$NoOp), A2(_Debugger_scrollTo, id, popout));
-    });
-    var $elm$browser$Debugger$Main$setDragStatus = F2(function(status, layout) {
-        if (layout.$ === 'Horizontal') {
-            var x = layout.b;
-            var y = layout.c;
-            return A3($elm$browser$Debugger$Main$Horizontal, status, x, y);
-        } else {
-            var x = layout.b;
-            var y = layout.c;
-            return A3($elm$browser$Debugger$Main$Vertical, status, x, y);
-        }
-    });
-    var $elm$browser$Debugger$Main$swapLayout = function(layout) {
-        if (layout.$ === 'Horizontal') {
-            var s = layout.a;
-            var x = layout.b;
-            var y = layout.c;
-            return A3($elm$browser$Debugger$Main$Vertical, s, x, y);
-        } else {
-            var s = layout.a;
-            var x = layout.b;
-            var y = layout.c;
-            return A3($elm$browser$Debugger$Main$Horizontal, s, x, y);
-        }
-    };
-    var $elm$core$Dict$getMin = function(dict) {
-        getMin: while(true){
-            if (dict.$ === 'RBNode_elm_builtin' && dict.d.$ === 'RBNode_elm_builtin') {
-                var left = dict.d;
-                var $temp$dict = left;
-                dict = $temp$dict;
-                continue getMin;
-            } else return dict;
-        }
-    };
-    var $elm$core$Dict$moveRedLeft = function(dict) {
-        if (dict.$ === 'RBNode_elm_builtin' && dict.d.$ === 'RBNode_elm_builtin' && dict.e.$ === 'RBNode_elm_builtin') {
-            if (dict.e.d.$ === 'RBNode_elm_builtin' && dict.e.d.a.$ === 'Red') {
-                var clr = dict.a;
-                var k = dict.b;
-                var v = dict.c;
-                var _v1 = dict.d;
-                var lClr = _v1.a;
-                var lK = _v1.b;
-                var lV = _v1.c;
-                var lLeft = _v1.d;
-                var lRight = _v1.e;
-                var _v2 = dict.e;
-                var rClr = _v2.a;
-                var rK = _v2.b;
-                var rV = _v2.c;
-                var rLeft = _v2.d;
-                var _v3 = rLeft.a;
-                var rlK = rLeft.b;
-                var rlV = rLeft.c;
-                var rlL = rLeft.d;
-                var rlR = rLeft.e;
-                var rRight = _v2.e;
-                return A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, rlK, rlV, A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, k, v, A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, lK, lV, lLeft, lRight), rlL), A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, rK, rV, rlR, rRight));
-            } else {
-                var clr = dict.a;
-                var k = dict.b;
-                var v = dict.c;
-                var _v4 = dict.d;
-                var lClr = _v4.a;
-                var lK = _v4.b;
-                var lV = _v4.c;
-                var lLeft = _v4.d;
-                var lRight = _v4.e;
-                var _v5 = dict.e;
-                var rClr = _v5.a;
-                var rK = _v5.b;
-                var rV = _v5.c;
-                var rLeft = _v5.d;
-                var rRight = _v5.e;
-                if (clr.$ === 'Black') return A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, k, v, A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, lK, lV, lLeft, lRight), A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, rK, rV, rLeft, rRight));
-                else return A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, k, v, A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, lK, lV, lLeft, lRight), A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, rK, rV, rLeft, rRight));
-            }
-        } else return dict;
-    };
-    var $elm$core$Dict$moveRedRight = function(dict) {
-        if (dict.$ === 'RBNode_elm_builtin' && dict.d.$ === 'RBNode_elm_builtin' && dict.e.$ === 'RBNode_elm_builtin') {
-            if (dict.d.d.$ === 'RBNode_elm_builtin' && dict.d.d.a.$ === 'Red') {
-                var clr = dict.a;
-                var k = dict.b;
-                var v = dict.c;
-                var _v1 = dict.d;
-                var lClr = _v1.a;
-                var lK = _v1.b;
-                var lV = _v1.c;
-                var _v2 = _v1.d;
-                var _v3 = _v2.a;
-                var llK = _v2.b;
-                var llV = _v2.c;
-                var llLeft = _v2.d;
-                var llRight = _v2.e;
-                var lRight = _v1.e;
-                var _v4 = dict.e;
-                var rClr = _v4.a;
-                var rK = _v4.b;
-                var rV = _v4.c;
-                var rLeft = _v4.d;
-                var rRight = _v4.e;
-                return A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, lK, lV, A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, llK, llV, llLeft, llRight), A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, k, v, lRight, A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, rK, rV, rLeft, rRight)));
-            } else {
-                var clr = dict.a;
-                var k = dict.b;
-                var v = dict.c;
-                var _v5 = dict.d;
-                var lClr = _v5.a;
-                var lK = _v5.b;
-                var lV = _v5.c;
-                var lLeft = _v5.d;
-                var lRight = _v5.e;
-                var _v6 = dict.e;
-                var rClr = _v6.a;
-                var rK = _v6.b;
-                var rV = _v6.c;
-                var rLeft = _v6.d;
-                var rRight = _v6.e;
-                if (clr.$ === 'Black') return A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, k, v, A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, lK, lV, lLeft, lRight), A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, rK, rV, rLeft, rRight));
-                else return A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, k, v, A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, lK, lV, lLeft, lRight), A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, rK, rV, rLeft, rRight));
-            }
-        } else return dict;
-    };
-    var $elm$core$Dict$removeHelpPrepEQGT = F7(function(targetKey, dict, color, key, value, left, right) {
-        if (left.$ === 'RBNode_elm_builtin' && left.a.$ === 'Red') {
-            var _v1 = left.a;
-            var lK = left.b;
-            var lV = left.c;
-            var lLeft = left.d;
-            var lRight = left.e;
-            return A5($elm$core$Dict$RBNode_elm_builtin, color, lK, lV, lLeft, A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, key, value, lRight, right));
-        } else {
-            _v2$2: while(true){
-                if (right.$ === 'RBNode_elm_builtin' && right.a.$ === 'Black') {
-                    if (right.d.$ === 'RBNode_elm_builtin') {
-                        if (right.d.a.$ === 'Black') {
-                            var _v3 = right.a;
-                            var _v4 = right.d;
-                            var _v5 = _v4.a;
-                            return $elm$core$Dict$moveRedRight(dict);
-                        } else break _v2$2;
-                    } else {
-                        var _v6 = right.a;
-                        var _v7 = right.d;
-                        return $elm$core$Dict$moveRedRight(dict);
-                    }
-                } else break _v2$2;
-            }
-            return dict;
-        }
-    });
-    var $elm$core$Dict$removeMin = function(dict) {
-        if (dict.$ === 'RBNode_elm_builtin' && dict.d.$ === 'RBNode_elm_builtin') {
-            var color = dict.a;
-            var key = dict.b;
-            var value = dict.c;
-            var left = dict.d;
-            var lColor = left.a;
-            var lLeft = left.d;
-            var right = dict.e;
-            if (lColor.$ === 'Black') {
-                if (lLeft.$ === 'RBNode_elm_builtin' && lLeft.a.$ === 'Red') {
-                    var _v3 = lLeft.a;
-                    return A5($elm$core$Dict$RBNode_elm_builtin, color, key, value, $elm$core$Dict$removeMin(left), right);
-                } else {
-                    var _v4 = $elm$core$Dict$moveRedLeft(dict);
-                    if (_v4.$ === 'RBNode_elm_builtin') {
-                        var nColor = _v4.a;
-                        var nKey = _v4.b;
-                        var nValue = _v4.c;
-                        var nLeft = _v4.d;
-                        var nRight = _v4.e;
-                        return A5($elm$core$Dict$balance, nColor, nKey, nValue, $elm$core$Dict$removeMin(nLeft), nRight);
-                    } else return $elm$core$Dict$RBEmpty_elm_builtin;
-                }
-            } else return A5($elm$core$Dict$RBNode_elm_builtin, color, key, value, $elm$core$Dict$removeMin(left), right);
-        } else return $elm$core$Dict$RBEmpty_elm_builtin;
-    };
-    var $elm$core$Dict$removeHelp = F2(function(targetKey, dict) {
-        if (dict.$ === 'RBEmpty_elm_builtin') return $elm$core$Dict$RBEmpty_elm_builtin;
-        else {
-            var color = dict.a;
-            var key = dict.b;
-            var value = dict.c;
-            var left = dict.d;
-            var right = dict.e;
-            if (_Utils_cmp(targetKey, key) < 0) {
-                if (left.$ === 'RBNode_elm_builtin' && left.a.$ === 'Black') {
-                    var _v4 = left.a;
-                    var lLeft = left.d;
-                    if (lLeft.$ === 'RBNode_elm_builtin' && lLeft.a.$ === 'Red') {
-                        var _v6 = lLeft.a;
-                        return A5($elm$core$Dict$RBNode_elm_builtin, color, key, value, A2($elm$core$Dict$removeHelp, targetKey, left), right);
-                    } else {
-                        var _v7 = $elm$core$Dict$moveRedLeft(dict);
-                        if (_v7.$ === 'RBNode_elm_builtin') {
-                            var nColor = _v7.a;
-                            var nKey = _v7.b;
-                            var nValue = _v7.c;
-                            var nLeft = _v7.d;
-                            var nRight = _v7.e;
-                            return A5($elm$core$Dict$balance, nColor, nKey, nValue, A2($elm$core$Dict$removeHelp, targetKey, nLeft), nRight);
-                        } else return $elm$core$Dict$RBEmpty_elm_builtin;
-                    }
-                } else return A5($elm$core$Dict$RBNode_elm_builtin, color, key, value, A2($elm$core$Dict$removeHelp, targetKey, left), right);
-            } else return A2($elm$core$Dict$removeHelpEQGT, targetKey, A7($elm$core$Dict$removeHelpPrepEQGT, targetKey, dict, color, key, value, left, right));
-        }
-    });
-    var $elm$core$Dict$removeHelpEQGT = F2(function(targetKey, dict) {
-        if (dict.$ === 'RBNode_elm_builtin') {
-            var color = dict.a;
-            var key = dict.b;
-            var value = dict.c;
-            var left = dict.d;
-            var right = dict.e;
-            if (_Utils_eq(targetKey, key)) {
-                var _v1 = $elm$core$Dict$getMin(right);
-                if (_v1.$ === 'RBNode_elm_builtin') {
-                    var minKey = _v1.b;
-                    var minValue = _v1.c;
-                    return A5($elm$core$Dict$balance, color, minKey, minValue, left, $elm$core$Dict$removeMin(right));
-                } else return $elm$core$Dict$RBEmpty_elm_builtin;
-            } else return A5($elm$core$Dict$balance, color, key, value, left, A2($elm$core$Dict$removeHelp, targetKey, right));
-        } else return $elm$core$Dict$RBEmpty_elm_builtin;
-    });
-    var $elm$core$Dict$remove = F2(function(key, dict) {
-        var _v0 = A2($elm$core$Dict$removeHelp, key, dict);
-        if (_v0.$ === 'RBNode_elm_builtin' && _v0.a.$ === 'Red') {
-            var _v1 = _v0.a;
-            var k = _v0.b;
-            var v = _v0.c;
-            var l = _v0.d;
-            var r = _v0.e;
-            return A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, k, v, l, r);
-        } else {
-            var x = _v0;
-            return x;
-        }
-    });
-    var $elm$core$Dict$update = F3(function(targetKey, alter, dictionary) {
-        var _v0 = alter(A2($elm$core$Dict$get, targetKey, dictionary));
-        if (_v0.$ === 'Just') {
-            var value = _v0.a;
-            return A3($elm$core$Dict$insert, targetKey, value, dictionary);
-        } else return A2($elm$core$Dict$remove, targetKey, dictionary);
-    });
-    var $elm$browser$Debugger$Expando$updateIndex = F3(function(n, func, list) {
-        if (!list.b) return _List_Nil;
-        else {
-            var x = list.a;
-            var xs = list.b;
-            return n <= 0 ? A2($elm$core$List$cons, func(x), xs) : A2($elm$core$List$cons, x, A3($elm$browser$Debugger$Expando$updateIndex, n - 1, func, xs));
-        }
-    });
-    var $elm$browser$Debugger$Expando$update = F2(function(msg, value) {
-        switch(value.$){
-            case 'S':
-                return value;
-            case 'Primitive':
-                return value;
-            case 'Sequence':
-                var seqType = value.a;
-                var isClosed = value.b;
-                var valueList = value.c;
-                switch(msg.$){
-                    case 'Toggle':
-                        return A3($elm$browser$Debugger$Expando$Sequence, seqType, !isClosed, valueList);
-                    case 'Index':
-                        if (msg.a.$ === 'None') {
-                            var _v3 = msg.a;
-                            var index = msg.b;
-                            var subMsg = msg.c;
-                            return A3($elm$browser$Debugger$Expando$Sequence, seqType, isClosed, A3($elm$browser$Debugger$Expando$updateIndex, index, $elm$browser$Debugger$Expando$update(subMsg), valueList));
-                        } else return value;
-                    default:
-                        return value;
-                }
-            case 'Dictionary':
-                var isClosed = value.a;
-                var keyValuePairs = value.b;
-                switch(msg.$){
-                    case 'Toggle':
-                        return A2($elm$browser$Debugger$Expando$Dictionary, !isClosed, keyValuePairs);
-                    case 'Index':
-                        var redirect = msg.a;
-                        var index = msg.b;
-                        var subMsg = msg.c;
-                        switch(redirect.$){
-                            case 'None':
-                                return value;
-                            case 'Key':
-                                return A2($elm$browser$Debugger$Expando$Dictionary, isClosed, A3($elm$browser$Debugger$Expando$updateIndex, index, function(_v6) {
-                                    var k = _v6.a;
-                                    var v = _v6.b;
-                                    return _Utils_Tuple2(A2($elm$browser$Debugger$Expando$update, subMsg, k), v);
-                                }, keyValuePairs));
-                            default:
-                                return A2($elm$browser$Debugger$Expando$Dictionary, isClosed, A3($elm$browser$Debugger$Expando$updateIndex, index, function(_v7) {
-                                    var k = _v7.a;
-                                    var v = _v7.b;
-                                    return _Utils_Tuple2(k, A2($elm$browser$Debugger$Expando$update, subMsg, v));
-                                }, keyValuePairs));
-                        }
-                    default:
-                        return value;
-                }
-            case 'Record':
-                var isClosed = value.a;
-                var valueDict = value.b;
-                switch(msg.$){
-                    case 'Toggle':
-                        return A2($elm$browser$Debugger$Expando$Record, !isClosed, valueDict);
-                    case 'Index':
-                        return value;
-                    default:
-                        var field = msg.a;
-                        var subMsg = msg.b;
-                        return A2($elm$browser$Debugger$Expando$Record, isClosed, A3($elm$core$Dict$update, field, $elm$browser$Debugger$Expando$updateField(subMsg), valueDict));
-                }
-            default:
-                var maybeName = value.a;
-                var isClosed = value.b;
-                var valueList = value.c;
-                switch(msg.$){
-                    case 'Toggle':
-                        return A3($elm$browser$Debugger$Expando$Constructor, maybeName, !isClosed, valueList);
-                    case 'Index':
-                        if (msg.a.$ === 'None') {
-                            var _v10 = msg.a;
-                            var index = msg.b;
-                            var subMsg = msg.c;
-                            return A3($elm$browser$Debugger$Expando$Constructor, maybeName, isClosed, A3($elm$browser$Debugger$Expando$updateIndex, index, $elm$browser$Debugger$Expando$update(subMsg), valueList));
-                        } else return value;
-                    default:
-                        return value;
-                }
-        }
-    });
-    var $elm$browser$Debugger$Expando$updateField = F2(function(msg, maybeExpando) {
-        if (maybeExpando.$ === 'Nothing') return maybeExpando;
-        else {
-            var expando = maybeExpando.a;
-            return $elm$core$Maybe$Just(A2($elm$browser$Debugger$Expando$update, msg, expando));
-        }
-    });
-    var $elm$browser$Debugger$Main$Upload = function(a) {
-        return {
-            $: 'Upload',
-            a: a
-        };
-    };
-    var $elm$browser$Debugger$Main$upload = function(popout) {
-        return A2($elm$core$Task$perform, $elm$browser$Debugger$Main$Upload, _Debugger_upload(popout));
-    };
-    var $elm$browser$Debugger$Overlay$BadMetadata = function(a) {
-        return {
-            $: 'BadMetadata',
-            a: a
-        };
-    };
-    var $elm$browser$Debugger$Overlay$badMetadata = $elm$browser$Debugger$Overlay$BadMetadata;
-    var $elm$browser$Debugger$Main$withGoodMetadata = F2(function(model, func) {
-        var _v0 = model.metadata;
-        if (_v0.$ === 'Ok') {
-            var metadata = _v0.a;
-            return func(metadata);
-        } else {
-            var error = _v0.a;
-            return _Utils_Tuple2(_Utils_update(model, {
-                overlay: $elm$browser$Debugger$Overlay$badMetadata(error)
-            }), $elm$core$Platform$Cmd$none);
-        }
-    });
-    var $elm$browser$Debugger$Main$wrapUpdate = F3(function(update, msg, model) {
-        wrapUpdate: while(true)switch(msg.$){
-            case 'NoOp':
-                return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
-            case 'UserMsg':
-                var userMsg = msg.a;
-                var userModel = $elm$browser$Debugger$Main$getLatestModel(model.state);
-                var newHistory = A3($elm$browser$Debugger$History$add, userMsg, userModel, model.history);
-                var _v1 = A2(update, userMsg, userModel);
-                var newUserModel = _v1.a;
-                var userCmds = _v1.b;
-                var commands = A2($elm$core$Platform$Cmd$map, $elm$browser$Debugger$Main$UserMsg, userCmds);
-                var _v2 = model.state;
-                if (_v2.$ === 'Running') return _Utils_Tuple2(_Utils_update(model, {
-                    expandoModel: A2($elm$browser$Debugger$Expando$merge, newUserModel, model.expandoModel),
-                    expandoMsg: A2($elm$browser$Debugger$Expando$merge, userMsg, model.expandoMsg),
-                    history: newHistory,
-                    state: $elm$browser$Debugger$Main$Running(newUserModel)
-                }), $elm$core$Platform$Cmd$batch(_List_fromArray([
-                    commands,
-                    $elm$browser$Debugger$Main$scroll(model.popout)
-                ])));
-                else {
-                    var index = _v2.a;
-                    var indexModel = _v2.b;
-                    var history = _v2.e;
-                    return _Utils_Tuple2(_Utils_update(model, {
-                        history: newHistory,
-                        state: A5($elm$browser$Debugger$Main$Paused, index, indexModel, newUserModel, userMsg, history)
-                    }), commands);
-                }
-            case 'TweakExpandoMsg':
-                var eMsg = msg.a;
-                return _Utils_Tuple2(_Utils_update(model, {
-                    expandoMsg: A2($elm$browser$Debugger$Expando$update, eMsg, model.expandoMsg)
-                }), $elm$core$Platform$Cmd$none);
-            case 'TweakExpandoModel':
-                var eMsg = msg.a;
-                return _Utils_Tuple2(_Utils_update(model, {
-                    expandoModel: A2($elm$browser$Debugger$Expando$update, eMsg, model.expandoModel)
-                }), $elm$core$Platform$Cmd$none);
-            case 'Resume':
-                var _v3 = model.state;
-                if (_v3.$ === 'Running') return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
-                else {
-                    var userModel = _v3.c;
-                    var userMsg = _v3.d;
-                    return _Utils_Tuple2(_Utils_update(model, {
-                        expandoModel: A2($elm$browser$Debugger$Expando$merge, userModel, model.expandoModel),
-                        expandoMsg: A2($elm$browser$Debugger$Expando$merge, userMsg, model.expandoMsg),
-                        state: $elm$browser$Debugger$Main$Running(userModel)
-                    }), $elm$browser$Debugger$Main$scroll(model.popout));
-                }
-            case 'Jump':
-                var index = msg.a;
-                return _Utils_Tuple2(A3($elm$browser$Debugger$Main$jumpUpdate, update, index, model), $elm$core$Platform$Cmd$none);
-            case 'SliderJump':
-                var index = msg.a;
-                return _Utils_Tuple2(A3($elm$browser$Debugger$Main$jumpUpdate, update, index, model), A2($elm$browser$Debugger$Main$scrollTo, $elm$browser$Debugger$History$idForMessageIndex(index), model.popout));
-            case 'Open':
-                return _Utils_Tuple2(model, A2($elm$core$Task$perform, $elm$core$Basics$always($elm$browser$Debugger$Main$NoOp), _Debugger_open(model.popout)));
-            case 'Up':
-                var _v4 = model.state;
-                if (_v4.$ === 'Running') return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
-                else {
-                    var i = _v4.a;
-                    var history = _v4.e;
-                    var targetIndex = i + 1;
-                    if (_Utils_cmp(targetIndex, $elm$browser$Debugger$History$size(history)) < 0) {
-                        var $temp$update = update, $temp$msg = $elm$browser$Debugger$Main$SliderJump(targetIndex), $temp$model = model;
-                        update = $temp$update;
-                        msg = $temp$msg;
-                        model = $temp$model;
-                        continue wrapUpdate;
-                    } else {
-                        var $temp$update = update, $temp$msg = $elm$browser$Debugger$Main$Resume, $temp$model = model;
-                        update = $temp$update;
-                        msg = $temp$msg;
-                        model = $temp$model;
-                        continue wrapUpdate;
-                    }
-                }
-            case 'Down':
-                var _v5 = model.state;
-                if (_v5.$ === 'Running') {
-                    var $temp$update = update, $temp$msg = $elm$browser$Debugger$Main$Jump($elm$browser$Debugger$History$size(model.history) - 1), $temp$model = model;
-                    update = $temp$update;
-                    msg = $temp$msg;
-                    model = $temp$model;
-                    continue wrapUpdate;
-                } else {
-                    var index = _v5.a;
-                    if (index > 0) {
-                        var $temp$update = update, $temp$msg = $elm$browser$Debugger$Main$SliderJump(index - 1), $temp$model = model;
-                        update = $temp$update;
-                        msg = $temp$msg;
-                        model = $temp$model;
-                        continue wrapUpdate;
-                    } else return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
-                }
-            case 'Import':
-                return A2($elm$browser$Debugger$Main$withGoodMetadata, model, function(_v6) {
-                    return _Utils_Tuple2(model, $elm$browser$Debugger$Main$upload(model.popout));
-                });
-            case 'Export':
-                return A2($elm$browser$Debugger$Main$withGoodMetadata, model, function(metadata) {
-                    return _Utils_Tuple2(model, A2($elm$browser$Debugger$Main$download, metadata, model.history));
-                });
-            case 'Upload':
-                var jsonString = msg.a;
-                return A2($elm$browser$Debugger$Main$withGoodMetadata, model, function(metadata) {
-                    var _v7 = A2($elm$browser$Debugger$Overlay$assessImport, metadata, jsonString);
-                    if (_v7.$ === 'Err') {
-                        var newOverlay = _v7.a;
-                        return _Utils_Tuple2(_Utils_update(model, {
-                            overlay: newOverlay
-                        }), $elm$core$Platform$Cmd$none);
-                    } else {
-                        var rawHistory = _v7.a;
-                        return A3($elm$browser$Debugger$Main$loadNewHistory, rawHistory, update, model);
-                    }
-                });
-            case 'OverlayMsg':
-                var overlayMsg = msg.a;
-                var _v8 = A2($elm$browser$Debugger$Overlay$close, overlayMsg, model.overlay);
-                if (_v8.$ === 'Nothing') return _Utils_Tuple2(_Utils_update(model, {
-                    overlay: $elm$browser$Debugger$Overlay$none
-                }), $elm$core$Platform$Cmd$none);
-                else {
-                    var rawHistory1 = _v8.a;
-                    return A3($elm$browser$Debugger$Main$loadNewHistory, rawHistory1, update, model);
-                }
-            case 'SwapLayout':
-                return _Utils_Tuple2(_Utils_update(model, {
-                    layout: $elm$browser$Debugger$Main$swapLayout(model.layout)
-                }), $elm$core$Platform$Cmd$none);
-            case 'DragStart':
-                return _Utils_Tuple2(_Utils_update(model, {
-                    layout: A2($elm$browser$Debugger$Main$setDragStatus, $elm$browser$Debugger$Main$Moving, model.layout)
-                }), $elm$core$Platform$Cmd$none);
-            case 'Drag':
-                var info = msg.a;
-                return _Utils_Tuple2(_Utils_update(model, {
-                    layout: A2($elm$browser$Debugger$Main$drag, info, model.layout)
-                }), $elm$core$Platform$Cmd$none);
-            default:
-                return _Utils_Tuple2(_Utils_update(model, {
-                    layout: A2($elm$browser$Debugger$Main$setDragStatus, $elm$browser$Debugger$Main$Static, model.layout)
-                }), $elm$core$Platform$Cmd$none);
-        }
-    });
-    var $elm$browser$Browser$External = function(a) {
-        return {
-            $: 'External',
-            a: a
-        };
-    };
-    var $elm$browser$Browser$Internal = function(a) {
-        return {
-            $: 'Internal',
-            a: a
-        };
-    };
-    var $elm$browser$Browser$Dom$NotFound = function(a) {
-        return {
-            $: 'NotFound',
-            a: a
-        };
-    };
-    var $elm$url$Url$Http = {
-        $: 'Http'
-    };
-    var $elm$url$Url$Https = {
-        $: 'Https'
-    };
-    var $elm$url$Url$Url = F6(function(protocol, host, port_, path, query, fragment) {
-        return {
-            fragment: fragment,
-            host: host,
-            path: path,
-            port_: port_,
-            protocol: protocol,
-            query: query
-        };
-    });
-    var $elm$core$String$dropLeft = F2(function(n, string) {
-        return n < 1 ? string : A3($elm$core$String$slice, n, $elm$core$String$length(string), string);
-    });
-    var $elm$core$String$indexes = _String_indexes;
-    var $elm$core$String$isEmpty = function(string) {
-        return string === '';
-    };
-    var $elm$url$Url$chompBeforePath = F5(function(protocol, path, params, frag, str) {
-        if ($elm$core$String$isEmpty(str) || A2($elm$core$String$contains, '@', str)) return $elm$core$Maybe$Nothing;
-        else {
-            var _v0 = A2($elm$core$String$indexes, ':', str);
-            if (!_v0.b) return $elm$core$Maybe$Just(A6($elm$url$Url$Url, protocol, str, $elm$core$Maybe$Nothing, path, params, frag));
-            else {
-                if (!_v0.b.b) {
-                    var i = _v0.a;
-                    var _v1 = $elm$core$String$toInt(A2($elm$core$String$dropLeft, i + 1, str));
-                    if (_v1.$ === 'Nothing') return $elm$core$Maybe$Nothing;
-                    else {
-                        var port_ = _v1;
-                        return $elm$core$Maybe$Just(A6($elm$url$Url$Url, protocol, A2($elm$core$String$left, i, str), port_, path, params, frag));
-                    }
-                } else return $elm$core$Maybe$Nothing;
-            }
-        }
-    });
-    var $elm$url$Url$chompBeforeQuery = F4(function(protocol, params, frag, str) {
-        if ($elm$core$String$isEmpty(str)) return $elm$core$Maybe$Nothing;
-        else {
-            var _v0 = A2($elm$core$String$indexes, '/', str);
-            if (!_v0.b) return A5($elm$url$Url$chompBeforePath, protocol, '/', params, frag, str);
-            else {
-                var i = _v0.a;
-                return A5($elm$url$Url$chompBeforePath, protocol, A2($elm$core$String$dropLeft, i, str), params, frag, A2($elm$core$String$left, i, str));
-            }
-        }
-    });
-    var $elm$url$Url$chompBeforeFragment = F3(function(protocol, frag, str) {
-        if ($elm$core$String$isEmpty(str)) return $elm$core$Maybe$Nothing;
-        else {
-            var _v0 = A2($elm$core$String$indexes, '?', str);
-            if (!_v0.b) return A4($elm$url$Url$chompBeforeQuery, protocol, $elm$core$Maybe$Nothing, frag, str);
-            else {
-                var i = _v0.a;
-                return A4($elm$url$Url$chompBeforeQuery, protocol, $elm$core$Maybe$Just(A2($elm$core$String$dropLeft, i + 1, str)), frag, A2($elm$core$String$left, i, str));
-            }
-        }
-    });
-    var $elm$url$Url$chompAfterProtocol = F2(function(protocol, str) {
-        if ($elm$core$String$isEmpty(str)) return $elm$core$Maybe$Nothing;
-        else {
-            var _v0 = A2($elm$core$String$indexes, '#', str);
-            if (!_v0.b) return A3($elm$url$Url$chompBeforeFragment, protocol, $elm$core$Maybe$Nothing, str);
-            else {
-                var i = _v0.a;
-                return A3($elm$url$Url$chompBeforeFragment, protocol, $elm$core$Maybe$Just(A2($elm$core$String$dropLeft, i + 1, str)), A2($elm$core$String$left, i, str));
-            }
-        }
-    });
-    var $elm$core$String$startsWith = _String_startsWith;
-    var $elm$url$Url$fromString = function(str) {
-        return A2($elm$core$String$startsWith, 'http://', str) ? A2($elm$url$Url$chompAfterProtocol, $elm$url$Url$Http, A2($elm$core$String$dropLeft, 7, str)) : A2($elm$core$String$startsWith, 'https://', str) ? A2($elm$url$Url$chompAfterProtocol, $elm$url$Url$Https, A2($elm$core$String$dropLeft, 8, str)) : $elm$core$Maybe$Nothing;
-    };
-    var $elm$core$Basics$never = function(_v0) {
-        never: while(true){
-            var nvr = _v0.a;
-            var $temp$_v0 = nvr;
-            _v0 = $temp$_v0;
-            continue never;
-        }
-    };
-    var $elm$browser$Browser$document = _Browser_document;
-    var $author$project$Main$Paused = {
-        $: 'Paused'
-    };
-    var $elm$core$Array$appendHelpTree = F2(function(toAppend, array) {
-        var len = array.a;
-        var tree = array.c;
-        var tail = array.d;
-        var itemsToAppend = $elm$core$Elm$JsArray$length(toAppend);
-        var notAppended = $elm$core$Array$branchFactor - $elm$core$Elm$JsArray$length(tail) - itemsToAppend;
-        var appended = A3($elm$core$Elm$JsArray$appendN, $elm$core$Array$branchFactor, tail, toAppend);
-        var newArray = A2($elm$core$Array$unsafeReplaceTail, appended, array);
-        if (notAppended < 0) {
-            var nextTail = A3($elm$core$Elm$JsArray$slice, notAppended, itemsToAppend, toAppend);
-            return A2($elm$core$Array$unsafeReplaceTail, nextTail, newArray);
-        } else return newArray;
-    });
-    var $elm$core$Array$builderFromArray = function(_v0) {
-        var len = _v0.a;
-        var tree = _v0.c;
-        var tail = _v0.d;
-        var helper = F2(function(node, acc) {
-            if (node.$ === 'SubTree') {
-                var subTree = node.a;
-                return A3($elm$core$Elm$JsArray$foldl, helper, acc, subTree);
-            } else return A2($elm$core$List$cons, node, acc);
-        });
-        return {
-            nodeList: A3($elm$core$Elm$JsArray$foldl, helper, _List_Nil, tree),
-            nodeListSize: len / $elm$core$Array$branchFactor | 0,
-            tail: tail
-        };
-    };
-    var $elm$core$Array$append = F2(function(a, _v0) {
-        var aTail = a.d;
-        var bLen = _v0.a;
-        var bTree = _v0.c;
-        var bTail = _v0.d;
-        if (_Utils_cmp(bLen, $elm$core$Array$branchFactor * 4) < 1) {
-            var foldHelper = F2(function(node, array) {
-                if (node.$ === 'SubTree') {
-                    var tree = node.a;
-                    return A3($elm$core$Elm$JsArray$foldl, foldHelper, array, tree);
-                } else {
-                    var leaf = node.a;
-                    return A2($elm$core$Array$appendHelpTree, leaf, array);
-                }
-            });
-            return A2($elm$core$Array$appendHelpTree, bTail, A3($elm$core$Elm$JsArray$foldl, foldHelper, a, bTree));
-        } else {
-            var foldHelper = F2(function(node, builder) {
-                if (node.$ === 'SubTree') {
-                    var tree = node.a;
-                    return A3($elm$core$Elm$JsArray$foldl, foldHelper, builder, tree);
-                } else {
-                    var leaf = node.a;
-                    return A2($elm$core$Array$appendHelpBuilder, leaf, builder);
-                }
-            });
-            return A2($elm$core$Array$builderToArray, true, A2($elm$core$Array$appendHelpBuilder, bTail, A3($elm$core$Elm$JsArray$foldl, foldHelper, $elm$core$Array$builderFromArray(a), bTree)));
-        }
-    });
     var $author$project$Cpu$arrayTake = function(n) {
         return A2($elm$core$Array$slice, 0, n);
     };
@@ -7678,6 +4640,36 @@ type alias Process =
     };
     var $author$project$Byte$fromInt = function(n) {
         return $author$project$Byte$Byte(255 & n);
+    };
+    var $elm$core$Array$fromListHelp = F3(function(list, nodeList, nodeListSize) {
+        fromListHelp: while(true){
+            var _v0 = A2($elm$core$Elm$JsArray$initializeFromList, $elm$core$Array$branchFactor, list);
+            var jsArray = _v0.a;
+            var remainingItems = _v0.b;
+            if (_Utils_cmp($elm$core$Elm$JsArray$length(jsArray), $elm$core$Array$branchFactor) < 0) return A2($elm$core$Array$builderToArray, true, {
+                nodeList: nodeList,
+                nodeListSize: nodeListSize,
+                tail: jsArray
+            });
+            else {
+                var $temp$list = remainingItems, $temp$nodeList = A2($elm$core$List$cons, $elm$core$Array$Leaf(jsArray), nodeList), $temp$nodeListSize = nodeListSize + 1;
+                list = $temp$list;
+                nodeList = $temp$nodeList;
+                nodeListSize = $temp$nodeListSize;
+                continue fromListHelp;
+            }
+        }
+    });
+    var $elm$core$Array$fromList = function(list) {
+        if (!list.b) return $elm$core$Array$empty;
+        else return A3($elm$core$Array$fromListHelp, list, _List_Nil, 0);
+    };
+    var $elm$core$List$append = F2(function(xs, ys) {
+        if (!ys.b) return xs;
+        else return A3($elm$core$List$foldr, $elm$core$List$cons, ys, xs);
+    });
+    var $elm$core$List$concat = function(lists) {
+        return A3($elm$core$List$foldr, $elm$core$List$append, _List_Nil, lists);
     };
     var $author$project$Cpu$fontSprites = A2($elm$core$List$map, $author$project$Byte$fromInt, $elm$core$List$concat(_List_fromArray([
         _List_fromArray([
@@ -7821,6 +4813,10 @@ type alias Process =
             a: a
         };
     };
+    var $elm$core$Dict$RBEmpty_elm_builtin = {
+        $: 'RBEmpty_elm_builtin'
+    };
+    var $elm$core$Dict$empty = $elm$core$Dict$RBEmpty_elm_builtin;
     var $elm$core$Set$empty = $elm$core$Set$Set_elm_builtin($elm$core$Dict$empty);
     var $author$project$Registers$Registers = function(a) {
         return {
@@ -7853,6 +4849,15 @@ type alias Process =
     var $author$project$Cpu$fromProgram = F2(function(seed, program) {
         return A2($author$project$Cpu$load, program, $author$project$Cpu$new(seed));
     });
+    var $author$project$Main$getProgram = function(r) {
+        if (r.$ === 'SampleRom') {
+            var x = r.b;
+            return x;
+        } else {
+            var x = r.a;
+            return x;
+        }
+    };
     var $author$project$OpCode$Add = F2(function(a, b) {
         return {
             $: 'Add',
@@ -8331,22 +5336,31 @@ type alias Process =
         });
         return A2(help, bytes, _List_Nil);
     };
-    var $author$project$Main$initModel = F2(function(seed, program) {
-        var cpu = A2($author$project$Cpu$fromProgram, seed, program);
+    var $author$project$Main$initModel = F3(function(seed, debug, rom) {
+        var cpu = A2($author$project$Cpu$fromProgram, seed, $author$project$Main$getProgram(rom));
         return {
-            allOps: $author$project$Main$programToOpCodes(program),
+            allOps: $author$project$Main$programToOpCodes($author$project$Main$getProgram(rom)),
             cpu: cpu,
+            debug: debug,
             followPc: true,
             opHistory: _List_Nil,
-            program: program,
+            rom: rom,
             seed: seed,
             status: $author$project$Main$Paused
         };
     });
-    var $author$project$Rom$Demo = {
+    var $elm$core$Platform$Cmd$batch = _Platform_batch;
+    var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
+    var $elm$core$Result$toMaybe = function(result) {
+        if (result.$ === 'Ok') {
+            var v = result.a;
+            return $elm$core$Maybe$Just(v);
+        } else return $elm$core$Maybe$Nothing;
+    };
+    var $author$project$SampleRom$Demo = {
         $: 'Demo'
     };
-    var $author$project$Rom$Rom = F4(function(kind, name, program, desc) {
+    var $author$project$SampleRom$SampleRom = F4(function(kind, name, program, desc) {
         return {
             desc: desc,
             kind: kind,
@@ -8354,7 +5368,7 @@ type alias Process =
             program: program
         };
     });
-    var $author$project$Rom$trip8 = A4($author$project$Rom$Rom, $author$project$Rom$Demo, 'Trip8 Demo (2008) [Revival Studios]', _List_fromArray([
+    var $author$project$SampleRom$trip8 = A4($author$project$SampleRom$SampleRom, $author$project$SampleRom$Demo, 'Trip8 Demo (2008) [Revival Studios]', _List_fromArray([
         18,
         20,
         82,
@@ -11559,11 +8573,20 @@ type alias Process =
         12,
         26
     ]), '');
+    var $elm$core$Maybe$withDefault = F2(function(_default, maybe) {
+        if (maybe.$ === 'Just') {
+            var value = maybe.a;
+            return value;
+        } else return _default;
+    });
     var $author$project$Main$init = function(flags) {
-        return _Utils_Tuple2(A2($author$project$Main$initModel, A2($elm$core$Maybe$withDefault, 0, flags.seed), $author$project$Rom$trip8.program), $elm$core$Platform$Cmd$none);
+        var config = A2($elm$core$Maybe$withDefault, $author$project$Main$defaultConfig, A2($elm$core$Maybe$andThen, function(v) {
+            return $elm$core$Result$toMaybe(A2($elm$json$Json$Decode$decodeValue, $author$project$Main$decodeConfig, v));
+        }, flags.config));
+        var rom = A2($elm$core$Maybe$withDefault, A2($author$project$Main$SampleRom, $author$project$SampleRom$trip8.name, $author$project$SampleRom$trip8.program), config.rom);
+        return _Utils_Tuple2(A3($author$project$Main$initModel, A2($elm$core$Maybe$withDefault, 0, flags.seed), config.debug, rom), $elm$core$Platform$Cmd$none);
     };
     var $elm$json$Json$Decode$null = _Json_decodeNull;
-    var $elm$json$Json$Decode$oneOf = _Json_oneOf;
     var $author$project$Main$ChangeStatus = function(a) {
         return {
             $: 'ChangeStatus',
@@ -11596,6 +8619,33 @@ type alias Process =
     };
     var $elm$core$Platform$Sub$batch = _Platform_batch;
     var $elm$json$Json$Decode$fail = _Json_fail;
+    var $elm$core$Basics$compare = _Utils_compare;
+    var $elm$core$Dict$get = F2(function(targetKey, dict) {
+        get: while(true){
+            if (dict.$ === 'RBEmpty_elm_builtin') return $elm$core$Maybe$Nothing;
+            else {
+                var key = dict.b;
+                var value = dict.c;
+                var left = dict.d;
+                var right = dict.e;
+                var _v1 = A2($elm$core$Basics$compare, targetKey, key);
+                switch(_v1.$){
+                    case 'LT':
+                        var $temp$targetKey = targetKey, $temp$dict = left;
+                        targetKey = $temp$targetKey;
+                        dict = $temp$dict;
+                        continue get;
+                    case 'EQ':
+                        return $elm$core$Maybe$Just(value);
+                    default:
+                        var $temp$targetKey = targetKey, $temp$dict = right;
+                        targetKey = $temp$targetKey;
+                        dict = $temp$dict;
+                        continue get;
+                }
+            }
+        }
+    });
     var $author$project$Key$Key0 = {
         $: 'Key0'
     };
@@ -11643,6 +8693,93 @@ type alias Process =
     };
     var $author$project$Key$KeyF = {
         $: 'KeyF'
+    };
+    var $elm$core$Dict$Black = {
+        $: 'Black'
+    };
+    var $elm$core$Dict$RBNode_elm_builtin = F5(function(a, b, c, d, e) {
+        return {
+            $: 'RBNode_elm_builtin',
+            a: a,
+            b: b,
+            c: c,
+            d: d,
+            e: e
+        };
+    });
+    var $elm$core$Dict$Red = {
+        $: 'Red'
+    };
+    var $elm$core$Dict$balance = F5(function(color, key, value, left, right) {
+        if (right.$ === 'RBNode_elm_builtin' && right.a.$ === 'Red') {
+            var _v1 = right.a;
+            var rK = right.b;
+            var rV = right.c;
+            var rLeft = right.d;
+            var rRight = right.e;
+            if (left.$ === 'RBNode_elm_builtin' && left.a.$ === 'Red') {
+                var _v3 = left.a;
+                var lK = left.b;
+                var lV = left.c;
+                var lLeft = left.d;
+                var lRight = left.e;
+                return A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, key, value, A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, lK, lV, lLeft, lRight), A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, rK, rV, rLeft, rRight));
+            } else return A5($elm$core$Dict$RBNode_elm_builtin, color, rK, rV, A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, key, value, left, rLeft), rRight);
+        } else {
+            if (left.$ === 'RBNode_elm_builtin' && left.a.$ === 'Red' && left.d.$ === 'RBNode_elm_builtin' && left.d.a.$ === 'Red') {
+                var _v5 = left.a;
+                var lK = left.b;
+                var lV = left.c;
+                var _v6 = left.d;
+                var _v7 = _v6.a;
+                var llK = _v6.b;
+                var llV = _v6.c;
+                var llLeft = _v6.d;
+                var llRight = _v6.e;
+                var lRight = left.e;
+                return A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, lK, lV, A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, llK, llV, llLeft, llRight), A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, key, value, lRight, right));
+            } else return A5($elm$core$Dict$RBNode_elm_builtin, color, key, value, left, right);
+        }
+    });
+    var $elm$core$Dict$insertHelp = F3(function(key, value, dict) {
+        if (dict.$ === 'RBEmpty_elm_builtin') return A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, key, value, $elm$core$Dict$RBEmpty_elm_builtin, $elm$core$Dict$RBEmpty_elm_builtin);
+        else {
+            var nColor = dict.a;
+            var nKey = dict.b;
+            var nValue = dict.c;
+            var nLeft = dict.d;
+            var nRight = dict.e;
+            var _v1 = A2($elm$core$Basics$compare, key, nKey);
+            switch(_v1.$){
+                case 'LT':
+                    return A5($elm$core$Dict$balance, nColor, nKey, nValue, A3($elm$core$Dict$insertHelp, key, value, nLeft), nRight);
+                case 'EQ':
+                    return A5($elm$core$Dict$RBNode_elm_builtin, nColor, nKey, value, nLeft, nRight);
+                default:
+                    return A5($elm$core$Dict$balance, nColor, nKey, nValue, nLeft, A3($elm$core$Dict$insertHelp, key, value, nRight));
+            }
+        }
+    });
+    var $elm$core$Dict$insert = F3(function(key, value, dict) {
+        var _v0 = A3($elm$core$Dict$insertHelp, key, value, dict);
+        if (_v0.$ === 'RBNode_elm_builtin' && _v0.a.$ === 'Red') {
+            var _v1 = _v0.a;
+            var k = _v0.b;
+            var v = _v0.c;
+            var l = _v0.d;
+            var r = _v0.e;
+            return A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, k, v, l, r);
+        } else {
+            var x = _v0;
+            return x;
+        }
+    });
+    var $elm$core$Dict$fromList = function(assocs) {
+        return A3($elm$core$List$foldl, F2(function(_v0, dict) {
+            var key = _v0.a;
+            var value = _v0.b;
+            return A3($elm$core$Dict$insert, key, value, dict);
+        }), $elm$core$Dict$empty, assocs);
     };
     var $author$project$Key$qwertyMap = $elm$core$Dict$fromList(_List_fromArray([
         _Utils_Tuple2('Digit1', $author$project$Key$Key1),
@@ -11746,6 +8883,9 @@ type alias Process =
             a: a
         };
     };
+    var $elm$core$Basics$composeL = F3(function(g, f, x) {
+        return g(f(x));
+    });
     var $elm$browser$Browser$AnimationManager$subMap = F2(function(func, sub) {
         if (sub.$ === 'Time') {
             var tagger = sub.a;
@@ -11788,6 +8928,55 @@ type alias Process =
         var name = sub.b;
         return _Utils_Tuple2(_Utils_ap($elm$browser$Browser$Events$nodeToKey(node), name), sub);
     };
+    var $elm$core$Dict$foldl = F3(function(func, acc, dict) {
+        foldl: while(true){
+            if (dict.$ === 'RBEmpty_elm_builtin') return acc;
+            else {
+                var key = dict.b;
+                var value = dict.c;
+                var left = dict.d;
+                var right = dict.e;
+                var $temp$func = func, $temp$acc = A3(func, key, value, A3($elm$core$Dict$foldl, func, acc, left)), $temp$dict = right;
+                func = $temp$func;
+                acc = $temp$acc;
+                dict = $temp$dict;
+                continue foldl;
+            }
+        }
+    });
+    var $elm$core$Dict$merge = F6(function(leftStep, bothStep, rightStep, leftDict, rightDict, initialResult) {
+        var stepState = F3(function(rKey, rValue, _v0) {
+            stepState: while(true){
+                var list = _v0.a;
+                var result = _v0.b;
+                if (!list.b) return _Utils_Tuple2(list, A3(rightStep, rKey, rValue, result));
+                else {
+                    var _v2 = list.a;
+                    var lKey = _v2.a;
+                    var lValue = _v2.b;
+                    var rest = list.b;
+                    if (_Utils_cmp(lKey, rKey) < 0) {
+                        var $temp$rKey = rKey, $temp$rValue = rValue, $temp$_v0 = _Utils_Tuple2(rest, A3(leftStep, lKey, lValue, result));
+                        rKey = $temp$rKey;
+                        rValue = $temp$rValue;
+                        _v0 = $temp$_v0;
+                        continue stepState;
+                    } else {
+                        if (_Utils_cmp(lKey, rKey) > 0) return _Utils_Tuple2(list, A3(rightStep, rKey, rValue, result));
+                        else return _Utils_Tuple2(rest, A4(bothStep, lKey, lValue, rValue, result));
+                    }
+                }
+            }
+        });
+        var _v3 = A3($elm$core$Dict$foldl, stepState, _Utils_Tuple2($elm$core$Dict$toList(leftDict), initialResult), rightDict);
+        var leftovers = _v3.a;
+        var intermediateResult = _v3.b;
+        return A3($elm$core$List$foldl, F2(function(_v4, result) {
+            var k = _v4.a;
+            var v = _v4.b;
+            return A3(leftStep, k, v, result);
+        }), intermediateResult, leftovers);
+    });
     var $elm$browser$Browser$Events$Event = F2(function(key, event) {
         return {
             event: event,
@@ -11840,6 +9029,16 @@ type alias Process =
             return $elm$core$Task$sequence(makeNewPids);
         }, $elm$core$Task$sequence(A2($elm$core$List$map, $elm$core$Process$kill, deadPids))));
     });
+    var $elm$core$List$maybeCons = F3(function(f, mx, xs) {
+        var _v0 = f(mx);
+        if (_v0.$ === 'Just') {
+            var x = _v0.a;
+            return A2($elm$core$List$cons, x, xs);
+        } else return xs;
+    });
+    var $elm$core$List$filterMap = F2(function(f, xs) {
+        return A3($elm$core$List$foldr, $elm$core$List$maybeCons(f), _List_Nil, xs);
+    });
     var $elm$browser$Browser$Events$onSelfMsg = F3(function(router, _v0, state) {
         var key = _v0.key;
         var event = _v0.event;
@@ -11869,7 +9068,6 @@ type alias Process =
     });
     var $elm$browser$Browser$Events$onKeyDown = A2($elm$browser$Browser$Events$on, $elm$browser$Browser$Events$Document, 'keydown');
     var $elm$browser$Browser$Events$onKeyUp = A2($elm$browser$Browser$Events$on, $elm$browser$Browser$Events$Document, 'keyup');
-    var $elm$json$Json$Decode$bool = _Json_decodeBool;
     var $elm$browser$Browser$Events$Hidden = {
         $: 'Hidden'
     };
@@ -11901,10 +9099,34 @@ type alias Process =
             }()
         ]));
     };
-    var $author$project$Rom$Test = {
+    var $elm$bytes$Bytes$Decode$Done = function(a) {
+        return {
+            $: 'Done',
+            a: a
+        };
+    };
+    var $elm$bytes$Bytes$Decode$Loop = function(a) {
+        return {
+            $: 'Loop',
+            a: a
+        };
+    };
+    var $author$project$Main$UserFileLoaded = function(a) {
+        return {
+            $: 'UserFileLoaded',
+            a: a
+        };
+    };
+    var $author$project$Main$UserFileSelected = function(a) {
+        return {
+            $: 'UserFileSelected',
+            a: a
+        };
+    };
+    var $author$project$SampleRom$Test = {
         $: 'Test'
     };
-    var $author$project$Rom$bestcoder = A4($author$project$Rom$Rom, $author$project$Rom$Test, 'bestcoder\'s test', _List_fromArray([
+    var $author$project$SampleRom$bestcoder = A4($author$project$SampleRom$SampleRom, $author$project$SampleRom$Test, 'bestcoder\'s test', _List_fromArray([
         0,
         224,
         99,
@@ -12376,10 +9598,10 @@ type alias Process =
         0,
         0
     ]), '');
-    var $author$project$Rom$Game = {
+    var $author$project$SampleRom$Game = {
         $: 'Game'
     };
-    var $author$project$Rom$breakout = A4($author$project$Rom$Rom, $author$project$Rom$Game, 'Breakout (Brix hack) [David Winter, 1997]', _List_fromArray([
+    var $author$project$SampleRom$breakout = A4($author$project$SampleRom$SampleRom, $author$project$SampleRom$Game, 'Breakout (Brix hack) [David Winter, 1997]', _List_fromArray([
         110,
         5,
         101,
@@ -12661,7 +9883,7 @@ type alias Process =
         0,
         0
     ]), '');
-    var $author$project$Rom$breakoutBroken = A4($author$project$Rom$Rom, $author$project$Rom$Game, 'Breakout (Broken)', _List_fromArray([
+    var $author$project$SampleRom$breakoutBroken = A4($author$project$SampleRom$SampleRom, $author$project$SampleRom$Game, 'Breakout (Broken)', _List_fromArray([
         162,
         204,
         106,
@@ -12895,7 +10117,7 @@ type alias Process =
         136,
         238
     ]), 'A breakout game that doesn\'t work very well whether that\'s because the game itself or my emulator impl (TODO).');
-    var $author$project$Rom$corax89 = A4($author$project$Rom$Rom, $author$project$Rom$Test, 'corax89\'s opcode tests', _List_fromArray([
+    var $author$project$SampleRom$corax89 = A4($author$project$SampleRom$SampleRom, $author$project$SampleRom$Test, 'corax89\'s opcode tests', _List_fromArray([
         18,
         78,
         234,
@@ -13375,7 +10597,7 @@ type alias Process =
         19,
         220
     ]), 'Prints OK/NO (pass/fail) next to each opcode it tests');
-    var $author$project$Rom$delay = A4($author$project$Rom$Rom, $author$project$Rom$Test, 'Delay Timer Test [Matthew Mikolay, 2010]', _List_fromArray([
+    var $author$project$SampleRom$delay = A4($author$project$SampleRom$SampleRom, $author$project$SampleRom$Test, 'Delay Timer Test [Matthew Mikolay, 2010]', _List_fromArray([
         102,
         1,
         34,
@@ -13435,7 +10657,7 @@ type alias Process =
         0,
         238
     ]), '');
-    var $author$project$Rom$ibm = A4($author$project$Rom$Rom, $author$project$Rom$Test, 'IBM logo', _List_fromArray([
+    var $author$project$SampleRom$ibm = A4($author$project$SampleRom$SampleRom, $author$project$SampleRom$Test, 'IBM logo', _List_fromArray([
         0,
         224,
         162,
@@ -13569,7 +10791,7 @@ type alias Process =
         0,
         224
     ]), 'Prints IBM logo');
-    var $author$project$Rom$keypad = A4($author$project$Rom$Rom, $author$project$Rom$Test, 'Keypad test [Hap, 2006]', _List_fromArray([
+    var $author$project$SampleRom$keypad = A4($author$project$SampleRom$SampleRom, $author$project$SampleRom$Test, 'Keypad test [Hap, 2006]', _List_fromArray([
         18,
         78,
         8,
@@ -13685,7 +10907,7 @@ type alias Process =
         18,
         100
     ]), 'Press a key and it will show you which one you pressed.');
-    var $author$project$Rom$maze = A4($author$project$Rom$Rom, $author$project$Rom$Demo, 'Maze [David Winter, 199x]', _List_fromArray([
+    var $author$project$SampleRom$maze = A4($author$project$SampleRom$SampleRom, $author$project$SampleRom$Demo, 'Maze [David Winter, 199x]', _List_fromArray([
         162,
         30,
         194,
@@ -13721,7 +10943,7 @@ type alias Process =
         128,
         16
     ]), '');
-    var $author$project$Rom$mazeAlt = A4($author$project$Rom$Rom, $author$project$Rom$Demo, 'Maze (alt) [David Winter, 199x]', _List_fromArray([
+    var $author$project$SampleRom$mazeAlt = A4($author$project$SampleRom$SampleRom, $author$project$SampleRom$Demo, 'Maze (alt) [David Winter, 199x]', _List_fromArray([
         96,
         0,
         97,
@@ -13761,10 +10983,10 @@ type alias Process =
         128,
         16
     ]), '');
-    var $author$project$Rom$pair = function(rom) {
+    var $author$project$SampleRom$pair = function(rom) {
         return _Utils_Tuple2(rom.name, rom);
     };
-    var $author$project$Rom$particle = A4($author$project$Rom$Rom, $author$project$Rom$Demo, 'Particle Demo [zeroZshadow, 2008]', _List_fromArray([
+    var $author$project$SampleRom$particle = A4($author$project$SampleRom$SampleRom, $author$project$SampleRom$Demo, 'Particle Demo [zeroZshadow, 2008]', _List_fromArray([
         163,
         33,
         96,
@@ -14119,7 +11341,7 @@ type alias Process =
         0,
         0
     ]), '');
-    var $author$project$Rom$picture = A4($author$project$Rom$Rom, $author$project$Rom$Test, 'Basic picture', _List_fromArray([
+    var $author$project$SampleRom$picture = A4($author$project$SampleRom$SampleRom, $author$project$SampleRom$Test, 'Basic picture', _List_fromArray([
         0,
         224,
         162,
@@ -14285,7 +11507,7 @@ type alias Process =
         255,
         255
     ]), '');
-    var $author$project$Rom$random = A4($author$project$Rom$Rom, $author$project$Rom$Test, 'Random number gen', _List_fromArray([
+    var $author$project$SampleRom$random = A4($author$project$SampleRom$SampleRom, $author$project$SampleRom$Test, 'Random number gen', _List_fromArray([
         101,
         0,
         0,
@@ -14321,7 +11543,7 @@ type alias Process =
         18,
         2
     ]), '');
-    var $author$project$Rom$stars = A4($author$project$Rom$Rom, $author$project$Rom$Demo, 'Stars [Sergey Naydenov, 2010]', _List_fromArray([
+    var $author$project$SampleRom$stars = A4($author$project$SampleRom$SampleRom, $author$project$SampleRom$Demo, 'Stars [Sergey Naydenov, 2010]', _List_fromArray([
         18,
         5,
         67,
@@ -15291,7 +12513,7 @@ type alias Process =
         0,
         0
     ]), '');
-    var $author$project$Rom$tetris = A4($author$project$Rom$Rom, $author$project$Rom$Game, 'Tetris [Fran Dachille, 1991]', _List_fromArray([
+    var $author$project$SampleRom$tetris = A4($author$project$SampleRom$SampleRom, $author$project$SampleRom$Game, 'Tetris [Fran Dachille, 1991]', _List_fromArray([
         162,
         180,
         35,
@@ -15787,7 +13009,7 @@ type alias Process =
         55,
         35
     ]), '');
-    var $author$project$Rom$timendus = A4($author$project$Rom$Rom, $author$project$Rom$Test, 'timendus\' tests', _List_fromArray([
+    var $author$project$SampleRom$timendus = A4($author$project$SampleRom$SampleRom, $author$project$SampleRom$Test, 'timendus\' tests', _List_fromArray([
         0,
         224,
         97,
@@ -18897,7 +16119,7 @@ type alias Process =
         25,
         146
     ]), 'https://github.com/Timendus/chip8-test-suite');
-    var $author$project$Rom$zero = A4($author$project$Rom$Rom, $author$project$Rom$Demo, 'Zero Demo [zeroZshadow, 2007]', _List_fromArray([
+    var $author$project$SampleRom$zero = A4($author$project$SampleRom$SampleRom, $author$project$SampleRom$Demo, 'Zero Demo [zeroZshadow, 2007]', _List_fromArray([
         96,
         10,
         101,
@@ -19043,30 +16265,180 @@ type alias Process =
         195,
         60
     ]), '');
-    var $author$project$Rom$all = $elm$core$Dict$fromList(_List_fromArray([
-        $author$project$Rom$pair($author$project$Rom$corax89),
-        $author$project$Rom$pair($author$project$Rom$timendus),
-        $author$project$Rom$pair($author$project$Rom$ibm),
-        $author$project$Rom$pair($author$project$Rom$keypad),
-        $author$project$Rom$pair($author$project$Rom$picture),
-        $author$project$Rom$pair($author$project$Rom$delay),
-        $author$project$Rom$pair($author$project$Rom$random),
-        $author$project$Rom$pair($author$project$Rom$bestcoder),
-        $author$project$Rom$pair($author$project$Rom$maze),
-        $author$project$Rom$pair($author$project$Rom$mazeAlt),
-        $author$project$Rom$pair($author$project$Rom$particle),
-        $author$project$Rom$pair($author$project$Rom$stars),
-        $author$project$Rom$pair($author$project$Rom$zero),
-        $author$project$Rom$pair($author$project$Rom$trip8),
-        $author$project$Rom$pair($author$project$Rom$tetris),
-        $author$project$Rom$pair($author$project$Rom$breakout),
-        $author$project$Rom$pair($author$project$Rom$breakoutBroken)
+    var $author$project$SampleRom$all = $elm$core$Dict$fromList(_List_fromArray([
+        $author$project$SampleRom$pair($author$project$SampleRom$corax89),
+        $author$project$SampleRom$pair($author$project$SampleRom$timendus),
+        $author$project$SampleRom$pair($author$project$SampleRom$ibm),
+        $author$project$SampleRom$pair($author$project$SampleRom$keypad),
+        $author$project$SampleRom$pair($author$project$SampleRom$picture),
+        $author$project$SampleRom$pair($author$project$SampleRom$delay),
+        $author$project$SampleRom$pair($author$project$SampleRom$random),
+        $author$project$SampleRom$pair($author$project$SampleRom$bestcoder),
+        $author$project$SampleRom$pair($author$project$SampleRom$maze),
+        $author$project$SampleRom$pair($author$project$SampleRom$mazeAlt),
+        $author$project$SampleRom$pair($author$project$SampleRom$particle),
+        $author$project$SampleRom$pair($author$project$SampleRom$stars),
+        $author$project$SampleRom$pair($author$project$SampleRom$zero),
+        $author$project$SampleRom$pair($author$project$SampleRom$trip8),
+        $author$project$SampleRom$pair($author$project$SampleRom$tetris),
+        $author$project$SampleRom$pair($author$project$SampleRom$breakout),
+        $author$project$SampleRom$pair($author$project$SampleRom$breakoutBroken)
     ]));
+    var $elm$bytes$Bytes$Decode$Decoder = function(a) {
+        return {
+            $: 'Decoder',
+            a: a
+        };
+    };
+    var $elm$bytes$Bytes$Decode$andThen = F2(function(callback, _v0) {
+        var decodeA = _v0.a;
+        return $elm$bytes$Bytes$Decode$Decoder(F2(function(bites, offset) {
+            var _v1 = A2(decodeA, bites, offset);
+            var newOffset = _v1.a;
+            var a = _v1.b;
+            var _v2 = callback(a);
+            var decodeB = _v2.a;
+            return A2(decodeB, bites, newOffset);
+        }));
+    });
     var $author$project$Cpu$clearKeys = function(cpu) {
         return _Utils_update(cpu, {
             keysDown: $elm$core$Set$empty
         });
     };
+    var $elm$bytes$Bytes$Encode$getWidth = function(builder) {
+        switch(builder.$){
+            case 'I8':
+                return 1;
+            case 'I16':
+                return 2;
+            case 'I32':
+                return 4;
+            case 'U8':
+                return 1;
+            case 'U16':
+                return 2;
+            case 'U32':
+                return 4;
+            case 'F32':
+                return 4;
+            case 'F64':
+                return 8;
+            case 'Seq':
+                var w = builder.a;
+                return w;
+            case 'Utf8':
+                var w = builder.a;
+                return w;
+            default:
+                var bs = builder.a;
+                return _Bytes_width(bs);
+        }
+    };
+    var $elm$bytes$Bytes$LE = {
+        $: 'LE'
+    };
+    var $elm$bytes$Bytes$Encode$write = F3(function(builder, mb, offset) {
+        switch(builder.$){
+            case 'I8':
+                var n = builder.a;
+                return A3(_Bytes_write_i8, mb, offset, n);
+            case 'I16':
+                var e = builder.a;
+                var n = builder.b;
+                return A4(_Bytes_write_i16, mb, offset, n, _Utils_eq(e, $elm$bytes$Bytes$LE));
+            case 'I32':
+                var e = builder.a;
+                var n = builder.b;
+                return A4(_Bytes_write_i32, mb, offset, n, _Utils_eq(e, $elm$bytes$Bytes$LE));
+            case 'U8':
+                var n = builder.a;
+                return A3(_Bytes_write_u8, mb, offset, n);
+            case 'U16':
+                var e = builder.a;
+                var n = builder.b;
+                return A4(_Bytes_write_u16, mb, offset, n, _Utils_eq(e, $elm$bytes$Bytes$LE));
+            case 'U32':
+                var e = builder.a;
+                var n = builder.b;
+                return A4(_Bytes_write_u32, mb, offset, n, _Utils_eq(e, $elm$bytes$Bytes$LE));
+            case 'F32':
+                var e = builder.a;
+                var n = builder.b;
+                return A4(_Bytes_write_f32, mb, offset, n, _Utils_eq(e, $elm$bytes$Bytes$LE));
+            case 'F64':
+                var e = builder.a;
+                var n = builder.b;
+                return A4(_Bytes_write_f64, mb, offset, n, _Utils_eq(e, $elm$bytes$Bytes$LE));
+            case 'Seq':
+                var bs = builder.b;
+                return A3($elm$bytes$Bytes$Encode$writeSequence, bs, mb, offset);
+            case 'Utf8':
+                var s = builder.b;
+                return A3(_Bytes_write_string, mb, offset, s);
+            default:
+                var bs = builder.a;
+                return A3(_Bytes_write_bytes, mb, offset, bs);
+        }
+    });
+    var $elm$bytes$Bytes$Encode$writeSequence = F3(function(builders, mb, offset) {
+        writeSequence: while(true){
+            if (!builders.b) return offset;
+            else {
+                var b = builders.a;
+                var bs = builders.b;
+                var $temp$builders = bs, $temp$mb = mb, $temp$offset = A3($elm$bytes$Bytes$Encode$write, b, mb, offset);
+                builders = $temp$builders;
+                mb = $temp$mb;
+                offset = $temp$offset;
+                continue writeSequence;
+            }
+        }
+    });
+    var $elm$bytes$Bytes$Decode$decode = F2(function(_v0, bs) {
+        var decoder = _v0.a;
+        return A2(_Bytes_decode, decoder, bs);
+    });
+    var $elm$json$Json$Encode$bool = _Json_wrap;
+    var $elm$json$Json$Encode$int = _Json_wrap;
+    var $elm$json$Json$Encode$list = F2(function(func, entries) {
+        return _Json_wrap(A3($elm$core$List$foldl, _Json_addEntry(func), _Json_emptyArray(_Utils_Tuple0), entries));
+    });
+    var $elm$json$Json$Encode$object = function(pairs) {
+        return _Json_wrap(A3($elm$core$List$foldl, F2(function(_v0, obj) {
+            var k = _v0.a;
+            var v = _v0.b;
+            return A3(_Json_addField, k, v, obj);
+        }), _Json_emptyObject(_Utils_Tuple0), pairs));
+    };
+    var $elm$json$Json$Encode$string = _Json_wrap;
+    var $author$project$Main$encodeConfig = function(m) {
+        var debug = m.debug;
+        var encodeRom = function(r) {
+            if (r.$ === 'CustomRom') {
+                var data = r.a;
+                return A2($elm$json$Json$Encode$list, $elm$json$Json$Encode$int, data);
+            } else {
+                var s = r.a;
+                var bs = r.b;
+                return A2($elm$json$Json$Encode$list, $elm$core$Basics$identity, _List_fromArray([
+                    $elm$json$Json$Encode$string(s),
+                    A2($elm$json$Json$Encode$list, $elm$json$Json$Encode$int, bs)
+                ]));
+            }
+        };
+        return $elm$json$Json$Encode$object(_List_fromArray([
+            _Utils_Tuple2('debug', $elm$json$Json$Encode$object(_List_fromArray([
+                _Utils_Tuple2('showDebug', $elm$json$Json$Encode$bool(debug.showDebug)),
+                _Utils_Tuple2('showHistory', $elm$json$Json$Encode$bool(debug.showHistory)),
+                _Utils_Tuple2('showProgram', $elm$json$Json$Encode$bool(debug.showProgram))
+            ]))),
+            _Utils_Tuple2('rom', encodeRom(m.rom))
+        ]));
+    };
+    var $elm$file$File$Select$file = F2(function(mimes, toMsg) {
+        return A2($elm$core$Task$perform, toMsg, _File_uploadOne(mimes));
+    });
     var $author$project$Byte$isZero = function(_v0) {
         var x = _v0.a;
         return !x;
@@ -19189,6 +16561,222 @@ type alias Process =
             keysDown: A2($elm$core$Set$insert, keyValue, cpu.keysDown)
         });
     });
+    var $elm$core$Dict$getMin = function(dict) {
+        getMin: while(true){
+            if (dict.$ === 'RBNode_elm_builtin' && dict.d.$ === 'RBNode_elm_builtin') {
+                var left = dict.d;
+                var $temp$dict = left;
+                dict = $temp$dict;
+                continue getMin;
+            } else return dict;
+        }
+    };
+    var $elm$core$Dict$moveRedLeft = function(dict) {
+        if (dict.$ === 'RBNode_elm_builtin' && dict.d.$ === 'RBNode_elm_builtin' && dict.e.$ === 'RBNode_elm_builtin') {
+            if (dict.e.d.$ === 'RBNode_elm_builtin' && dict.e.d.a.$ === 'Red') {
+                var clr = dict.a;
+                var k = dict.b;
+                var v = dict.c;
+                var _v1 = dict.d;
+                var lClr = _v1.a;
+                var lK = _v1.b;
+                var lV = _v1.c;
+                var lLeft = _v1.d;
+                var lRight = _v1.e;
+                var _v2 = dict.e;
+                var rClr = _v2.a;
+                var rK = _v2.b;
+                var rV = _v2.c;
+                var rLeft = _v2.d;
+                var _v3 = rLeft.a;
+                var rlK = rLeft.b;
+                var rlV = rLeft.c;
+                var rlL = rLeft.d;
+                var rlR = rLeft.e;
+                var rRight = _v2.e;
+                return A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, rlK, rlV, A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, k, v, A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, lK, lV, lLeft, lRight), rlL), A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, rK, rV, rlR, rRight));
+            } else {
+                var clr = dict.a;
+                var k = dict.b;
+                var v = dict.c;
+                var _v4 = dict.d;
+                var lClr = _v4.a;
+                var lK = _v4.b;
+                var lV = _v4.c;
+                var lLeft = _v4.d;
+                var lRight = _v4.e;
+                var _v5 = dict.e;
+                var rClr = _v5.a;
+                var rK = _v5.b;
+                var rV = _v5.c;
+                var rLeft = _v5.d;
+                var rRight = _v5.e;
+                if (clr.$ === 'Black') return A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, k, v, A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, lK, lV, lLeft, lRight), A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, rK, rV, rLeft, rRight));
+                else return A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, k, v, A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, lK, lV, lLeft, lRight), A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, rK, rV, rLeft, rRight));
+            }
+        } else return dict;
+    };
+    var $elm$core$Dict$moveRedRight = function(dict) {
+        if (dict.$ === 'RBNode_elm_builtin' && dict.d.$ === 'RBNode_elm_builtin' && dict.e.$ === 'RBNode_elm_builtin') {
+            if (dict.d.d.$ === 'RBNode_elm_builtin' && dict.d.d.a.$ === 'Red') {
+                var clr = dict.a;
+                var k = dict.b;
+                var v = dict.c;
+                var _v1 = dict.d;
+                var lClr = _v1.a;
+                var lK = _v1.b;
+                var lV = _v1.c;
+                var _v2 = _v1.d;
+                var _v3 = _v2.a;
+                var llK = _v2.b;
+                var llV = _v2.c;
+                var llLeft = _v2.d;
+                var llRight = _v2.e;
+                var lRight = _v1.e;
+                var _v4 = dict.e;
+                var rClr = _v4.a;
+                var rK = _v4.b;
+                var rV = _v4.c;
+                var rLeft = _v4.d;
+                var rRight = _v4.e;
+                return A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, lK, lV, A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, llK, llV, llLeft, llRight), A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, k, v, lRight, A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, rK, rV, rLeft, rRight)));
+            } else {
+                var clr = dict.a;
+                var k = dict.b;
+                var v = dict.c;
+                var _v5 = dict.d;
+                var lClr = _v5.a;
+                var lK = _v5.b;
+                var lV = _v5.c;
+                var lLeft = _v5.d;
+                var lRight = _v5.e;
+                var _v6 = dict.e;
+                var rClr = _v6.a;
+                var rK = _v6.b;
+                var rV = _v6.c;
+                var rLeft = _v6.d;
+                var rRight = _v6.e;
+                if (clr.$ === 'Black') return A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, k, v, A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, lK, lV, lLeft, lRight), A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, rK, rV, rLeft, rRight));
+                else return A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, k, v, A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, lK, lV, lLeft, lRight), A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, rK, rV, rLeft, rRight));
+            }
+        } else return dict;
+    };
+    var $elm$core$Dict$removeHelpPrepEQGT = F7(function(targetKey, dict, color, key, value, left, right) {
+        if (left.$ === 'RBNode_elm_builtin' && left.a.$ === 'Red') {
+            var _v1 = left.a;
+            var lK = left.b;
+            var lV = left.c;
+            var lLeft = left.d;
+            var lRight = left.e;
+            return A5($elm$core$Dict$RBNode_elm_builtin, color, lK, lV, lLeft, A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, key, value, lRight, right));
+        } else {
+            _v2$2: while(true){
+                if (right.$ === 'RBNode_elm_builtin' && right.a.$ === 'Black') {
+                    if (right.d.$ === 'RBNode_elm_builtin') {
+                        if (right.d.a.$ === 'Black') {
+                            var _v3 = right.a;
+                            var _v4 = right.d;
+                            var _v5 = _v4.a;
+                            return $elm$core$Dict$moveRedRight(dict);
+                        } else break _v2$2;
+                    } else {
+                        var _v6 = right.a;
+                        var _v7 = right.d;
+                        return $elm$core$Dict$moveRedRight(dict);
+                    }
+                } else break _v2$2;
+            }
+            return dict;
+        }
+    });
+    var $elm$core$Dict$removeMin = function(dict) {
+        if (dict.$ === 'RBNode_elm_builtin' && dict.d.$ === 'RBNode_elm_builtin') {
+            var color = dict.a;
+            var key = dict.b;
+            var value = dict.c;
+            var left = dict.d;
+            var lColor = left.a;
+            var lLeft = left.d;
+            var right = dict.e;
+            if (lColor.$ === 'Black') {
+                if (lLeft.$ === 'RBNode_elm_builtin' && lLeft.a.$ === 'Red') {
+                    var _v3 = lLeft.a;
+                    return A5($elm$core$Dict$RBNode_elm_builtin, color, key, value, $elm$core$Dict$removeMin(left), right);
+                } else {
+                    var _v4 = $elm$core$Dict$moveRedLeft(dict);
+                    if (_v4.$ === 'RBNode_elm_builtin') {
+                        var nColor = _v4.a;
+                        var nKey = _v4.b;
+                        var nValue = _v4.c;
+                        var nLeft = _v4.d;
+                        var nRight = _v4.e;
+                        return A5($elm$core$Dict$balance, nColor, nKey, nValue, $elm$core$Dict$removeMin(nLeft), nRight);
+                    } else return $elm$core$Dict$RBEmpty_elm_builtin;
+                }
+            } else return A5($elm$core$Dict$RBNode_elm_builtin, color, key, value, $elm$core$Dict$removeMin(left), right);
+        } else return $elm$core$Dict$RBEmpty_elm_builtin;
+    };
+    var $elm$core$Dict$removeHelp = F2(function(targetKey, dict) {
+        if (dict.$ === 'RBEmpty_elm_builtin') return $elm$core$Dict$RBEmpty_elm_builtin;
+        else {
+            var color = dict.a;
+            var key = dict.b;
+            var value = dict.c;
+            var left = dict.d;
+            var right = dict.e;
+            if (_Utils_cmp(targetKey, key) < 0) {
+                if (left.$ === 'RBNode_elm_builtin' && left.a.$ === 'Black') {
+                    var _v4 = left.a;
+                    var lLeft = left.d;
+                    if (lLeft.$ === 'RBNode_elm_builtin' && lLeft.a.$ === 'Red') {
+                        var _v6 = lLeft.a;
+                        return A5($elm$core$Dict$RBNode_elm_builtin, color, key, value, A2($elm$core$Dict$removeHelp, targetKey, left), right);
+                    } else {
+                        var _v7 = $elm$core$Dict$moveRedLeft(dict);
+                        if (_v7.$ === 'RBNode_elm_builtin') {
+                            var nColor = _v7.a;
+                            var nKey = _v7.b;
+                            var nValue = _v7.c;
+                            var nLeft = _v7.d;
+                            var nRight = _v7.e;
+                            return A5($elm$core$Dict$balance, nColor, nKey, nValue, A2($elm$core$Dict$removeHelp, targetKey, nLeft), nRight);
+                        } else return $elm$core$Dict$RBEmpty_elm_builtin;
+                    }
+                } else return A5($elm$core$Dict$RBNode_elm_builtin, color, key, value, A2($elm$core$Dict$removeHelp, targetKey, left), right);
+            } else return A2($elm$core$Dict$removeHelpEQGT, targetKey, A7($elm$core$Dict$removeHelpPrepEQGT, targetKey, dict, color, key, value, left, right));
+        }
+    });
+    var $elm$core$Dict$removeHelpEQGT = F2(function(targetKey, dict) {
+        if (dict.$ === 'RBNode_elm_builtin') {
+            var color = dict.a;
+            var key = dict.b;
+            var value = dict.c;
+            var left = dict.d;
+            var right = dict.e;
+            if (_Utils_eq(targetKey, key)) {
+                var _v1 = $elm$core$Dict$getMin(right);
+                if (_v1.$ === 'RBNode_elm_builtin') {
+                    var minKey = _v1.b;
+                    var minValue = _v1.c;
+                    return A5($elm$core$Dict$balance, color, minKey, minValue, left, $elm$core$Dict$removeMin(right));
+                } else return $elm$core$Dict$RBEmpty_elm_builtin;
+            } else return A5($elm$core$Dict$balance, color, key, value, left, A2($elm$core$Dict$removeHelp, targetKey, right));
+        } else return $elm$core$Dict$RBEmpty_elm_builtin;
+    });
+    var $elm$core$Dict$remove = F2(function(key, dict) {
+        var _v0 = A2($elm$core$Dict$removeHelp, key, dict);
+        if (_v0.$ === 'RBNode_elm_builtin' && _v0.a.$ === 'Red') {
+            var _v1 = _v0.a;
+            var k = _v0.b;
+            var v = _v0.c;
+            var l = _v0.d;
+            var r = _v0.e;
+            return A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, k, v, l, r);
+        } else {
+            var x = _v0;
+            return x;
+        }
+    });
     var $elm$core$Set$remove = F2(function(key, _v0) {
         var dict = _v0.a;
         return $elm$core$Set$Set_elm_builtin(A2($elm$core$Dict$remove, key, dict));
@@ -19198,7 +16786,30 @@ type alias Process =
             keysDown: A2($elm$core$Set$remove, $author$project$Key$toInt(key), cpu.keysDown)
         });
     });
-    var $elm$json$Json$Encode$bool = _Json_wrap;
+    var $elm$bytes$Bytes$Decode$loopHelp = F4(function(state, callback, bites, offset) {
+        loopHelp: while(true){
+            var _v0 = callback(state);
+            var decoder = _v0.a;
+            var _v1 = A2(decoder, bites, offset);
+            var newOffset = _v1.a;
+            var step = _v1.b;
+            if (step.$ === 'Loop') {
+                var newState = step.a;
+                var $temp$state = newState, $temp$callback = callback, $temp$bites = bites, $temp$offset = newOffset;
+                state = $temp$state;
+                callback = $temp$callback;
+                bites = $temp$bites;
+                offset = $temp$offset;
+                continue loopHelp;
+            } else {
+                var result = step.a;
+                return _Utils_Tuple2(newOffset, result);
+            }
+        }
+    });
+    var $elm$bytes$Bytes$Decode$loop = F2(function(state, callback) {
+        return $elm$bytes$Bytes$Decode$Decoder(A2($elm$bytes$Bytes$Decode$loopHelp, state, callback));
+    });
     var $author$project$Main$playAudio = _Platform_outgoingPort('playAudio', $elm$json$Json$Encode$bool);
     var $author$project$Main$scrollToId = _Platform_outgoingPort('scrollToId', $elm$json$Json$Encode$string);
     var $author$project$Cpu$ProgramCounterOutOfRange = function(a) {
@@ -19278,6 +16889,30 @@ type alias Process =
         var a = 1103515245;
         return A2($elm$core$Basics$modBy, m, a * seed + c);
     };
+    var $elm$core$Array$getHelp = F3(function(shift, index, tree) {
+        getHelp: while(true){
+            var pos = $elm$core$Array$bitMask & index >>> shift;
+            var _v0 = A2($elm$core$Elm$JsArray$unsafeGet, pos, tree);
+            if (_v0.$ === 'SubTree') {
+                var subTree = _v0.a;
+                var $temp$shift = shift - $elm$core$Array$shiftStep, $temp$index = index, $temp$tree = subTree;
+                shift = $temp$shift;
+                index = $temp$index;
+                tree = $temp$tree;
+                continue getHelp;
+            } else {
+                var values = _v0.a;
+                return A2($elm$core$Elm$JsArray$unsafeGet, $elm$core$Array$bitMask & index, values);
+            }
+        }
+    });
+    var $elm$core$Array$get = F2(function(index, _v0) {
+        var len = _v0.a;
+        var startShift = _v0.b;
+        var tree = _v0.c;
+        var tail = _v0.d;
+        return index < 0 || _Utils_cmp(index, len) > -1 ? $elm$core$Maybe$Nothing : _Utils_cmp(index, $elm$core$Array$tailIndex(len)) > -1 ? $elm$core$Maybe$Just(A2($elm$core$Elm$JsArray$unsafeGet, $elm$core$Array$bitMask & index, tail)) : $elm$core$Maybe$Just(A3($elm$core$Array$getHelp, startShift, index, tree));
+    });
     var $author$project$Registers$get = F2(function(r, _v0) {
         var array = _v0.a;
         return A2($elm$core$Maybe$withDefault, $author$project$Byte$fromInt(0), A2($elm$core$Array$get, $author$project$Register$toInt(r), array));
@@ -19298,6 +16933,7 @@ type alias Process =
         return A2($elm$core$Dict$member, key, dict);
     });
     var $author$project$Byte$msb = $author$project$Byte$getBit(7);
+    var $elm$core$Basics$not = _Basics_not;
     var $author$project$Byte$or = F2(function(_v0, _v1) {
         var a = _v0.a;
         var b = _v1.a;
@@ -19757,7 +17393,6 @@ type alias Process =
             return $author$project$Byte$toInt(hi) << 8 | $author$project$Byte$toInt(lo);
         }), A2($elm$core$Array$get, cpu.pc, cpu.mem), A2($elm$core$Array$get, cpu.pc + 1, cpu.mem));
     };
-    var $elm$core$Debug$log = _Debug_log;
     var $elm$core$Tuple$pair = F2(function(a, b) {
         return _Utils_Tuple2(a, b);
     });
@@ -19777,7 +17412,7 @@ type alias Process =
                 } else {
                     var c = _v2.a;
                     var stepsPerFrame = A2($elm$core$Basics$max, 1, $elm$core$Basics$ceiling(c.opsPerSecond / 60));
-                    var steps = A2($elm$core$Debug$log, 'steps', cpu.steps + 1);
+                    var steps = cpu.steps + 1;
                     return $elm$core$Result$Ok(A2($elm$core$Tuple$pair, op, (!(steps % stepsPerFrame) ? $author$project$Cpu$decrementTimers : $elm$core$Basics$identity)(function(x) {
                         return _Utils_update(x, {
                             steps: steps
@@ -19811,10 +17446,19 @@ type alias Process =
     var $author$project$Cpu$step = F2(function(n, cpu) {
         return A3($author$project$Cpu$stepManyHelp, n, _List_Nil, cpu);
     });
+    var $author$project$Main$storeConfig = _Platform_outgoingPort('storeConfig', $elm$core$Basics$identity);
+    var $elm$bytes$Bytes$Decode$succeed = function(a) {
+        return $elm$bytes$Bytes$Decode$Decoder(F2(function(_v0, offset) {
+            return _Utils_Tuple2(offset, a);
+        }));
+    };
     var $author$project$Cpu$tick = F2(function(deltaTime, cpu) {
         var instrCount = A2($elm$core$Basics$max, 1, $elm$core$Basics$floor(deltaTime / 1000 * cpu.opsPerSecond));
         return A2($author$project$Cpu$step, instrCount, cpu);
     });
+    var $elm$file$File$toBytes = _File_toBytes;
+    var $elm$bytes$Bytes$Decode$unsignedInt8 = $elm$bytes$Bytes$Decode$Decoder(_Bytes_read_u8);
+    var $elm$bytes$Bytes$width = _Bytes_width;
     var $author$project$Cpu$withSpeed = F2(function(speed, cpu) {
         return _Utils_update(cpu, {
             opsPerSecond: speed
@@ -19825,7 +17469,13 @@ type alias Process =
             case 'NoOp':
                 return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
             case 'Reset':
-                return _Utils_Tuple2(A2($author$project$Main$initModel, model.seed + 1, model.program), $elm$core$Platform$Cmd$none);
+                return _Utils_Tuple2(A3($author$project$Main$initModel, model.seed + 1, model.debug, model.rom), $elm$core$Platform$Cmd$none);
+            case 'ChangeDebug':
+                var d = msg.a;
+                var m = _Utils_update(model, {
+                    debug: d
+                });
+                return _Utils_Tuple2(m, $author$project$Main$storeConfig($author$project$Main$encodeConfig(m)));
             case 'Tick':
                 var delta = msg.a;
                 var _v1 = A2($author$project$Cpu$tick, delta, model.cpu);
@@ -19835,18 +17485,20 @@ type alias Process =
                     var ops = _v2.a;
                     var cpu = _v2.b;
                     var ops2 = function() {
-                        if (!ops.b) return _List_Nil;
-                        else {
-                            var op = ops.a;
-                            var rest = ops.b;
-                            return A2($elm$core$List$cons, _Utils_Tuple2(op, $elm$core$Maybe$Just(cpu)), A2($elm$core$List$map, function(o) {
-                                return _Utils_Tuple2(o, $elm$core$Maybe$Nothing);
-                            }, rest));
-                        }
+                        if (model.debug.showHistory) {
+                            if (!ops.b) return _List_Nil;
+                            else {
+                                var op = ops.a;
+                                var rest = ops.b;
+                                return A2($elm$core$List$cons, _Utils_Tuple2(op, $elm$core$Maybe$Just(cpu)), A2($elm$core$List$map, function(o) {
+                                    return _Utils_Tuple2(o, $elm$core$Maybe$Nothing);
+                                }, rest));
+                            }
+                        } else return _List_Nil;
                     }();
                     return _Utils_Tuple2(_Utils_update(model, {
                         cpu: cpu,
-                        opHistory: A2($elm$core$List$take, 100, A3($elm$core$List$foldr, $elm$core$List$cons, model.opHistory, ops2))
+                        opHistory: model.debug.showHistory ? A2($elm$core$List$take, 100, A3($elm$core$List$foldr, $elm$core$List$cons, model.opHistory, ops2)) : _List_Nil
                     }), $elm$core$Platform$Cmd$batch(_List_fromArray([
                         model.followPc ? $author$project$Main$scrollToId('program-explorer-' + $elm$core$String$fromInt(cpu.pc)) : $elm$core$Platform$Cmd$none,
                         $author$project$Byte$isZero(cpu.soundTimer) ? $author$project$Main$playAudio(false) : $author$project$Main$playAudio(true)
@@ -19873,11 +17525,12 @@ type alias Process =
                 }), $elm$core$Platform$Cmd$none);
             case 'RomSelected':
                 var name = msg.a;
-                var _v4 = A2($elm$core$Dict$get, name, $author$project$Rom$all);
+                var _v4 = A2($elm$core$Dict$get, name, $author$project$SampleRom$all);
                 if (_v4.$ === 'Nothing') return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
                 else {
                     var rom = _v4.a;
-                    return _Utils_Tuple2(A2($author$project$Main$initModel, model.seed + 1, rom.program), $elm$core$Platform$Cmd$none);
+                    var m = A3($author$project$Main$initModel, model.seed + 1, model.debug, A2($author$project$Main$SampleRom, rom.name, rom.program));
+                    return _Utils_Tuple2(m, $author$project$Main$storeConfig($author$project$Main$encodeConfig(m)));
                 }
             case 'Step':
                 var steps = msg.a;
@@ -19888,18 +17541,20 @@ type alias Process =
                     var ops = _v6.a;
                     var cpu = _v6.b;
                     var ops2 = function() {
-                        if (!ops.b) return _List_Nil;
-                        else {
-                            var op = ops.a;
-                            var rest = ops.b;
-                            return A2($elm$core$List$cons, _Utils_Tuple2(op, $elm$core$Maybe$Just(cpu)), A2($elm$core$List$map, function(o) {
-                                return _Utils_Tuple2(o, $elm$core$Maybe$Nothing);
-                            }, rest));
-                        }
+                        if (model.debug.showHistory) {
+                            if (!ops.b) return _List_Nil;
+                            else {
+                                var op = ops.a;
+                                var rest = ops.b;
+                                return A2($elm$core$List$cons, _Utils_Tuple2(op, $elm$core$Maybe$Just(cpu)), A2($elm$core$List$map, function(o) {
+                                    return _Utils_Tuple2(o, $elm$core$Maybe$Nothing);
+                                }, rest));
+                            }
+                        } else return _List_Nil;
                     }();
                     return _Utils_Tuple2(_Utils_update(model, {
                         cpu: cpu,
-                        opHistory: A2($elm$core$List$take, 100, A3($elm$core$List$foldr, $elm$core$List$cons, model.opHistory, ops2))
+                        opHistory: model.debug.showHistory ? A2($elm$core$List$take, 100, A3($elm$core$List$foldr, $elm$core$List$cons, model.opHistory, ops2)) : _List_Nil
                     }), $elm$core$Platform$Cmd$batch(_List_fromArray([
                         model.followPc ? $author$project$Main$scrollToId('program-explorer-' + $elm$core$String$fromInt(cpu.pc)) : $elm$core$Platform$Cmd$none,
                         $author$project$Byte$isZero(cpu.soundTimer) ? $author$project$Main$playAudio(false) : $author$project$Main$playAudio(true)
@@ -19915,30 +17570,53 @@ type alias Process =
                 return _Utils_Tuple2(_Utils_update(model, {
                     cpu: A2($author$project$Cpu$withSpeed, speed, model.cpu)
                 }), $elm$core$Platform$Cmd$none);
-            default:
+            case 'RevertToCpu':
                 var distance = msg.a;
                 var cpu = msg.b;
                 return _Utils_Tuple2(_Utils_update(model, {
                     cpu: cpu,
                     opHistory: A2($elm$core$List$drop, distance, model.opHistory)
                 }), $elm$core$Platform$Cmd$none);
+            case 'RequestUserFile':
+                return _Utils_Tuple2(model, A2($elm$file$File$Select$file, _List_fromArray([
+                    '.ch8'
+                ]), $author$project$Main$UserFileSelected));
+            case 'UserFileSelected':
+                var file = msg.a;
+                return _Utils_Tuple2(model, A2($elm$core$Task$perform, $author$project$Main$UserFileLoaded, $elm$file$File$toBytes(file)));
+            default:
+                var bytes_ = msg.a;
+                var len = $elm$bytes$Bytes$width(bytes_);
+                var decoder = A2($elm$bytes$Bytes$Decode$loop, _Utils_Tuple2(0, _List_Nil), function(_v8) {
+                    var n = _v8.a;
+                    var acc = _v8.b;
+                    return _Utils_cmp(n, len) > -1 ? $elm$bytes$Bytes$Decode$succeed($elm$bytes$Bytes$Decode$Done($elm$core$List$reverse(acc))) : A2($elm$bytes$Bytes$Decode$andThen, function(b) {
+                        return $elm$bytes$Bytes$Decode$succeed($elm$bytes$Bytes$Decode$Loop(_Utils_Tuple2(n + 1, A2($elm$core$List$cons, b, acc))));
+                    }, $elm$bytes$Bytes$Decode$unsignedInt8);
+                });
+                var rom = A2($elm$core$Maybe$withDefault, $author$project$Main$CustomRom(_List_Nil), A2($elm$core$Maybe$map, $author$project$Main$CustomRom, A2($elm$bytes$Bytes$Decode$decode, decoder, bytes_)));
+                var m = A3($author$project$Main$initModel, model.seed, model.debug, rom);
+                return _Utils_Tuple2(m, $author$project$Main$storeConfig($author$project$Main$encodeConfig(m)));
         }
     });
-    var $author$project$Main$spacer = A2($elm$html$Html$div, _List_fromArray([
-        $elm$html$Html$Attributes$class('spacer')
-    ]), _List_Nil);
-    var $elm$html$Html$hr = _VirtualDom_node('hr');
-    var $elm$core$Maybe$andThen = F2(function(callback, maybeValue) {
-        if (maybeValue.$ === 'Just') {
-            var value = maybeValue.a;
-            return callback(value);
-        } else return $elm$core$Maybe$Nothing;
+    var $elm$json$Json$Decode$value = _Json_decodeValue;
+    var $elm$html$Html$Attributes$stringProperty = F2(function(key, string) {
+        return A2(_VirtualDom_property, key, $elm$json$Json$Encode$string(string));
     });
+    var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
+    var $elm$html$Html$div = _VirtualDom_node('div');
+    var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
+    var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
+    var $elm$html$Html$hr = _VirtualDom_node('hr');
     var $elm$core$List$filter = F2(function(isGood, list) {
         return A3($elm$core$List$foldr, F2(function(x, xs) {
             return isGood(x) ? A2($elm$core$List$cons, x, xs) : xs;
         }), _List_Nil, list);
     });
+    var $elm$core$Tuple$second = function(_v0) {
+        var y = _v0.b;
+        return y;
+    };
     var $elm$html$Html$Attributes$classList = function(classes) {
         return $elm$html$Html$Attributes$class(A2($elm$core$String$join, ' ', A2($elm$core$List$map, $elm$core$Tuple$first, A2($elm$core$List$filter, $elm$core$Tuple$second, classes))));
     };
@@ -19959,6 +17637,8 @@ type alias Process =
         }
     });
     var $elm$html$Html$h2 = _VirtualDom_node('h2');
+    var $elm$html$Html$li = _VirtualDom_node('li');
+    var $elm$core$Basics$neq = _Utils_notEqual;
     var $elm$core$String$cons = _String_cons;
     var $elm$core$String$fromChar = function(_char) {
         return A2($elm$core$String$cons, _char, '');
@@ -19973,6 +17653,9 @@ type alias Process =
         return _Utils_ap(A2($elm$core$String$repeat, n - $elm$core$String$length(string), $elm$core$String$fromChar(_char)), string);
     });
     var $elm$core$String$fromList = _String_fromList;
+    var $elm$core$Basics$negate = function(n) {
+        return -n;
+    };
     var $rtfeldman$elm_hex$Hex$unsafeToDigit = function(num) {
         unsafeToDigit: while(true)switch(num){
             case 0:
@@ -20030,6 +17713,7 @@ type alias Process =
     var $author$project$Main$showNumber = function(n) {
         return 'Ox' + (A3($elm$core$String$padLeft, 2, _Utils_chr('0'), $rtfeldman$elm_hex$Hex$toString(n)) + (' (' + ($elm$core$String$fromInt(n) + ')')));
     };
+    var $elm$html$Html$ul = _VirtualDom_node('ul');
     var $author$project$Main$viewCpu = F2(function(history, cpu) {
         var prev = A2($elm$core$Maybe$withDefault, cpu, A2($elm$core$Maybe$andThen, $elm$core$Basics$identity, A2($elm$core$Maybe$map, $elm$core$Tuple$second, A2($author$project$Main$find, function(_v0) {
             var mc = _v0.b;
@@ -20091,7 +17775,25 @@ type alias Process =
             b: b
         };
     });
+    var $elm$html$Html$button = _VirtualDom_node('button');
     var $elm$html$Html$h3 = _VirtualDom_node('h3');
+    var $elm$core$List$isEmpty = function(xs) {
+        if (!xs.b) return true;
+        else return false;
+    };
+    var $elm$virtual_dom$VirtualDom$Normal = function(a) {
+        return {
+            $: 'Normal',
+            a: a
+        };
+    };
+    var $elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
+    var $elm$html$Html$Events$on = F2(function(event, decoder) {
+        return A2($elm$virtual_dom$VirtualDom$on, event, $elm$virtual_dom$VirtualDom$Normal(decoder));
+    });
+    var $elm$html$Html$Events$onClick = function(msg) {
+        return A2($elm$html$Html$Events$on, 'click', $elm$json$Json$Decode$succeed(msg));
+    };
     var $elm$core$String$toUpper = _String_toUpper;
     var $author$project$OpCode$toString = function(op) {
         var toHex = function(n_) {
@@ -20281,7 +17983,7 @@ type alias Process =
                 A2($elm$html$Html$hr, _List_Nil, _List_Nil),
                 $author$project$Main$viewStack(model.cpu),
                 A2($elm$html$Html$hr, _List_Nil, _List_Nil),
-                $author$project$Main$viewOpCodeHistory(model.opHistory),
+                model.debug.showHistory ? $author$project$Main$viewOpCodeHistory(model.opHistory) : $elm$html$Html$text(''),
                 $author$project$Main$viewMemory(model.cpu)
             ]))
         ]));
@@ -20309,14 +18011,126 @@ type alias Process =
         return A2(_VirtualDom_property, key, $elm$json$Json$Encode$bool(bool));
     });
     var $elm$html$Html$Attributes$disabled = $elm$html$Html$Attributes$boolProperty('disabled');
+    var $elm$core$String$fromFloat = _String_fromNumber;
+    var $elm$html$Html$input = _VirtualDom_node('input');
     var $elm$html$Html$label = _VirtualDom_node('label');
+    var $elm$html$Html$Attributes$max = $elm$html$Html$Attributes$stringProperty('max');
+    var $elm$html$Html$Attributes$min = $elm$html$Html$Attributes$stringProperty('min');
+    var $elm$html$Html$Events$alwaysStop = function(x) {
+        return _Utils_Tuple2(x, true);
+    };
+    var $elm$virtual_dom$VirtualDom$MayStopPropagation = function(a) {
+        return {
+            $: 'MayStopPropagation',
+            a: a
+        };
+    };
+    var $elm$html$Html$Events$stopPropagationOn = F2(function(event, decoder) {
+        return A2($elm$virtual_dom$VirtualDom$on, event, $elm$virtual_dom$VirtualDom$MayStopPropagation(decoder));
+    });
+    var $elm$json$Json$Decode$at = F2(function(fields, decoder) {
+        return A3($elm$core$List$foldr, $elm$json$Json$Decode$field, decoder, fields);
+    });
+    var $elm$html$Html$Events$targetValue = A2($elm$json$Json$Decode$at, _List_fromArray([
+        'target',
+        'value'
+    ]), $elm$json$Json$Decode$string);
+    var $elm$html$Html$Events$onInput = function(tagger) {
+        return A2($elm$html$Html$Events$stopPropagationOn, 'input', A2($elm$json$Json$Decode$map, $elm$html$Html$Events$alwaysStop, A2($elm$json$Json$Decode$map, tagger, $elm$html$Html$Events$targetValue)));
+    };
+    var $elm$html$Html$p = _VirtualDom_node('p');
+    var $elm$html$Html$span = _VirtualDom_node('span');
     var $elm$html$Html$Attributes$step = function(n) {
         return A2($elm$html$Html$Attributes$stringProperty, 'step', n);
     };
+    var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
+    var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
     var $elm$html$Html$Attributes$tabindex = function(n) {
         return A2(_VirtualDom_attribute, 'tabIndex', $elm$core$String$fromInt(n));
     };
     var $elm$core$String$toFloat = _String_toFloat;
+    var $elm$html$Html$Attributes$type_ = $elm$html$Html$Attributes$stringProperty('type');
+    var $elm$html$Html$Attributes$value = $elm$html$Html$Attributes$stringProperty('value');
+    var $author$project$Main$ChangeDebug = function(a) {
+        return {
+            $: 'ChangeDebug',
+            a: a
+        };
+    };
+    var $elm$html$Html$Attributes$checked = $elm$html$Html$Attributes$boolProperty('checked');
+    var $elm$html$Html$Events$targetChecked = A2($elm$json$Json$Decode$at, _List_fromArray([
+        'target',
+        'checked'
+    ]), $elm$json$Json$Decode$bool);
+    var $elm$html$Html$Events$onCheck = function(tagger) {
+        return A2($elm$html$Html$Events$on, 'change', A2($elm$json$Json$Decode$map, tagger, $elm$html$Html$Events$targetChecked));
+    };
+    var $author$project$Main$viewDebugOptions = function(d) {
+        return A2($elm$html$Html$div, _List_fromArray([
+            $elm$html$Html$Attributes$class('debug-options')
+        ]), _List_fromArray([
+            A2($elm$html$Html$hr, _List_Nil, _List_Nil),
+            A2($elm$html$Html$div, _List_fromArray([
+                A2($elm$html$Html$Attributes$style, 'text-align', 'center')
+            ]), _List_fromArray([
+                A2($elm$html$Html$label, _List_Nil, _List_fromArray([
+                    $elm$html$Html$text('Show debug'),
+                    A2($elm$html$Html$input, _List_fromArray([
+                        $elm$html$Html$Attributes$type_('checkbox'),
+                        $elm$html$Html$Attributes$checked(d.showDebug),
+                        $elm$html$Html$Events$onCheck(function(v) {
+                            return $author$project$Main$ChangeDebug(_Utils_update(d, {
+                                showDebug: v
+                            }));
+                        })
+                    ]), _List_Nil)
+                ]))
+            ])),
+            A2($elm$html$Html$div, _List_fromArray([
+                A2($elm$html$Html$Attributes$style, 'display', 'flex'),
+                A2($elm$html$Html$Attributes$style, 'justify-content', 'space-evenly')
+            ]), _List_fromArray([
+                A2($elm$html$Html$div, _List_Nil, _List_fromArray([
+                    A2($elm$html$Html$label, _List_fromArray([
+                        $elm$html$Html$Attributes$classList(_List_fromArray([
+                            _Utils_Tuple2('disabled', !d.showDebug)
+                        ]))
+                    ]), _List_fromArray([
+                        $elm$html$Html$text('Show history'),
+                        A2($elm$html$Html$input, _List_fromArray([
+                            $elm$html$Html$Attributes$type_('checkbox'),
+                            $elm$html$Html$Attributes$disabled(!d.showDebug),
+                            $elm$html$Html$Attributes$checked(d.showHistory),
+                            $elm$html$Html$Events$onCheck(function(v) {
+                                return $author$project$Main$ChangeDebug(_Utils_update(d, {
+                                    showHistory: v
+                                }));
+                            })
+                        ]), _List_Nil)
+                    ]))
+                ])),
+                A2($elm$html$Html$div, _List_Nil, _List_fromArray([
+                    A2($elm$html$Html$label, _List_fromArray([
+                        $elm$html$Html$Attributes$classList(_List_fromArray([
+                            _Utils_Tuple2('disabled', !d.showDebug)
+                        ]))
+                    ]), _List_fromArray([
+                        $elm$html$Html$text('Show program'),
+                        A2($elm$html$Html$input, _List_fromArray([
+                            $elm$html$Html$Attributes$type_('checkbox'),
+                            $elm$html$Html$Attributes$disabled(!d.showDebug),
+                            $elm$html$Html$Attributes$checked(d.showProgram),
+                            $elm$html$Html$Events$onCheck(function(v) {
+                                return $author$project$Main$ChangeDebug(_Utils_update(d, {
+                                    showProgram: v
+                                }));
+                            })
+                        ]), _List_Nil)
+                    ]))
+                ]))
+            ]))
+        ]));
+    };
     var $elm$svg$Svg$Attributes$fill = _VirtualDom_attribute('fill');
     var $elm$svg$Svg$Attributes$height = _VirtualDom_attribute('height');
     var $elm$virtual_dom$VirtualDom$keyedNodeNS = F2(function(namespace, tag) {
@@ -20372,8 +18186,7 @@ type alias Process =
     var $author$project$Main$viewFrameBuffer = function(fb) {
         return A3($elm$svg$Svg$Keyed$node, 'svg', _List_fromArray([
             $elm$svg$Svg$Attributes$viewBox('0 0 64 32'),
-            $elm$svg$Svg$Attributes$height('200px'),
-            A2($elm$html$Html$Attributes$style, 'border', '1px solid black')
+            $elm$svg$Svg$Attributes$height('200px')
         ]), A2($elm$core$List$indexedMap, F2(function(i, _v0) {
             var _v1 = _v0.a;
             var x = _v1.a;
@@ -20390,41 +18203,101 @@ type alias Process =
             ]), _List_Nil));
         }), $author$project$FrameBuffer$toList(fb)));
     };
+    var $author$project$Key$fromInt = function(n) {
+        switch(n){
+            case 0:
+                return $elm$core$Maybe$Just($author$project$Key$Key0);
+            case 1:
+                return $elm$core$Maybe$Just($author$project$Key$Key1);
+            case 2:
+                return $elm$core$Maybe$Just($author$project$Key$Key2);
+            case 3:
+                return $elm$core$Maybe$Just($author$project$Key$Key3);
+            case 4:
+                return $elm$core$Maybe$Just($author$project$Key$Key4);
+            case 5:
+                return $elm$core$Maybe$Just($author$project$Key$Key5);
+            case 6:
+                return $elm$core$Maybe$Just($author$project$Key$Key6);
+            case 7:
+                return $elm$core$Maybe$Just($author$project$Key$Key7);
+            case 8:
+                return $elm$core$Maybe$Just($author$project$Key$Key8);
+            case 9:
+                return $elm$core$Maybe$Just($author$project$Key$Key9);
+            case 10:
+                return $elm$core$Maybe$Just($author$project$Key$KeyA);
+            case 11:
+                return $elm$core$Maybe$Just($author$project$Key$KeyB);
+            case 12:
+                return $elm$core$Maybe$Just($author$project$Key$KeyC);
+            case 13:
+                return $elm$core$Maybe$Just($author$project$Key$KeyD);
+            case 14:
+                return $elm$core$Maybe$Just($author$project$Key$KeyE);
+            case 15:
+                return $elm$core$Maybe$Just($author$project$Key$KeyF);
+            default:
+                return $elm$core$Maybe$Nothing;
+        }
+    };
+    var $elm$html$Html$Events$onMouseDown = function(msg) {
+        return A2($elm$html$Html$Events$on, 'mousedown', $elm$json$Json$Decode$succeed(msg));
+    };
+    var $elm$html$Html$Events$onMouseLeave = function(msg) {
+        return A2($elm$html$Html$Events$on, 'mouseleave', $elm$json$Json$Decode$succeed(msg));
+    };
+    var $elm$html$Html$Events$onMouseUp = function(msg) {
+        return A2($elm$html$Html$Events$on, 'mouseup', $elm$json$Json$Decode$succeed(msg));
+    };
     var $author$project$Main$viewKeysDown = function(cpu) {
         return A2($elm$html$Html$div, _List_fromArray([
             $elm$html$Html$Attributes$class('keyboard')
-        ]), $elm$core$List$concat(A2($elm$core$List$indexedMap, F2(function(i, v) {
-            var element = A2($elm$html$Html$span, _List_fromArray([
-                $elm$html$Html$Attributes$classList(_List_fromArray([
-                    _Utils_Tuple2('highlight', A2($elm$core$Set$member, v, cpu.keysDown))
-                ]))
-            ]), _List_fromArray([
-                $elm$html$Html$text($rtfeldman$elm_hex$Hex$toString(v))
-            ]));
-            return i > 0 && !(i % 4) ? _List_fromArray([
-                A2($elm$html$Html$br, _List_Nil, _List_Nil),
-                element
-            ]) : _List_fromArray([
-                element
-            ]);
-        }), _List_fromArray([
-            1,
-            2,
-            3,
-            12,
-            4,
-            5,
-            6,
-            13,
-            7,
-            8,
-            9,
-            14,
-            10,
-            0,
-            11,
-            15
-        ]))));
+        ]), A2($elm$core$List$map, function(vs) {
+            return A2($elm$html$Html$div, _List_fromArray([
+                $elm$html$Html$Attributes$class('row')
+            ]), A2($elm$core$List$map, function(v) {
+                var key = A2($elm$core$Maybe$withDefault, $author$project$Key$Key0, $author$project$Key$fromInt(v));
+                return A2($elm$html$Html$button, _List_fromArray([
+                    $elm$html$Html$Attributes$classList(_List_fromArray([
+                        _Utils_Tuple2('highlight', A2($elm$core$Set$member, v, cpu.keysDown))
+                    ])),
+                    $elm$html$Html$Events$onMouseDown($author$project$Main$KeyDown(key)),
+                    $elm$html$Html$Events$onMouseUp($author$project$Main$KeyUp(key)),
+                    $elm$html$Html$Events$onMouseLeave($author$project$Main$KeyUp(key))
+                ]), _List_fromArray([
+                    $elm$html$Html$text($elm$core$String$toUpper($rtfeldman$elm_hex$Hex$toString(v)))
+                ]));
+            }, vs));
+        }, _List_fromArray([
+            _List_fromArray([
+                1,
+                2,
+                3,
+                12
+            ]),
+            _List_fromArray([
+                4,
+                5,
+                6,
+                13
+            ]),
+            _List_fromArray([
+                7,
+                8,
+                9,
+                14
+            ]),
+            _List_fromArray([
+                10,
+                0,
+                11,
+                15
+            ])
+        ])));
+    };
+    var $author$project$Main$RequestUserFile = {
+        $: 'RequestUserFile'
     };
     var $author$project$Main$RomSelected = function(a) {
         return {
@@ -20432,12 +18305,24 @@ type alias Process =
             a: a
         };
     };
+    var $elm$virtual_dom$VirtualDom$attribute = F2(function(key, value) {
+        return A2(_VirtualDom_attribute, _VirtualDom_noOnOrFormAction(key), _VirtualDom_noJavaScriptOrHtmlUri(value));
+    });
     var $elm$html$Html$Attributes$attribute = $elm$virtual_dom$VirtualDom$attribute;
     var $elm$html$Html$optgroup = _VirtualDom_node('optgroup');
     var $elm$html$Html$option = _VirtualDom_node('option');
     var $elm$html$Html$select = _VirtualDom_node('select');
     var $elm$html$Html$Attributes$selected = $elm$html$Html$Attributes$boolProperty('selected');
-    var $author$project$Main$viewRomSelector = function(currentProgram) {
+    var $elm$core$Dict$values = function(dict) {
+        return A3($elm$core$Dict$foldr, F3(function(key, value, valueList) {
+            return A2($elm$core$List$cons, value, valueList);
+        }), _List_Nil, dict);
+    };
+    var $author$project$Main$viewSampleRomSelector = function(currentRom) {
+        var selectedRomIsCustom = function() {
+            if (currentRom.$ === 'SampleRom') return false;
+            else return true;
+        }();
         var kindToTitle = function(kind) {
             switch(kind.$){
                 case 'Demo':
@@ -20448,121 +18333,190 @@ type alias Process =
                     return 'Games';
             }
         };
-        return A2($elm$html$Html$label, _List_Nil, _List_fromArray([
-            $elm$html$Html$text('Load a ROM: '),
-            A2($elm$html$Html$select, _List_fromArray([
-                $elm$html$Html$Events$onInput($author$project$Main$RomSelected)
-            ]), A2($elm$core$List$map, function(kind) {
-                return A2($elm$html$Html$optgroup, _List_fromArray([
-                    A2($elm$html$Html$Attributes$attribute, 'label', kindToTitle(kind))
-                ]), A2($elm$core$List$map, function(rom) {
-                    return A2($elm$html$Html$option, _List_fromArray([
-                        $elm$html$Html$Attributes$value(rom.name),
-                        $elm$html$Html$Attributes$selected(_Utils_eq(currentProgram, rom.program))
-                    ]), _List_fromArray([
-                        $elm$html$Html$text(rom.name)
-                    ]));
-                }, A2($elm$core$List$filter, function(rom) {
-                    return _Utils_eq(rom.kind, kind);
-                }, $elm$core$Dict$values($author$project$Rom$all))));
-            }, _List_fromArray([
-                $author$project$Rom$Demo,
-                $author$project$Rom$Test,
-                $author$project$Rom$Game
-            ])))
+        return A2($elm$html$Html$div, _List_fromArray([
+            A2($elm$html$Html$Attributes$style, 'margin-top', '1em'),
+            $elm$html$Html$Attributes$class('rom-selector')
+        ]), _List_fromArray([
+            A2($elm$html$Html$label, _List_fromArray([
+                A2($elm$html$Html$Attributes$style, 'display', 'block'),
+                $elm$html$Html$Attributes$classList(_List_fromArray([
+                    _Utils_Tuple2('highlight', !selectedRomIsCustom)
+                ]))
+            ]), _List_fromArray([
+                $elm$html$Html$text('Built-in ROMs: '),
+                A2($elm$html$Html$select, _List_fromArray([
+                    $elm$html$Html$Events$onInput($author$project$Main$RomSelected)
+                ]), A2($elm$core$List$map, function(kind) {
+                    return A2($elm$html$Html$optgroup, _List_fromArray([
+                        A2($elm$html$Html$Attributes$attribute, 'label', kindToTitle(kind))
+                    ]), A2($elm$core$List$map, function(rom) {
+                        return A2($elm$html$Html$option, _List_fromArray([
+                            $elm$html$Html$Attributes$value(rom.name),
+                            $elm$html$Html$Attributes$selected(function() {
+                                if (currentRom.$ === 'SampleRom') {
+                                    var key = currentRom.a;
+                                    return _Utils_eq(key, rom.name);
+                                } else return false;
+                            }())
+                        ]), _List_fromArray([
+                            $elm$html$Html$text(rom.name)
+                        ]));
+                    }, A2($elm$core$List$filter, function(rom) {
+                        return _Utils_eq(rom.kind, kind);
+                    }, $elm$core$Dict$values($author$project$SampleRom$all))));
+                }, _List_fromArray([
+                    $author$project$SampleRom$Demo,
+                    $author$project$SampleRom$Test,
+                    $author$project$SampleRom$Game
+                ])))
+            ])),
+            A2($elm$html$Html$label, _List_fromArray([
+                $elm$html$Html$Attributes$classList(_List_fromArray([
+                    _Utils_Tuple2('highlight', selectedRomIsCustom)
+                ])),
+                A2($elm$html$Html$Attributes$style, 'display', 'block')
+            ]), _List_fromArray([
+                $elm$html$Html$text('Load your own ROM file: '),
+                A2($elm$html$Html$button, _List_fromArray([
+                    $elm$html$Html$Events$onClick($author$project$Main$RequestUserFile),
+                    $elm$html$Html$Attributes$type_('button')
+                ]), _List_fromArray([
+                    $elm$html$Html$text('Choose local file')
+                ]))
+            ])),
+            A2($elm$html$Html$br, _List_Nil, _List_Nil),
+            A2($elm$html$Html$p, _List_fromArray([
+                A2($elm$html$Html$Attributes$style, 'text-align', 'center')
+            ]), _List_fromArray([
+                function() {
+                    if (currentRom.$ === 'SampleRom') {
+                        var program = currentRom.b;
+                        return $elm$html$Html$text('ROM loaded from samples. (' + ($elm$core$String$fromInt($elm$core$List$length(program)) + ' bytes)'));
+                    } else {
+                        var program = currentRom.a;
+                        return $elm$html$Html$text('ROM loaded from user file. (' + ($elm$core$String$fromInt($elm$core$List$length(program)) + ' bytes)'));
+                    }
+                }()
+            ]))
         ]));
     };
     var $author$project$Main$viewMid = function(model) {
         return A2($elm$html$Html$div, _List_fromArray([
             $elm$html$Html$Attributes$class('mid')
         ]), _List_fromArray([
-            $author$project$Main$viewRomSelector(model.program),
-            A2($elm$html$Html$br, _List_Nil, _List_Nil),
-            $author$project$Main$viewFrameBuffer(model.cpu.frameBuf),
-            A2($elm$html$Html$br, _List_Nil, _List_Nil),
-            $author$project$Main$viewKeysDown(model.cpu),
-            A2($elm$html$Html$br, _List_Nil, _List_Nil),
-            A2($elm$html$Html$button, _List_fromArray([
-                $elm$html$Html$Events$onClick($author$project$Main$ChangeStatus($author$project$Main$Running)),
-                $elm$html$Html$Attributes$disabled(_Utils_eq(model.status, $author$project$Main$Running))
+            A2($elm$html$Html$div, _List_fromArray([
+                $elm$html$Html$Attributes$class('scroller')
             ]), _List_fromArray([
-                $elm$html$Html$text('Run')
-            ])),
-            A2($elm$html$Html$button, _List_fromArray([
-                $elm$html$Html$Events$onClick($author$project$Main$ChangeStatus($author$project$Main$Paused)),
-                $elm$html$Html$Attributes$disabled(_Utils_eq(model.status, $author$project$Main$Paused))
-            ]), _List_fromArray([
-                $elm$html$Html$text('Pause')
-            ])),
-            A2($elm$html$Html$button, _List_fromArray([
-                $elm$html$Html$Events$onClick($author$project$Main$Reset)
-            ]), _List_fromArray([
-                $elm$html$Html$text('Reset')
-            ])),
-            function() {
-                var _v0 = model.status;
-                if (_v0.$ === 'Running') return A2($elm$html$Html$span, _List_fromArray([
-                    A2($elm$html$Html$Attributes$style, 'position', 'relative')
+                A2($elm$html$Html$div, _List_fromArray([
+                    A2($elm$html$Html$Attributes$style, 'max-width', 'fit-content'),
+                    A2($elm$html$Html$Attributes$style, 'margin', '0 auto')
                 ]), _List_fromArray([
-                    A2($elm$html$Html$span, _List_fromArray([
-                        A2($elm$html$Html$Attributes$style, 'position', 'absolute'),
-                        $elm$html$Html$Attributes$class('rotating')
+                    $author$project$Main$viewSampleRomSelector(model.rom),
+                    A2($elm$html$Html$br, _List_Nil, _List_Nil),
+                    $author$project$Main$viewFrameBuffer(model.cpu.frameBuf),
+                    A2($elm$html$Html$br, _List_Nil, _List_Nil),
+                    function() {
+                        var _v0 = model.cpu.awaitingKeyPress;
+                        if (_v0.$ === 'Nothing') return A2($elm$html$Html$p, _List_fromArray([
+                            A2($elm$html$Html$Attributes$style, 'visibility', 'hidden')
+                        ]), _List_fromArray([
+                            $elm$html$Html$text('-')
+                        ]));
+                        else {
+                            var x = _v0.a;
+                            return A2($elm$html$Html$p, _List_fromArray([
+                                $elm$html$Html$Attributes$class('awaiting')
+                            ]), _List_fromArray([
+                                $elm$html$Html$text('⚠️ Awaiting key press for register V' + ($rtfeldman$elm_hex$Hex$toString($author$project$Register$toInt(x)) + ' '))
+                            ]));
+                        }
+                    }(),
+                    A2($elm$html$Html$div, _List_fromArray([
+                        $elm$html$Html$Attributes$class('playback-controls')
                     ]), _List_fromArray([
-                        $elm$html$Html$text('⌛')
+                        function() {
+                            var _v1 = model.status;
+                            if (_v1.$ === 'Running') return A2($elm$html$Html$button, _List_fromArray([
+                                $elm$html$Html$Events$onClick($author$project$Main$ChangeStatus($author$project$Main$Paused)),
+                                $elm$html$Html$Attributes$disabled(_Utils_eq(model.status, $author$project$Main$Paused))
+                            ]), _List_fromArray([
+                                $elm$html$Html$text('Pause')
+                            ]));
+                            else return A2($elm$html$Html$button, _List_fromArray([
+                                $elm$html$Html$Events$onClick($author$project$Main$ChangeStatus($author$project$Main$Running)),
+                                $elm$html$Html$Attributes$disabled(_Utils_eq(model.status, $author$project$Main$Running))
+                            ]), _List_fromArray([
+                                $elm$html$Html$text('Run')
+                            ]));
+                        }(),
+                        A2($elm$html$Html$button, _List_fromArray([
+                            $elm$html$Html$Events$onClick($author$project$Main$Reset)
+                        ]), _List_fromArray([
+                            $elm$html$Html$text('Reload')
+                        ]))
                     ])),
-                    A2($elm$html$Html$span, _List_fromArray([
-                        A2($elm$html$Html$Attributes$style, 'margin-left', '1em')
+                    A2($elm$html$Html$br, _List_Nil, _List_Nil),
+                    A2($elm$html$Html$div, _List_fromArray([
+                        A2($elm$html$Html$Attributes$style, 'display', 'flex'),
+                        A2($elm$html$Html$Attributes$style, 'justify-content', 'space-evenly')
                     ]), _List_fromArray([
-                        $elm$html$Html$text(' Running...')
-                    ]))
-                ]));
-                else return $elm$html$Html$text('');
-            }(),
-            A2($elm$html$Html$br, _List_Nil, _List_Nil),
-            $elm$html$Html$text('Steps: ' + $elm$core$String$fromInt(model.cpu.steps)),
-            A2($elm$html$Html$br, _List_Nil, _List_Nil),
-            A2($elm$html$Html$button, _List_fromArray([
-                $elm$html$Html$Events$onClick($author$project$Main$Step(1)),
-                $elm$html$Html$Attributes$tabindex(1)
-            ]), _List_fromArray([
-                $elm$html$Html$text('Step +1')
-            ])),
-            A2($elm$html$Html$button, _List_fromArray([
-                $elm$html$Html$Events$onClick($author$project$Main$Step(10)),
-                $elm$html$Html$Attributes$tabindex(1)
-            ]), _List_fromArray([
-                $elm$html$Html$text('Step +10')
-            ])),
-            A2($elm$html$Html$button, _List_fromArray([
-                $elm$html$Html$Events$onClick($author$project$Main$Step(100)),
-                $elm$html$Html$Attributes$tabindex(1)
-            ]), _List_fromArray([
-                $elm$html$Html$text('Step +100')
-            ])),
-            A2($elm$html$Html$br, _List_Nil, _List_Nil),
-            A2($elm$html$Html$label, _List_Nil, _List_fromArray([
-                A2($elm$html$Html$input, _List_fromArray([
-                    $elm$html$Html$Attributes$type_('range'),
-                    $elm$html$Html$Attributes$min('60'),
-                    $elm$html$Html$Attributes$max('1000'),
-                    $elm$html$Html$Attributes$step('100'),
-                    $elm$html$Html$Attributes$value($elm$core$String$fromFloat(model.cpu.opsPerSecond)),
-                    $elm$html$Html$Events$onInput(function(s) {
-                        return $author$project$Main$ChangeCpuSpeed(A2($elm$core$Maybe$withDefault, model.cpu.opsPerSecond, $elm$core$String$toFloat(s)));
-                    })
-                ]), _List_Nil),
-                $elm$html$Html$text(' Cpu speed: ' + (model.cpu.opsPerSecond > 800 ? 'max' : $elm$core$String$fromFloat(model.cpu.opsPerSecond) + ' ops/sec'))
-            ])),
-            function() {
-                var _v1 = model.cpu.awaitingKeyPress;
-                if (_v1.$ === 'Nothing') return $elm$html$Html$text('');
-                else {
-                    var x = _v1.a;
-                    return A2($elm$html$Html$p, _List_Nil, _List_fromArray([
-                        $elm$html$Html$text('Awaiting key press for register V' + ($rtfeldman$elm_hex$Hex$toString($author$project$Register$toInt(x)) + ' '))
-                    ]));
-                }
-            }()
+                        $author$project$Main$viewKeysDown(model.cpu),
+                        A2($elm$html$Html$div, _List_fromArray([
+                            A2($elm$html$Html$Attributes$style, 'padding-left', '1em')
+                        ]), _List_fromArray([
+                            $elm$html$Html$text('Steps: ' + $elm$core$String$fromInt(model.cpu.steps)),
+                            function() {
+                                var _v2 = model.status;
+                                if (_v2.$ === 'Running') return A2($elm$html$Html$span, _List_fromArray([
+                                    A2($elm$html$Html$Attributes$style, 'display', 'inline-block'),
+                                    $elm$html$Html$Attributes$class('rotating'),
+                                    A2($elm$html$Html$Attributes$style, 'margin-left', '.5em')
+                                ]), _List_fromArray([
+                                    $elm$html$Html$text('⌛')
+                                ]));
+                                else return $elm$html$Html$text('');
+                            }(),
+                            A2($elm$html$Html$br, _List_Nil, _List_Nil),
+                            A2($elm$html$Html$button, _List_fromArray([
+                                $elm$html$Html$Events$onClick($author$project$Main$Step(1)),
+                                $elm$html$Html$Attributes$tabindex(1)
+                            ]), _List_fromArray([
+                                $elm$html$Html$text('Step +1')
+                            ])),
+                            A2($elm$html$Html$button, _List_fromArray([
+                                $elm$html$Html$Events$onClick($author$project$Main$Step(10)),
+                                $elm$html$Html$Attributes$tabindex(1)
+                            ]), _List_fromArray([
+                                $elm$html$Html$text('Step +10')
+                            ])),
+                            A2($elm$html$Html$button, _List_fromArray([
+                                $elm$html$Html$Events$onClick($author$project$Main$Step(100)),
+                                $elm$html$Html$Attributes$tabindex(1)
+                            ]), _List_fromArray([
+                                $elm$html$Html$text('Step +100')
+                            ])),
+                            A2($elm$html$Html$br, _List_Nil, _List_Nil),
+                            A2($elm$html$Html$br, _List_Nil, _List_Nil),
+                            A2($elm$html$Html$label, _List_Nil, _List_fromArray([
+                                $elm$html$Html$text(' Cpu speed: ' + (model.cpu.opsPerSecond > 800 ? 'max' : $elm$core$String$fromFloat(model.cpu.opsPerSecond) + ' ops/sec')),
+                                A2($elm$html$Html$input, _List_fromArray([
+                                    $elm$html$Html$Attributes$type_('range'),
+                                    $elm$html$Html$Attributes$min('60'),
+                                    $elm$html$Html$Attributes$max('1000'),
+                                    A2($elm$html$Html$Attributes$style, 'display', 'block'),
+                                    A2($elm$html$Html$Attributes$style, 'width', '100%'),
+                                    $elm$html$Html$Attributes$step('100'),
+                                    $elm$html$Html$Attributes$value($elm$core$String$fromFloat(model.cpu.opsPerSecond)),
+                                    $elm$html$Html$Events$onInput(function(s) {
+                                        return $author$project$Main$ChangeCpuSpeed(A2($elm$core$Maybe$withDefault, model.cpu.opsPerSecond, $elm$core$String$toFloat(s)));
+                                    })
+                                ]), _List_Nil)
+                            ]))
+                        ]))
+                    ])),
+                    $author$project$Main$viewDebugOptions(model.debug)
+                ]))
+            ]))
         ]));
     };
     var $author$project$Main$ChangeFollowPc = function(a) {
@@ -20571,20 +18525,15 @@ type alias Process =
             a: a
         };
     };
-    var $elm$html$Html$Attributes$checked = $elm$html$Html$Attributes$boolProperty('checked');
+    var $elm$html$Html$code = _VirtualDom_node('code');
+    var $elm$html$Html$Attributes$id = $elm$html$Html$Attributes$stringProperty('id');
     var $elm$html$Html$ol = _VirtualDom_node('ol');
-    var $elm$html$Html$Events$targetChecked = A2($elm$json$Json$Decode$at, _List_fromArray([
-        'target',
-        'checked'
-    ]), $elm$json$Json$Decode$bool);
-    var $elm$html$Html$Events$onCheck = function(tagger) {
-        return A2($elm$html$Html$Events$on, 'change', A2($elm$json$Json$Decode$map, tagger, $elm$html$Html$Events$targetChecked));
-    };
     var $elm$html$Html$Attributes$start = function(n) {
         return A2($elm$html$Html$Attributes$stringProperty, 'start', $elm$core$String$fromInt(n));
     };
+    var $elm$html$Html$Attributes$title = $elm$html$Html$Attributes$stringProperty('title');
     var $author$project$Main$viewRight = function(model) {
-        return A2($elm$html$Html$div, _List_fromArray([
+        return !model.debug.showProgram ? $elm$html$Html$text('') : A2($elm$html$Html$div, _List_fromArray([
             $elm$html$Html$Attributes$class('right'),
             $elm$html$Html$Attributes$id('right')
         ]), _List_fromArray([
@@ -20647,11 +18596,9 @@ type alias Process =
                 A2($elm$html$Html$div, _List_fromArray([
                     $elm$html$Html$Attributes$class('container')
                 ]), _List_fromArray([
-                    $author$project$Main$viewLeft(model),
-                    $author$project$Main$spacer,
+                    model.debug.showDebug ? $author$project$Main$viewLeft(model) : $elm$html$Html$text(''),
                     $author$project$Main$viewMid(model),
-                    $author$project$Main$spacer,
-                    $author$project$Main$viewRight(model)
+                    model.debug.showDebug ? $author$project$Main$viewRight(model) : $elm$html$Html$text('')
                 ]))
             ]),
             title: 'elm-chip8'
@@ -20666,254 +18613,19 @@ type alias Process =
     _Platform_export({
         'Main': {
             'init': $author$project$Main$main(A2($elm$json$Json$Decode$andThen, function(seed) {
-                return $elm$json$Json$Decode$succeed({
-                    seed: seed
-                });
+                return A2($elm$json$Json$Decode$andThen, function(config) {
+                    return $elm$json$Json$Decode$succeed({
+                        config: config,
+                        seed: seed
+                    });
+                }, A2($elm$json$Json$Decode$field, 'config', $elm$json$Json$Decode$oneOf(_List_fromArray([
+                    $elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+                    A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$value)
+                ]))));
             }, A2($elm$json$Json$Decode$field, 'seed', $elm$json$Json$Decode$oneOf(_List_fromArray([
                 $elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
                 A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$int)
-            ])))))({
-                "versions": {
-                    "elm": "0.19.1"
-                },
-                "types": {
-                    "message": "Main.Msg",
-                    "aliases": {
-                        "Cpu.Cpu": {
-                            "args": [],
-                            "type": "{ mem : Array.Array Byte.Byte, v : Registers.Registers, i : Basics.Int, stack : List.List Basics.Int, pc : Basics.Int, soundTimer : Byte.Byte, delayTimer : Byte.Byte, frameBuf : FrameBuffer.FrameBuffer, seed : Basics.Int, awaitingKeyPress : Maybe.Maybe Register.Register, keysDown : Set.Set Basics.Int, steps : Basics.Int, opsPerSecond : Basics.Float }"
-                        },
-                        "Array.Tree": {
-                            "args": [
-                                "a"
-                            ],
-                            "type": "Elm.JsArray.JsArray (Array.Node a)"
-                        }
-                    },
-                    "unions": {
-                        "Main.Msg": {
-                            "args": [],
-                            "tags": {
-                                "NoOp": [],
-                                "Tick": [
-                                    "Basics.Float"
-                                ],
-                                "Step": [
-                                    "Basics.Int"
-                                ],
-                                "KeyDown": [
-                                    "Key.Key"
-                                ],
-                                "KeyUp": [
-                                    "Key.Key"
-                                ],
-                                "ClearKeys": [],
-                                "ChangeStatus": [
-                                    "Main.Status"
-                                ],
-                                "Reset": [],
-                                "RomSelected": [
-                                    "String.String"
-                                ],
-                                "ChangeFollowPc": [
-                                    "Basics.Bool"
-                                ],
-                                "ChangeCpuSpeed": [
-                                    "Basics.Float"
-                                ],
-                                "RevertToCpu": [
-                                    "Basics.Int",
-                                    "Cpu.Cpu"
-                                ]
-                            }
-                        },
-                        "Array.Array": {
-                            "args": [
-                                "a"
-                            ],
-                            "tags": {
-                                "Array_elm_builtin": [
-                                    "Basics.Int",
-                                    "Basics.Int",
-                                    "Array.Tree a",
-                                    "Elm.JsArray.JsArray a"
-                                ]
-                            }
-                        },
-                        "Basics.Bool": {
-                            "args": [],
-                            "tags": {
-                                "True": [],
-                                "False": []
-                            }
-                        },
-                        "Byte.Byte": {
-                            "args": [],
-                            "tags": {
-                                "Byte": [
-                                    "Basics.Int"
-                                ]
-                            }
-                        },
-                        "Basics.Float": {
-                            "args": [],
-                            "tags": {
-                                "Float": []
-                            }
-                        },
-                        "FrameBuffer.FrameBuffer": {
-                            "args": [],
-                            "tags": {
-                                "FrameBuffer": [
-                                    "Array.Array Basics.Bool"
-                                ]
-                            }
-                        },
-                        "Basics.Int": {
-                            "args": [],
-                            "tags": {
-                                "Int": []
-                            }
-                        },
-                        "Key.Key": {
-                            "args": [],
-                            "tags": {
-                                "Key0": [],
-                                "Key1": [],
-                                "Key2": [],
-                                "Key3": [],
-                                "Key4": [],
-                                "Key5": [],
-                                "Key6": [],
-                                "Key7": [],
-                                "Key8": [],
-                                "Key9": [],
-                                "KeyA": [],
-                                "KeyB": [],
-                                "KeyC": [],
-                                "KeyD": [],
-                                "KeyE": [],
-                                "KeyF": []
-                            }
-                        },
-                        "List.List": {
-                            "args": [
-                                "a"
-                            ],
-                            "tags": {}
-                        },
-                        "Maybe.Maybe": {
-                            "args": [
-                                "a"
-                            ],
-                            "tags": {
-                                "Just": [
-                                    "a"
-                                ],
-                                "Nothing": []
-                            }
-                        },
-                        "Register.Register": {
-                            "args": [],
-                            "tags": {
-                                "V0": [],
-                                "V1": [],
-                                "V2": [],
-                                "V3": [],
-                                "V4": [],
-                                "V5": [],
-                                "V6": [],
-                                "V7": [],
-                                "V8": [],
-                                "V9": [],
-                                "VA": [],
-                                "VB": [],
-                                "VC": [],
-                                "VD": [],
-                                "VE": [],
-                                "VF": []
-                            }
-                        },
-                        "Registers.Registers": {
-                            "args": [],
-                            "tags": {
-                                "Registers": [
-                                    "Array.Array Byte.Byte"
-                                ]
-                            }
-                        },
-                        "Set.Set": {
-                            "args": [
-                                "t"
-                            ],
-                            "tags": {
-                                "Set_elm_builtin": [
-                                    "Dict.Dict t ()"
-                                ]
-                            }
-                        },
-                        "Main.Status": {
-                            "args": [],
-                            "tags": {
-                                "Running": [],
-                                "Paused": []
-                            }
-                        },
-                        "String.String": {
-                            "args": [],
-                            "tags": {
-                                "String": []
-                            }
-                        },
-                        "Dict.Dict": {
-                            "args": [
-                                "k",
-                                "v"
-                            ],
-                            "tags": {
-                                "RBNode_elm_builtin": [
-                                    "Dict.NColor",
-                                    "k",
-                                    "v",
-                                    "Dict.Dict k v",
-                                    "Dict.Dict k v"
-                                ],
-                                "RBEmpty_elm_builtin": []
-                            }
-                        },
-                        "Elm.JsArray.JsArray": {
-                            "args": [
-                                "a"
-                            ],
-                            "tags": {
-                                "JsArray": [
-                                    "a"
-                                ]
-                            }
-                        },
-                        "Array.Node": {
-                            "args": [
-                                "a"
-                            ],
-                            "tags": {
-                                "SubTree": [
-                                    "Array.Tree a"
-                                ],
-                                "Leaf": [
-                                    "Elm.JsArray.JsArray a"
-                                ]
-                            }
-                        },
-                        "Dict.NColor": {
-                            "args": [],
-                            "tags": {
-                                "Red": [],
-                                "Black": []
-                            }
-                        }
-                    }
-                }
-            })
+            ])))))(0)
         }
     });
     //////////////////// HMR BEGIN ////////////////////
