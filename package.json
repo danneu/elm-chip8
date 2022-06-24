@@ -5,13 +5,16 @@
         "start-no-debug": "PARCEL_ELM_NO_DEBUG=1 yarn start",
         "review": "elm-review",
         "review-fix": "elm-review --fix",
-        "build": "parcel build index.html"
+        "build": "parcel build --public-url ./ index.html",
+        "gh-pages": "yarn run build && echo Deploying... && gh-pages -d dist"
     },
     "devDependencies": {
-        "@parcel/transformer-elm": "2.6.0",
-        "@parcel/transformer-sass": "2.6.0",
+        "@parcel/transformer-elm": "2.5.0",
+        "@parcel/transformer-sass": "2.5.0",
         "elm": "^0.19.1-5",
         "elm-review": "^2.7.2",
-        "elm-test": "^0.19.1-revision8"
+        "elm-test": "^0.19.1-revision8",
+        "gh-pages": "^4.0.0",
+        "parcel": "2.5.0"
     }
 }

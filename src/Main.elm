@@ -5,24 +5,32 @@ import Browser
 import Browser.Dom
 import Browser.Events
 import Byte
+import Bytes exposing (Bytes)
+import Bytes.Decode as B
 import Cpu exposing (Cpu)
 import Dict
+import File
+import File.Select
 import FrameBuffer exposing (FrameBuffer)
 import Hex
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick)
+import Html.Events exposing (onCheck, onClick)
 import Json.Decode as D
+import Json.Encode as E
 import Key
 import OpCode exposing (OpCode)
 import Register
 import Registers
-import Rom
+import SampleRom
 import Set
 import Svg
 import Svg.Attributes as SA
 import Svg.Keyed
 import Task
+
+
+port storeConfig : E.Value -> Cmd msg
 
 
 port scrollToId : String -> Cmd msg
@@ -44,6 +52,10 @@ type Msg
     | ChangeFollowPc Bool
     | ChangeCpuSpeed Float
     | RevertToCpu Int Cpu
+    | ChangeDebug DebugOptions
+    | RequestUserFile
+    | UserFileSelected File.File
+    | UserFileLoaded Bytes
 
 
 type Status
@@ -51,19 +63,66 @@ type Status
     | Paused
 
 
+type alias DebugOptions =
+    { showDebug : Bool
+
+    -- We keep the state of suboptions so that we can toggle debug without losing state
+    , showHistory : Bool
+    , showProgram : Bool
+    }
+
+
+defaultDebug =
+    -- { showHistory = True
+    { showDebug = True
+    , showHistory = False
+
+    -- , showProgram = True
+    , showProgram = False
+    }
+
+
+defaultConfig : Config
+defaultConfig =
+    { debug = defaultDebug
+    , rom = Nothing
+    }
+
+
+type Rom
+    = SampleRom String (List Int)
+    | CustomRom (List Int)
+
+
+getProgram : Rom -> List Int
+getProgram r =
+    case r of
+        SampleRom _ x ->
+            x
+
+        CustomRom x ->
+            x
+
+
 type alias Model =
     { cpu : Cpu
     , seed : Int
     , opHistory : List ( OpCode, Maybe Cpu )
     , status : Status
-    , program : List Int
+
+    -- , program : List Int
+    -- , romKey : Maybe String
+    -- , rom : Rom.Rom
+    , rom : Rom
     , allOps : Result String (List ( Int, Maybe OpCode ))
     , followPc : Bool
+    , debug : DebugOptions
     }
 
 
 type alias Flags =
     { seed : Maybe Int
+    , config : Maybe E.Value
     }
 
 
@@ -98,20 +157,23 @@ programToOpCodes bytes =
     help bytes []
 
 
-initModel : Int -> List Int -> Model
-initModel seed program =
+initModel : Int -> DebugOptions -> Rom -> Model
+initModel seed debug rom =
     let
         cpu =
-            Cpu.fromProgram seed program
+            Cpu.fromProgram seed (getProgram rom)
     in
     { cpu = cpu
     , seed = seed
     , opHistory = []
     , status = Paused
-    , program = program
+    , rom = rom
     , allOps =
-        programToOpCodes program
+        programToOpCodes (getProgram rom)
     , followPc = True
+    , debug = debug
+
+    -- , romKey = Just rom.name
     }
 
 
@@ -148,7 +210,17 @@ spriteClipTest =
 
 init : Flags -> ( Model, Cmd Msg )
 init flags =
-    ( initModel (Maybe.withDefault 0 flags.seed) Rom.trip8.program
+    let
+        config =
+            flags.config
+                |> Maybe.andThen (\v -> D.decodeValue decodeConfig v |> Result.toMaybe)
+                |> Maybe.withDefault defaultConfig
+
+        rom =
+            config.rom
+                |> Maybe.withDefault (SampleRom SampleRom.trip8.name SampleRom.trip8.program)
+    in
+    ( initModel (Maybe.withDefault 0 flags.seed) config.debug rom
     , Cmd.none
     )
 
@@ -173,6 +245,76 @@ viewMemory _ =
     text ""
 
 
+
+-- type alias Model =
+--     { cpu : Cpu
+--     , seed : Int
+--     , opHistory : List ( OpCode, Maybe Cpu )
+--     , status : Status
+--     , program : List Int
+--     , allOps : Result String (List ( Int, Maybe OpCode ))
+--     , followPc : Bool
+--     , debug : DebugOptions
+--     }
+
+
+{-| A subset of the model that we save to localStorage.
+-}
+type alias Config =
+    { debug : DebugOptions
+    , rom : Maybe Rom
+    }
+
+
+encodeConfig : Model -> E.Value
+encodeConfig ({ debug } as m) =
+    let
+        encodeRom : Rom -> E.Value
+        encodeRom r =
+            case r of
+                CustomRom data ->
+                    E.list E.int data
+
+                SampleRom s bs ->
+                    E.list identity [ E.string s, E.list E.int bs ]
+    in
+    E.object
+        [ ( "debug"
+          , E.object
+                [ ( "showDebug", E.bool debug.showDebug )
+                , ( "showHistory", E.bool debug.showHistory )
+                , ( "showProgram", E.bool debug.showProgram )
+                ]
+          )
+        , ( "rom", encodeRom m.rom )
+        ]
+
+
+decodeConfig : D.Decoder Config
+decodeConfig =
+    D.map2 Config
+        (D.field "debug"
+            (D.map3 DebugOptions
+                (D.field "showDebug" D.bool)
+                (D.field "showHistory" D.bool)
+                (D.field "showProgram" D.bool)
+            )
+        )
+        -- rom: [1,2,3,...]
+        -- rom: {kind: "Game", name: "...", program: [1,2,3], desc: """}
+        (D.field "rom"
+            (D.oneOf
+                [ D.list D.int |> D.map (CustomRom >> Just)
+                , D.map2 SampleRom
+                    (D.index 0 D.string)
+                    (D.index 1 (D.list D.int))
+                    |> D.map Just
+                , D.succeed Nothing
+                ]
+            )
+        )
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
@@ -180,8 +322,17 @@ update msg model =
             ( model, Cmd.none )
 
         Reset ->
-            ( initModel (model.seed + 1) model.program
+            ( initModel (model.seed + 1) model.debug model.rom
             , Cmd.none
+            )
+
+        ChangeDebug d ->
+            let
+                m =
+                    { model | debug = d }
+            in
+            ( m
+            , storeConfig (encodeConfig m)
             )
 
         -- TODO: Move tick execution into Cpu. `step` should use it. ie.g. User should not have to be the one decr'ing timers.
@@ -225,18 +376,26 @@ update msg model =
                 Ok ( ops, cpu ) ->
                     let
                         ops2 =
-                            case ops of
-                                [] ->
-                                    []
+                            if model.debug.showHistory then
+                                case ops of
+                                    [] ->
+                                        []
 
-                                op :: rest ->
-                                    ( op, Just cpu ) :: List.map (\o -> ( o, Nothing )) rest
+                                    op :: rest ->
+                                        ( op, Just cpu ) :: List.map (\o -> ( o, Nothing )) rest
+
+                            else
+                                []
                     in
                     ( { model
                         | cpu = cpu
                         , opHistory =
-                            List.foldr (::) model.opHistory ops2
-                                |> List.take 100
+                            if model.debug.showHistory then
+                                List.foldr (::) model.opHistory ops2
+                                    |> List.take 100
+
+                            else
+                                []
                       }
                     , Cmd.batch
                         [ if model.followPc then
@@ -273,13 +432,17 @@ update msg model =
             )
 
         RomSelected name ->
-            case Dict.get name Rom.all of
+            case Dict.get name SampleRom.all of
                 Nothing ->
                     ( model, Cmd.none )
 
                 Just rom ->
-                    ( initModel (model.seed + 1) rom.program
-                    , Cmd.none
+                    let
+                        m =
+                            initModel (model.seed + 1) model.debug (SampleRom rom.name rom.program)
+                    in
+                    ( m
+                    , storeConfig (encodeConfig m)
                     )
 
         Step steps ->
@@ -291,18 +454,26 @@ update msg model =
                 Ok ( ops, cpu ) ->
                     let
                         ops2 =
-                            case ops of
-                                [] ->
-                                    []
+                            if model.debug.showHistory then
+                                case ops of
+                                    [] ->
+                                        []
 
-                                op :: rest ->
-                                    ( op, Just cpu ) :: List.map (\o -> ( o, Nothing )) rest
+                                    op :: rest ->
+                                        ( op, Just cpu ) :: List.map (\o -> ( o, Nothing )) rest
+
+                            else
+                                []
                     in
                     ( { model
                         | cpu = cpu
                         , opHistory =
-                            List.foldr (::) model.opHistory ops2
-                                |> List.take 100
+                            if model.debug.showHistory then
+                                List.foldr (::) model.opHistory ops2
+                                    |> List.take 100
+
+                            else
+                                []
                       }
                       -- , scrollToPc cpu.pc
                     , Cmd.batch
@@ -339,6 +510,48 @@ update msg model =
             , Cmd.none
             )
 
+        RequestUserFile ->
+            ( model
+            , File.Select.file [ ".ch8" ] UserFileSelected
+            )
+
+        UserFileSelected file ->
+            ( model
+            , Task.perform UserFileLoaded (File.toBytes file)
+            )
+
+        UserFileLoaded bytes_ ->
+            let
+                len =
+                    Bytes.width bytes_
+
+                decoder =
+                    B.loop ( 0, [] ) <|
+                        \( n, acc ) ->
+                            if n >= len then
+                                B.succeed (B.Done (List.reverse acc))
+
+                            else
+                                B.unsignedInt8
+                                    |> B.andThen
+                                        (\b ->
+                                            B.Loop ( n + 1, b :: acc )
+                                                |> B.succeed
+                                        )
+
+                rom =
+                    B.decode decoder bytes_
+                        |> Maybe.map CustomRom
+                        -- TODO: Default rom here doesn't make sense
+                        |> Maybe.withDefault (CustomRom [])
+
+                m =
+                    initModel model.seed model.debug rom
+            in
+            ( m
+            , storeConfig (encodeConfig m)
+            )
+
 
 scrollToPc : Int -> Cmd Msg
 scrollToPc pc =
@@ -367,7 +580,8 @@ viewFrameBuffer fb =
     Svg.Keyed.node "svg"
         [ SA.viewBox "0 0 64 32"
         , SA.height "200px"
-        , Html.Attributes.style "border" "1px solid black"
+
+        -- , Html.Attributes.style "border" "1px solid black"
         ]
         (FrameBuffer.toList fb
             |> List.indexedMap
@@ -527,7 +741,11 @@ viewLeft model =
             , hr [] []
             , viewStack model.cpu
             , hr [] []
-            , viewOpCodeHistory model.opHistory
+            , if model.debug.showHistory then
+                viewOpCodeHistory model.opHistory
+
+              else
+                text ""
             , viewMemory model.cpu
             ]
         ]
@@ -535,130 +753,232 @@ viewLeft model =
 
 viewRight : Model -> Html Msg
 viewRight model =
-    div
-        [ class "right"
-        , id "right" -- for Brower.Dom viewport
-        ]
-        [ label
-            []
-            [ text "Follow PC: "
-            , input
-                [ type_ "checkbox"
-                , Html.Events.onCheck ChangeFollowPc
-                , checked model.followPc
-                ]
-                []
+    if not model.debug.showProgram then
+        text ""
+
+    else
+        div
+            [ class "right"
+            , id "right" -- for Brower.Dom viewport
             ]
-        , case model.allOps of
-            Err _ ->
-                text "TODO: Handle error"
-
-            Ok allOps ->
-                let
-                    hex n =
-                        "0x" ++ String.padLeft 4 '0' (Hex.toString n)
-                in
-                ol
-                    [ start 0x0200
-                    , id "program-explorer"
-                    , style "padding-bottom" "50vh"
+            [ label
+                []
+                [ text "Follow PC: "
+                , input
+                    [ type_ "checkbox"
+                    , Html.Events.onCheck ChangeFollowPc
+                    , checked model.followPc
                     ]
-                    (List.indexedMap
-                        (\i ( int, maybeOp ) ->
-                            -- Index to PC -> 0x200 + index * 2
-                            -- PC to Index -> PC - 0x200 // 2
-                            li
-                                -- [ value (String.fromInt <| (0x0200 + (i * 2)))
-                                [ id ("program-explorer-" ++ String.fromInt (0x0200 + (i * 2)))
-                                , classList [ ( "highlight", (model.cpu.pc - 0x0200) // 2 == i ) ]
-                                ]
-                                [ -- Item hex index
-                                  span
-                                    [ title (String.fromInt (0x0200 + (i * 2)))
+                    []
+                ]
+            , case model.allOps of
+                Err _ ->
+                    text "TODO: Handle error"
+
+                Ok allOps ->
+                    let
+                        hex n =
+                            "0x" ++ String.padLeft 4 '0' (Hex.toString n)
+                    in
+                    ol
+                        [ start 0x0200
+                        , id "program-explorer"
+                        , style "padding-bottom" "50vh"
+                        ]
+                        (List.indexedMap
+                            (\i ( int, maybeOp ) ->
+                                -- Index to PC -> 0x200 + index * 2
+                                -- PC to Index -> PC - 0x200 // 2
+                                li
+                                    -- [ value (String.fromInt <| (0x0200 + (i * 2)))
+                                    [ id ("program-explorer-" ++ String.fromInt (0x0200 + (i * 2)))
+                                    , classList [ ( "highlight", (model.cpu.pc - 0x0200) // 2 == i ) ]
                                     ]
-                                    [ text ("0x" ++ Hex.toString (0x0200 + (i * 2)) ++ " ") ]
+                                    [ -- Item hex index
+                                      span
+                                        [ title (String.fromInt (0x0200 + (i * 2)))
+                                        ]
+                                        [ text ("0x" ++ Hex.toString (0x0200 + (i * 2)) ++ " ") ]
 
-                                -- Item hex value
-                                , text (hex int)
-                                , text " "
-                                , case maybeOp of
-                                    Nothing ->
-                                        text "--"
+                                    -- Item hex value
+                                    , text (hex int)
+                                    , text " "
+                                    , case maybeOp of
+                                        Nothing ->
+                                            text "--"
 
-                                    Just op ->
-                                        code [ style "white-space" "pre" ] [ text (OpCode.toString op) ]
+                                        Just op ->
+                                            code [ style "white-space" "pre" ] [ text (OpCode.toString op) ]
 
-                                -- case maybeOp of
-                                -- Nothing ->
-                                ]
+                                    -- case maybeOp of
+                                    -- Nothing ->
+                                    ]
+                            )
+                            allOps
                         )
-                        allOps
-                    )
-        ]
+            ]
 
 
-viewKeysDown : Cpu -> Html msg
+viewKeysDown : Cpu -> Html Msg
 viewKeysDown cpu =
     div
         [ class "keyboard" ]
-        ([ 1, 2, 3, 0x0C, 4, 5, 6, 0x0D, 7, 8, 9, 0x0E, 0x0A, 0, 0x0B, 0x0F ]
-            |> List.indexedMap
-                (\i v ->
-                    let
-                        element =
-                            span
-                                [ classList [ ( "highlight", Set.member v cpu.keysDown ) ]
-                                ]
-                                [ text (Hex.toString v) ]
-                    in
-                    if i > 0 && remainderBy 4 i == 0 then
-                        [ br [] [], element ]
-
-                    else
-                        [ element ]
+        ([ [ 1, 2, 3, 0x0C ], [ 4, 5, 6, 0x0D ], [ 7, 8, 9, 0x0E ], [ 0x0A, 0, 0x0B, 0x0F ] ]
+            |> List.map
+                (\vs ->
+                    div
+                        [ class "row"
+                        ]
+                        (List.map
+                            (\v ->
+                                let
+                                    key =
+                                        Key.fromInt v
+                                            |> Maybe.withDefault Key.Key0
+                                in
+                                button
+                                    [ classList [ ( "highlight", Set.member v cpu.keysDown ) ]
+                                    , Html.Events.onMouseDown (KeyDown key)
+                                    , Html.Events.onMouseUp (KeyUp key)
+                                    , Html.Events.onMouseLeave (KeyUp key)
+                                    ]
+                                    [ text (String.toUpper <| Hex.toString v) ]
+                            )
+                            vs
+                        )
                 )
-            |> List.concat
         )
 
 
-{-| TODO: Replace model.program with model.currentRom or something.
--}
-viewRomSelector : List Int -> Html Msg
-viewRomSelector currentProgram =
+viewSampleRomSelector : Rom -> Html Msg
+viewSampleRomSelector currentRom =
     let
-        kindToTitle : Rom.RomKind -> String
+        kindToTitle : SampleRom.RomKind -> String
         kindToTitle kind =
             case kind of
-                Rom.Demo ->
+                SampleRom.Demo ->
                     "Demos"
 
-                Rom.Test ->
+                SampleRom.Test ->
                     "Tests"
 
-                Rom.Game ->
+                SampleRom.Game ->
                     "Games"
+
+        selectedRomIsCustom =
+            case currentRom of
+                SampleRom _ _ ->
+                    False
+
+                CustomRom _ ->
+                    True
     in
-    label []
-        [ text "Load a ROM: "
-        , select
-            [ Html.Events.onInput RomSelected ]
-            (List.map
-                (\kind ->
-                    optgroup
-                        [ attribute "label" (kindToTitle kind) ]
-                        (List.map
-                            (\rom ->
-                                option
-                                    [ value rom.name
-                                    , selected (currentProgram == rom.program)
-                                    ]
-                                    [ text rom.name ]
+    div
+        [ style "margin-top" "1em"
+        , class "rom-selector"
+        ]
+        [ label
+            [ style "display" "block"
+            , classList [ ( "highlight", not selectedRomIsCustom ) ]
+            ]
+            [ text "Built-in ROMs: "
+            , select
+                [ Html.Events.onInput RomSelected ]
+                (List.map
+                    (\kind ->
+                        optgroup
+                            [ attribute "label" (kindToTitle kind) ]
+                            (List.map
+                                (\rom ->
+                                    option
+                                        [ value rom.name
+                                        , selected <|
+                                            case currentRom of
+                                                SampleRom key _ ->
+                                                    key == rom.name
+
+                                                _ ->
+                                                    False
+                                        ]
+                                        [ text rom.name ]
+                                )
+                                (Dict.values SampleRom.all |> List.filter (\rom -> rom.kind == kind))
                             )
-                            (Dict.values Rom.all |> List.filter (\rom -> rom.kind == kind))
-                        )
+                    )
+                    [ SampleRom.Demo, SampleRom.Test, SampleRom.Game ]
                 )
-                [ Rom.Demo, Rom.Test, Rom.Game ]
-            )
+            ]
+        , label
+            [ classList [ ( "highlight", selectedRomIsCustom ) ]
+            , style "display" "block"
+            ]
+            [ text "Load your own ROM file: "
+            , button [ onClick RequestUserFile, type_ "button" ] [ text "Choose local file" ]
+            ]
+        , br [] []
+        , p [ style "text-align" "center" ]
+            [ case currentRom of
+                SampleRom _ program ->
+                    text ("ROM loaded from samples. (" ++ String.fromInt (List.length program) ++ " bytes)")
+
+                CustomRom program ->
+                    text ("ROM loaded from user file. (" ++ String.fromInt (List.length program) ++ " bytes)")
+            ]
+        ]
+
+
+viewDebugOptions : DebugOptions -> Html Msg
+viewDebugOptions d =
+    div
+        [ class "debug-options"
+        ]
+        [ hr [] []
+        , div
+            [ style "text-align" "center" ]
+            [ label
+                []
+                [ text "Show debug"
+                , input
+                    [ type_ "checkbox"
+                    , checked d.showDebug
+                    , onCheck (\v -> ChangeDebug { d | showDebug = v })
+                    ]
+                    []
+                ]
+            ]
+        , div
+            [ style "display" "flex"
+            , style "justify-content" "space-evenly"
+            ]
+            [ div
+                []
+                [ label
+                    [ classList [ ( "disabled", not d.showDebug ) ] ]
+                    [ text "Show history"
+                    , input
+                        [ type_ "checkbox"
+                        , disabled (not d.showDebug)
+                        , checked d.showHistory
+                        , onCheck (\v -> ChangeDebug { d | showHistory = v })
+                        ]
+                        []
+                    ]
+                ]
+            , div
+                []
+                [ label
+                    [ classList [ ( "disabled", not d.showDebug ) ] ]
+                    [ text "Show program"
+                    , input
+                        [ type_ "checkbox"
+                        , disabled (not d.showDebug)
+                        , checked d.showProgram
+                        , onCheck (\v -> ChangeDebug { d | showProgram = v })
+                        ]
+                        []
+                    ]
+                ]
+            ]
         ]
 
 
@@ -666,72 +986,118 @@ viewMid : Model -> Html Msg
 viewMid model =
     div
         [ class "mid" ]
-        [ viewRomSelector model.program
-        , br [] []
-        , viewFrameBuffer model.cpu.frameBuf
-        , br [] []
-        , viewKeysDown model.cpu
-        , br [] []
-        , button [ onClick (ChangeStatus Running), disabled (model.status == Running) ] [ text "Run" ]
-        , button [ onClick (ChangeStatus Paused), disabled (model.status == Paused) ] [ text "Pause" ]
-        , button [ onClick Reset ] [ text "Reset" ]
-        , case model.status of
-            Running ->
-                span [ style "position" "relative" ]
-                    [ span [ style "position" "absolute", class "rotating" ] [ text "⌛" ]
-                    , span [ style "margin-left" "1em" ] [ text " Running..." ]
-                    ]
-
-            _ ->
-                text ""
-        , br [] []
-        , text ("Steps: " ++ String.fromInt model.cpu.steps)
-        , br [] []
-        , button
-            [ onClick (Step 1)
-            , tabindex 1
-            ]
-            [ text "Step +1" ]
-        , button
-            [ onClick (Step 10)
-            , tabindex 1
-            ]
-            [ text "Step +10" ]
-        , button
-            [ onClick (Step 100)
-            , tabindex 1
-            ]
-            [ text "Step +100" ]
-        , br [] []
-        , label []
-            [ input
-                [ type_ "range"
-                , Html.Attributes.min "60"
-                , Html.Attributes.max "1000"
-                , step "100"
-                , value (String.fromFloat model.cpu.opsPerSecond)
-                , Html.Events.onInput (\s -> String.toFloat s |> Maybe.withDefault model.cpu.opsPerSecond |> ChangeCpuSpeed)
+        [ div
+            [ class "scroller" ]
+            [ div
+                [ style "max-width" "fit-content"
+                , style "margin" "0 auto"
                 ]
-                []
-            , text
-                (" Cpu speed: "
-                    ++ (if model.cpu.opsPerSecond > 800 then
-                            "max"
+                [ viewSampleRomSelector model.rom
+                , br [] []
+                , viewFrameBuffer model.cpu.frameBuf
+                , br [] []
+                , case model.cpu.awaitingKeyPress of
+                    Nothing ->
+                        -- Lazy way of avoiding the awaiting-key banner from pushing content down
+                        p [ style "visibility" "hidden" ] [ text "-" ]
 
-                        else
-                            String.fromFloat model.cpu.opsPerSecond ++ " ops/sec"
-                       )
-                )
+                    Just x ->
+                        p
+                            [ class "awaiting"
+                            ]
+                            [ text ("⚠️ Awaiting key press for register V" ++ Hex.toString (Register.toInt x) ++ " ") ]
+                , div
+                    [ class "playback-controls" ]
+                    [ case model.status of
+                        Running ->
+                            button [ onClick (ChangeStatus Paused), disabled (model.status == Paused) ] [ text "Pause" ]
+
+                        Paused ->
+                            button
+                                [ onClick (ChangeStatus Running)
+                                , disabled (model.status == Running)
+
+                                -- , classList
+                                --     [ ( "pulse-blue"
+                                --       , model.status == Paused
+                                --       )
+                                --     ]
+                                ]
+                                [ text "Run" ]
+                    , button [ onClick Reset ] [ text "Reload" ]
+                    ]
+                , br [] []
+                , div
+                    [ style "display" "flex"
+                    , style "justify-content" "space-evenly"
+                    ]
+                    [ viewKeysDown model.cpu
+                    , div
+                        [ --style "flex-grow" "2"
+                          style "padding-left" "1em"
+                        ]
+                        [ text ("Steps: " ++ String.fromInt model.cpu.steps)
+                        , case model.status of
+                            Running ->
+                                span
+                                    [ style "display" "inline-block"
+                                    , class "rotating"
+                                    , style "margin-left" ".5em"
+                                    ]
+                                    [ text "⌛"
+                                    ]
+
+                            _ ->
+                                text ""
+                        , br [] []
+                        , button
+                            [ onClick (Step 1)
+                            , tabindex 1
+                            ]
+                            [ text "Step +1" ]
+                        , button
+                            [ onClick (Step 10)
+                            , tabindex 1
+                            ]
+                            [ text "Step +10" ]
+                        , button
+                            [ onClick (Step 100)
+                            , tabindex 1
+                            ]
+                            [ text "Step +100" ]
+                        , br [] []
+                        , br [] []
+                        , label []
+                            [ text
+                                (" Cpu speed: "
+                                    ++ (if model.cpu.opsPerSecond > 800 then
+                                            "max"
+
+                                        else
+                                            String.fromFloat model.cpu.opsPerSecond ++ " ops/sec"
+                                       )
+                                )
+                            , input
+                                [ type_ "range"
+                                , Html.Attributes.min "60"
+                                , Html.Attributes.max "1000"
+                                , style "display" "block"
+                                , style "width" "100%"
+                                , step "100"
+                                , value (String.fromFloat model.cpu.opsPerSecond)
+                                , Html.Events.onInput (\s -> String.toFloat s |> Maybe.withDefault model.cpu.opsPerSecond |> ChangeCpuSpeed)
+                                ]
+                                []
+                            ]
+                        ]
+                    ]
+                , viewDebugOptions model.debug
+                ]
             ]
-        , case model.cpu.awaitingKeyPress of
-            Nothing ->
-                text ""
-
-            Just x ->
-                p [] [ text ("Awaiting key press for register V" ++ Hex.toString (Register.toInt x) ++ " ") ]
         ]
 
 
+spacer : Html msg
 spacer =
     div [ class "spacer" ] []
 
@@ -742,14 +1108,22 @@ view model =
     , body =
         [ div
             [ class "container" ]
-            [ viewLeft model
-            , spacer
-            , viewMid model
-            , spacer
-            , viewRight model
-            ]
+            [ if model.debug.showDebug then
+                viewLeft model
 
-        -- Show all opcodes
+              else
+                text ""
+
+            -- , spacer
+            , viewMid model
+
+            -- , spacer
+            , if model.debug.showDebug then
+                viewRight model
+
+              else
+                text ""
+            ]
         ]
     }
 

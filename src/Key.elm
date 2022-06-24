@@ -1,4 +1,4 @@
-module Key exposing (Key(..), qwertyMap, toInt)
+module Key exposing (Key(..), fromInt, qwertyMap, toInt)
 
 import Dict exposing (Dict)
 
@@ -114,41 +114,56 @@ toInt key =
             0x0F
 
 
+fromInt : Int -> Maybe Key
+fromInt n =
+    case n of
+        0 ->
+            Just Key0
 
--- fromInt : Int -> Maybe Key
--- fromInt n =
---     case n of
---         0 ->
---             Just Key0
---         1 ->
---             Just Key1
---         2 ->
---             Just Key2
---         3 ->
---             Just Key3
---         4 ->
---             Just Key4
---         5 ->
---             Just Key5
---         6 ->
---             Just Key6
---         7 ->
---             Just Key7
---         8 ->
---             Just Key8
---         9 ->
---             Just Key9
---         0x0A ->
---             Just KeyA
---         0x0B ->
---             Just KeyB
---         0x0C ->
---             Just KeyC
---         0x0D ->
---             Just KeyD
---         0x0E ->
---             Just KeyE
---         0x0F ->
---             Just KeyF
---         _ ->
---             Nothing
+        1 ->
+            Just Key1
+
+        2 ->
+            Just Key2
+
+        3 ->
+            Just Key3
+
+        4 ->
+            Just Key4
+
+        5 ->
+            Just Key5
+
+        6 ->
+            Just Key6
+
+        7 ->
+            Just Key7
+
+        8 ->
+            Just Key8
+
+        9 ->
+            Just Key9
+
+        0x0A ->
+            Just KeyA
+
+        0x0B ->
+            Just KeyB
+
+        0x0C ->
+            Just KeyC
+
+        0x0D ->
+            Just KeyD
+
+        0x0E ->
+            Just KeyE
+
+        0x0F ->
+            Just KeyF
+
+        _ ->
+            Nothing

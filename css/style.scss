@@ -8,8 +8,13 @@ body {
 label,
 button,
 input[type='checkbox'],
+input[type='range'],
 select {
     cursor: pointer;
+}
+
+label.disabled {
+    color: gray;
 }
 
 h1,
@@ -48,8 +53,34 @@ ul ul {
     border: 1px solid black;
 }
 
+.rom-selector {
+    label.highlight {
+        background-color: #0984e3;
+    }
+    label {
+        padding: 1em;
+    }
+}
+
+svg {
+    width: 100%;
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.playback-controls {
+    display: flex;
+    justify-content: space-evenly;
+    margin: 0.5em 0;
+
+    button {
+        width: 25%;
+    }
+}
+
 .container {
     display: flex;
+    justify-content: space-between;
 
     .spacer {
         margin: 0 auto;
@@ -59,6 +90,17 @@ ul ul {
         height: 100vh;
         display: flex;
         flex-direction: column;
+    }
+    .mid {
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        // special
+        flex-grow: 2;
+
+        .scroller {
+            // margin: 0 auto;
+        }
     }
 
     .left,
@@ -80,11 +122,36 @@ ul ul {
     }
 }
 
+.debug-options {
+    margin-top: 3em;
+}
+
+.awaiting {
+    background-color: #f39c12;
+    text-align: center;
+}
+
 .keyboard {
     border: 1px solid black;
     display: inline-block;
-    .highlight {
-        background: lime;
+    .row {
+        display: flex;
+    }
+    button {
+        font-size: 0.75em;
+        border-style: groove;
+        border: 1px solid #999;
+        margin: 0;
+        padding: 1em;
+        font-family: Menlo, 'Courier New', monospace;
+        background-color: white;
+        &:hover {
+            background-color: #ccc;
+        }
+
+        &.highlight {
+            background-color: lime;
+        }
     }
 }
 
@@ -98,4 +165,25 @@ ul ul {
 }
 .rotating {
     animation: rotating 2s linear infinite;
+}
+
+.pulse-blue {
+    animation: pulse-blue 2s infinite;
+}
+
+@keyframes pulse-blue {
+    0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(52, 172, 224, 0.7);
+    }
+
+    70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 10px rgba(52, 172, 224, 0);
+    }
+
+    100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(52, 172, 224, 0);
+    }
 }

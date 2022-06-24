@@ -235,7 +235,9 @@ step1 cpu =
                                 -- steps per 1/60 second
                                 stepsPerFrame =
                                     -- FIXME: Too naive.
-                                    ceiling <| c.opsPerSecond / 60
+                                    (c.opsPerSecond / 60)
+                                        |> ceiling
+                                        |> Basics.max 1
                             in
                             -- Ew
                             c

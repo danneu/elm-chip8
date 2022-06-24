@@ -4,6 +4,7 @@ import { Elm } from './src/Main.elm'
 const app = Elm.Main.init({
     flags: {
         seed: Date.now(),
+        config: getConfig(),
     },
 })
 
@@ -68,3 +69,17 @@ app.ports.playAudio.subscribe((shouldPlay) => {
         audio.pause()
     }
 })
+
+app.ports.storeConfig.subscribe((config) => {
+    console.log('config', config)
+    localStorage.setItem('config', JSON.stringify(config, null, 2))
+})
+
+function getConfig() {
+    const json = localStorage.getItem('config')
+    console.log('getConfig', json)
+    if (typeof json !== 'string') return
+    try {
+        return JSON.parse(json)
+    } catch (e) {}
+}
