@@ -72,13 +72,11 @@ type alias DebugOptions =
     }
 
 
+defaultDebug : DebugOptions
 defaultDebug =
-    -- { showHistory = True
     { showDebug = True
-    , showHistory = False
-
-    -- , showProgram = True
-    , showProgram = False
+    , showHistory = True
+    , showProgram = True
     }
 
 
@@ -850,8 +848,8 @@ viewKeysDown cpu =
         )
 
 
-viewSampleRomSelector : Rom -> Html Msg
-viewSampleRomSelector currentRom =
+viewRomSelector : Rom -> Html Msg
+viewRomSelector currentRom =
     let
         kindToTitle : SampleRom.RomKind -> String
         kindToTitle kind =
@@ -880,6 +878,7 @@ viewSampleRomSelector currentRom =
         [ label
             [ style "display" "block"
             , classList [ ( "highlight", not selectedRomIsCustom ) ]
+            , class "rom-input"
             ]
             [ text "Built-in ROMs: "
             , select
@@ -908,11 +907,12 @@ viewSampleRomSelector currentRom =
                     [ SampleRom.Demo, SampleRom.Test, SampleRom.Game ]
                 )
             ]
-        , label
+        , div
             [ classList [ ( "highlight", selectedRomIsCustom ) ]
             , style "display" "block"
+            , class "rom-input"
             ]
-            [ text "Load your own ROM file: "
+            [ text "Load your own ROM (.ch8) file: "
             , button [ onClick RequestUserFile, type_ "button" ] [ text "Choose local file" ]
             ]
         , br [] []
@@ -992,7 +992,7 @@ viewMid model =
                 [ style "max-width" "fit-content"
                 , style "margin" "0 auto"
                 ]
-                [ viewSampleRomSelector model.rom
+                [ viewRomSelector model.rom
                 , br [] []
                 , viewFrameBuffer model.cpu.frameBuf
                 , br [] []
