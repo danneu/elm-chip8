@@ -2,6 +2,4 @@
 
 A Chip-8 interpreter and debugging nifties implemented with Elm.
 
-## TODO
-
--   Figure out my timing/tick/step strategy. Right now it's a scatterbrained mess.
+- Demo: <http://danneu.com/elm-chip8/> (Already has a ROM loaded, just press "Run"
